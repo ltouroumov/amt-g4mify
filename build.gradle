@@ -1,0 +1,41 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url "http://repo.spring.io/snapshot" }
+        maven { url "http://repo.spring.io/milestone" }
+    }
+
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.0.BUILD-SNAPSHOT")
+    }
+}
+
+// Apply the java plugin to add support for Java
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+
+sourceSets {
+    main {
+        java.srcDirs = ['src/main']
+        resources.srcDirs = ['res/main']
+    }
+    test {
+        java.srcDirs = ['src/test']
+        resources.srcDirs = ['res/test']
+    }
+}
+repositories {
+    mavenCentral()
+    maven { url "http://repo.spring.io/snapshot" }
+    maven { url "http://repo.spring.io/milestone" }
+}
+
+
+// In this section you declare the dependencies for your production and test code
+dependencies {
+    compile "org.springframework.boot:spring-boot-starter-web:1.4.2.RELEASE"
+    compile 'org.springframework.boot:spring-boot-starter-thymeleaf:1.4.2.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-data-jpa:1.4.2.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-data-rest:1.4.2.RELEASE'
+    compile 'com.h2database:h2'
+}
