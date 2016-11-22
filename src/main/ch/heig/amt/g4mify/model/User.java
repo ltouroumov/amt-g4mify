@@ -1,9 +1,8 @@
 package ch.heig.amt.g4mify.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import ch.heig.amt.g4mify.json.JsonEntity;
+
+import javax.persistence.*;
 import java.util.List;
 
 /**
@@ -11,9 +10,14 @@ import java.util.List;
  * @created 11/14/16
  */
 @Entity
-public class User {
+@Table(name = "users")
+public class User implements BaseModel {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
+
+    @Column(unique = true)
     private String username;
 
     private String displayname;
@@ -23,6 +27,13 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Badge> badges;
+
+    @OneToMany(mappedBy = "user")
+    private List<Event> events;
+
+    public long getId() {
+        return id;
+    }
 
     public String getUsername() {
         return username;
@@ -46,5 +57,13 @@ public class User {
 
     public void setDomain(Domain domain) {
         this.domain = domain;
+    }
+
+    public List<Badge> getBadges() {
+        return badges;
+    }
+
+    public List<Event> getEvents() {
+        return events;
     }
 }

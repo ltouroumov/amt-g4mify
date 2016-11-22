@@ -1,16 +1,16 @@
 package ch.heig.amt.g4mify.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import ch.heig.amt.g4mify.json.JsonEntity;
+
+import javax.persistence.*;
 
 /**
  * @author ldavid
  * @created 11/14/16
  */
 @Entity
-public class Rule {
+@Table(name = "rules")
+public class Rule implements BaseModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

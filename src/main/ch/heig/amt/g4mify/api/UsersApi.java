@@ -18,22 +18,19 @@ import java.util.stream.Collectors;
  * @created 11/14/16
  */
 @RestController
-@RequestMapping("/{domainId}/users")
-public class UsersApi {
-
-    @Autowired
-    private DomainsRepository domainsRepository;
+@RequestMapping("/users")
+public class UsersApi extends BaseDomainApi {
 
     @Autowired
     private UsersRepository usersRepository;
 
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List<User>> index(@PathVariable int domainId,
+    public ResponseEntity<List<User>> index(@RequestParam long domain,
                                             @RequestParam(required = false, defaultValue = "0") long page,
                                             @RequestParam(required = false, defaultValue = "50") long pageSize) {
 
-        Domain domain = domainsRepository.findOne(domainId);
-        List<User> users = usersRepository.findByDomain(domain)
+        Domain _domain = getDomain(domain);
+        List<User> users = usersRepository.findByDomain(_domain)
                 .stream()
                 .skip(page * pageSize)
                 .limit(pageSize)
@@ -43,20 +40,23 @@ public class UsersApi {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<?> create(@PathVariable int domainId, @RequestBody User input) {
+    public ResponseEntity<?> create(@RequestBody User input) {
 
-        Domain domain = domainsRepository.findOne(domainId);
-
-        input.setDomain(domain);
         User user = usersRepository.save(input);
 
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(user.getUsername())
+                .buildAndExpand(user.getId())
                 .toUri();
 
         return ResponseEntity.created(uri).body(user);
+    }
+
+    @RequestMapping("/{id}")
+    public ResponseEntity<User> show(@PathVariable long id) {
+        User user = usersRepository.findOne(id);
+        return ResponseEntity.ok(user);
     }
 
 }

@@ -1,9 +1,8 @@
 package ch.heig.amt.g4mify.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import ch.heig.amt.g4mify.json.JsonEntity;
+
+import javax.persistence.*;
 import java.util.List;
 
 /**
@@ -11,7 +10,8 @@ import java.util.List;
  * @created 11/14/16
  */
 @Entity
-public class Counter {
+@Table(name = "counters")
+public class Counter implements BaseModel {
 
     @Id
     private String name;

@@ -11,7 +11,10 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @EnableAutoConfiguration
-@ComponentScan
+@ComponentScan(basePackages = {
+    "ch.heig.amt.g4mify.config",
+    "ch.heig.amt.g4mify.api"
+})
 public class Application {
 
     public static void main(String args[]) {

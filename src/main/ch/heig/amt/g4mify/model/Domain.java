@@ -1,24 +1,22 @@
 package ch.heig.amt.g4mify.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * @author ldavid
  * @created 11/14/16
  */
 @Entity
-public class Domain {
+@Table(name = "domains")
+public class Domain implements BaseModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private long id;
 
     private String name;
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 

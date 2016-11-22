@@ -54,14 +54,14 @@ public class DomainsApi {
     }
 
     @RequestMapping(path = "/{id}", method = RequestMethod.GET)
-    public ResponseEntity<Domain> show(@PathVariable int id) {
+    public ResponseEntity<Domain> show(@PathVariable long id) {
         Domain domain = domainsRepository.findOne(id);
 
         return ResponseEntity.ok(domain);
     }
 
     @RequestMapping(path = "/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<Domain> update(@PathVariable int id, @RequestBody Domain input) {
+    public ResponseEntity<Domain> update(@PathVariable long id, @RequestBody Domain input) {
         Domain domain = domainsRepository.findOne(id);
         domain.setName(input.getName());
 
@@ -69,7 +69,7 @@ public class DomainsApi {
     }
 
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<?> delete(@PathVariable int id) {
+    public ResponseEntity<?> delete(@PathVariable long id) {
         domainsRepository.delete(id);
 
         return ResponseEntity.status(HttpStatus.OK).build();
