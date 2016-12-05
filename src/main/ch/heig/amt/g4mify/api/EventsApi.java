@@ -30,7 +30,7 @@ public class EventsApi extends AbstractDomainApi {
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<?> post(@RequestParam("domain") long domainId,
                                   @RequestBody Event input) {
-        Domain domain = getDomain(domainId);
+        Domain domain = getDomain();
 
         Event event = eventsRepository.save(input);
         ActorRef actor = system.actorOf(ext.props("eventActor"));
