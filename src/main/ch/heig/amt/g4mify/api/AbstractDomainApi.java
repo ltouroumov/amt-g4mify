@@ -6,15 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author ldavid
- * @created 11/21/16
+ * @created 11/28/16
  */
-public abstract class BaseDomainApi {
+public class AbstractDomainApi {
 
     @Autowired
-    protected DomainsRepository domainsRepository;
+    private DomainsRepository domainsRepository;
 
-    protected Domain getDomain(long domainId) {
-        return domainsRepository.findOne(domainId);
+    protected Domain getDomain(long id) {
+        return domainsRepository.findOne(id);
     }
 
 }

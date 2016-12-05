@@ -1,7 +1,5 @@
 package ch.heig.amt.g4mify.model;
 
-import ch.heig.amt.g4mify.json.JsonEntity;
-
 import javax.persistence.*;
 import java.util.List;
 
@@ -11,7 +9,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "counters")
-public class Counter implements BaseModel {
+public class Counter {
 
     @Id
     private String name;

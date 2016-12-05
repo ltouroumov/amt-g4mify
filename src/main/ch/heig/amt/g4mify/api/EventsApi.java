@@ -3,6 +3,7 @@ package ch.heig.amt.g4mify.api;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import ch.heig.amt.g4mify.extension.SpringExtension;
+import ch.heig.amt.g4mify.model.Domain;
 import ch.heig.amt.g4mify.model.Event;
 import ch.heig.amt.g4mify.repository.EventsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +15,8 @@ import org.springframework.web.bind.annotation.*;
  * @created 11/21/16
  */
 @RestController
-@RequestMapping("/{domainId}/events")
-public class EventsApi extends BaseDomainApi {
+@RequestMapping("/api/events")
+public class EventsApi extends AbstractDomainApi {
 
     @Autowired
     private EventsRepository eventsRepository;
@@ -27,7 +28,10 @@ public class EventsApi extends BaseDomainApi {
     private SpringExtension ext;
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<?> post(@RequestBody Event input) {
+    public ResponseEntity<?> post(@RequestParam("domain") long domainId,
+                                  @RequestBody Event input) {
+        Domain domain = getDomain(domainId);
+
         Event event = eventsRepository.save(input);
         ActorRef actor = system.actorOf(ext.props("eventActor"));
         actor.tell(event, null);

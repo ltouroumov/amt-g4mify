@@ -1,7 +1,5 @@
 package ch.heig.amt.g4mify.model;
 
-import ch.heig.amt.g4mify.json.JsonEntity;
-
 import javax.persistence.*;
 
 /**
@@ -10,7 +8,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "buckets")
-public class Bucket implements BaseModel {
+public class Bucket {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -19,6 +17,9 @@ public class Bucket implements BaseModel {
     private long time;
 
     private long value;
+
+    @ManyToOne
+    private User user;
 
     @ManyToOne
     private Metric metric;

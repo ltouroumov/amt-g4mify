@@ -11,4 +11,6 @@ import org.springframework.stereotype.Component;
 @Component
 public interface DomainsRepository extends JpaRepository<Domain, Long> {
 
+    Domain findByName(String name);
+
 }

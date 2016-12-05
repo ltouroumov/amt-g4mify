@@ -11,6 +11,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import springfox.documentation.builders.ApiInfoBuilder;
+import springfox.documentation.service.ApiInfo;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+import static springfox.documentation.builders.PathSelectors.regex;
 
 /**
  * @author ldavid
@@ -30,12 +37,35 @@ public class ApplicationConfiguration {
     @Autowired
     private SpringExtension springExtension;
 
+    /*
     @Bean
     @Autowired
     public Jackson2ObjectMapperBuilder objectMapperBuilder(EntityJsonDeserializer entityDeserializer) {
         Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
         builder.deserializers(entityDeserializer);
         return builder;
+    }
+    */
+
+    @Bean
+    public Docket newsApi() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("g4mify")
+                .apiInfo(apiInfo())
+                .select()
+                .paths(regex("/api.*"))
+                .build();
+    }
+
+    private ApiInfo apiInfo() {
+        return new ApiInfoBuilder()
+                .title("G4mify Platform")
+                .description("Gamification Platform")
+                .contact("Laureline David")
+                .license("Apache License Version 2.0")
+                .licenseUrl("https://github.com/IBM-Bluemix/news-aggregator/blob/master/LICENSE")
+                .version("2.0")
+                .build();
     }
 
     @Bean

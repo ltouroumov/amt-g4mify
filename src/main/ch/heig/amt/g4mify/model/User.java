@@ -1,7 +1,5 @@
 package ch.heig.amt.g4mify.model;
 
-import ch.heig.amt.g4mify.json.JsonEntity;
-
 import javax.persistence.*;
 import java.util.List;
 
@@ -11,7 +9,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "users")
-public class User implements BaseModel {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -25,10 +23,10 @@ public class User implements BaseModel {
     @ManyToOne
     private Domain domain;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Badge> badges;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Event> events;
 
     public long getId() {

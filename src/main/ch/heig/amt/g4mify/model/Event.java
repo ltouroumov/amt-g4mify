@@ -1,6 +1,5 @@
 package ch.heig.amt.g4mify.model;
 
-import ch.heig.amt.g4mify.json.JsonEntity;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -12,7 +11,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "events")
-public class Event implements BaseModel {
+public class Event {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

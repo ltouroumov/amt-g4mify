@@ -1,7 +1,5 @@
 package ch.heig.amt.g4mify.model;
 
-import ch.heig.amt.g4mify.json.JsonEntity;
-
 import javax.persistence.*;
 import java.util.List;
 
@@ -11,7 +9,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "metrics")
-public class Metric implements BaseModel {
+public class Metric {
 
     @Id
     private String name;
@@ -19,7 +17,7 @@ public class Metric implements BaseModel {
     @ManyToOne
     private Counter counter;
 
-    @OneToMany(mappedBy = "metric")
+    @OneToMany(mappedBy = "metric", cascade = CascadeType.ALL)
     private List<Bucket> buckets;
 
     public String getName() {

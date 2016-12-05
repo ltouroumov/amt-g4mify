@@ -1,7 +1,5 @@
 package ch.heig.amt.g4mify.model;
 
-import ch.heig.amt.g4mify.json.JsonEntity;
-
 import javax.persistence.*;
 import java.util.List;
 
@@ -11,7 +9,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "badge_types")
-public class BadgeType implements BaseModel {
+public class BadgeType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -23,7 +21,10 @@ public class BadgeType implements BaseModel {
 
     private String image;
 
-    @OneToMany(mappedBy = "type")
+    @ManyToOne
+    private Domain domain;
+
+    @OneToMany(mappedBy = "type", cascade = CascadeType.ALL)
     private List<Badge> badges;
 
     public long getId() {

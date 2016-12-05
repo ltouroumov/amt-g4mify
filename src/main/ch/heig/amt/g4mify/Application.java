@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
  * @author ldavid
@@ -15,6 +16,7 @@ import org.springframework.context.annotation.Configuration;
     "ch.heig.amt.g4mify.config",
     "ch.heig.amt.g4mify.api"
 })
+@EnableSwagger2
 public class Application {
 
     public static void main(String args[]) {
