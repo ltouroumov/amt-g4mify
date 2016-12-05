@@ -32,6 +32,7 @@ public class DomainAuthenticationFilter extends OncePerRequestFilter {
         String authorization = request.getHeader("Authorization");
 
         if (authorization == null) {
+            filterChain.doFilter(request, response);
             return;
         }
 

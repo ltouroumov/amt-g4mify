@@ -53,7 +53,7 @@ public class ApplicationConfiguration {
                 .groupName("g4mify")
                 .apiInfo(apiInfo())
                 .select()
-                .paths(regex("/api.*"))
+                .paths(regex("/(register|api.*)"))
                 .build();
     }
 
