@@ -14,19 +14,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * @author ldavid
  * @created 12/5/16
  */
 @RestController
-@RequestMapping(path = "/register")
 @Api(value = "register", description = "Handles Domain Registration")
 public class RegisterApi {
 
     @Autowired
     private DomainsRepository domainsRepository;
 
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(path = "/register", method = RequestMethod.POST)
     @ApiOperation(value = "Register a new Domain")
     public ResponseEntity<Domain> register(@RequestBody DomainUpdate body) {
 
@@ -36,6 +37,13 @@ public class RegisterApi {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(domain);
 
+    }
+
+    @RequestMapping(path = "/purge", method = RequestMethod.POST)
+    @ApiOperation(value = "Purges database")
+    public ResponseEntity<?> purge() {
+        domainsRepository.deleteAll();
+        return ResponseEntity.ok(null);
     }
 
 }
