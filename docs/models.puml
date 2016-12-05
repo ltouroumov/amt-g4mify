@@ -1,0 +1,69 @@
+@startuml
+
+hide empty methods
+
+class Domain {
+    + id: long
+    + name: String
+}
+
+Domain -- "*" User
+Domain -- "*" Counter
+Domain -- "*" BadgeType
+Domain -- "*" Rule
+
+class User {
+    + id: long
+    + username: String
+    + displayname: String
+}
+
+User -- "*" Bucket
+User -- "*" Event
+User -- "*" Badge
+
+class Counter {
+    + id: long
+    + name: String
+}
+
+Counter -- "*" Metric
+
+class Metric {
+    + id: long
+    + name: String
+}
+
+Metric - "*" Bucket
+
+class Bucket {
+    + time: Date
+    + value: long
+}
+
+class BadgeType {
+    + id: long
+    + name: String
+}
+
+BadgeType "1" -- Badge
+
+class Badge {
+    + id: long
+    + awarded: Date
+}
+
+class Rule {
+    + id: long
+    + condition: String
+}
+
+BadgeType "1" - Rule : "awards"
+
+class Event {
+    + id: long
+    + time: Date
+    + updates: [{Counter, long}]
+}
+
+@enduml
