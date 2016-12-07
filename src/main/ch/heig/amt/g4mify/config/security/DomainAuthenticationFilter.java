@@ -29,7 +29,7 @@ public class DomainAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        String authorization = request.getHeader("Authorization");
+        String authorization = request.getHeader("Identity"); // <domain-id>:<domain-key>
 
         if (authorization == null) {
             filterChain.doFilter(request, response);

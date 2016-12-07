@@ -39,7 +39,7 @@ public class DomainsApi extends AbstractDomainApi {
     }
 
     @RequestMapping(method = RequestMethod.DELETE)
-    @ApiOperation("Destroy the current domain")
+    @ApiOperation(value = "Destroy the current domain", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> delete(@PathVariable long id) {
         domainsRepository.delete(id);
 

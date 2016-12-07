@@ -1,4 +1,6 @@
-# Object Model
+# G4mify &mdash; Object Model
+
+This document describes the object model used by the g4mify platform. These objects are exposed via the [REST API](api.md).
 
 ![](models.png)
 
@@ -18,7 +20,7 @@ Represents a value type which can be influenced by events, a counter will hold a
 
 Allows counters to be observed over various time periods. A default metric of "total" representing the total value of the counter is present when creating a counter.
 
-### Bucket
+### Bucket (*internal*)
 
 Contains actual values of counters per user per time slice (15 minutes).
 
@@ -38,6 +40,6 @@ Allows the domain owner to define rules to award badges when certain conditions 
 
 *TODO*: Allow conditions to compare to aggregate values (ex: average counter values)
 
-### Event
+### Event (*internal*)
 
 Client applications in the domain can generate events for a specific user which affect their counters.
