@@ -11,6 +11,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static ch.heig.amt.g4mify.model.view.ViewUtils.outputView;
+import static ch.heig.amt.g4mify.model.view.ViewUtils.updateView;
+
 /**
  * @author ldavid
  * @created 11/14/16
@@ -24,7 +27,7 @@ public class DomainsApi extends AbstractDomainApi {
     @ApiOperation(value = "Gets info about the current domain", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DomainSummary> show() {
 
-        DomainSummary domain = View.to(DomainSummary.class, getDomain());
+        DomainSummary domain = outputView(DomainSummary.class).from(getDomain());
 
         return ResponseEntity.ok(domain);
     }
@@ -33,7 +36,7 @@ public class DomainsApi extends AbstractDomainApi {
     @ApiOperation(value = "Updates the current domain", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Domain> update(@RequestBody DomainUpdate input) {
         Domain domain = getDomain();
-        View.update(domain, input);
+        updateView(domain).with(input);
 
         return ResponseEntity.ok(domainsRepository.save(domain));
     }

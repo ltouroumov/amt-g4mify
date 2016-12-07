@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static ch.heig.amt.g4mify.model.view.ViewUtils.outputView;
+
 /**
  * @author ldavid
  * @created 12/5/16
@@ -39,7 +41,7 @@ public class RegisterApi {
     })
     public ResponseEntity<Domain> register(@RequestBody DomainUpdate body) {
 
-        Domain input = View.to(Domain.class, body);
+        Domain input = outputView(Domain.class).from(body);
         input.setKey("secret");
         Domain domain = domainsRepository.save(input);
 

@@ -1,20 +1,19 @@
 package ch.heig.amt.g4mify.repository;
 
+import ch.heig.amt.g4mify.model.Counter;
 import ch.heig.amt.g4mify.model.Domain;
-import ch.heig.amt.g4mify.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.stream.Stream;
 
 /**
  * @author ldavid
- * @created 11/14/16
+ * @created 12/7/16
  */
 @Component
-public interface UsersRepository extends JpaRepository<User, Long> {
+public interface CountersRepository extends JpaRepository<Counter, Long> {
 
-    Stream<User> findByDomain(Domain domain);
+    public Stream<Counter> findByDomain(Domain domain);
 
 }
