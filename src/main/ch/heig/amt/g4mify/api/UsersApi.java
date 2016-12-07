@@ -7,6 +7,7 @@ import ch.heig.amt.g4mify.model.view.user.UserDetail;
 import ch.heig.amt.g4mify.model.view.user.UserSummary;
 import ch.heig.amt.g4mify.repository.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -27,11 +28,10 @@ public class UsersApi extends AbstractDomainApi {
     private UsersRepository usersRepository;
 
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List<UserSummary>> index(@RequestParam("domain") long domainId,
-                                                   @RequestParam(required = false, defaultValue = "0") long page,
+    public ResponseEntity<List<UserSummary>> index(@RequestParam(required = false, defaultValue = "0") long page,
                                                    @RequestParam(required = false, defaultValue = "50") long pageSize) {
 
-        Domain domain = getDomain(domainId);
+        Domain domain = getDomain();
         List<UserSummary> users = usersRepository.findByDomain(domain)
                 .stream()
                 .skip(page * pageSize)
@@ -43,10 +43,9 @@ public class UsersApi extends AbstractDomainApi {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<?> create(@RequestParam("domain") long domainId,
-                                    @RequestBody UserSummary body) {
+    public ResponseEntity<?> create(@RequestBody UserSummary body) {
 
-        Domain domain = getDomain(domainId);
+        Domain domain = getDomain();
         User input = View.to(User.class, body);
         input.setDomain(domain);
 
@@ -62,19 +61,40 @@ public class UsersApi extends AbstractDomainApi {
 
     @RequestMapping("/{id}")
     public ResponseEntity<UserDetail> show(@PathVariable long id) {
-        UserDetail user = View.to(UserDetail.class, usersRepository.findOne(id));
-        return ResponseEntity.ok(user);
+        User user = usersRepository.findOne(id);
+        if (canAccess(user)) {
+            UserDetail userDetail = View.to(UserDetail.class, user);
+            return ResponseEntity.ok(userDetail);
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
     }
 
     @RequestMapping(path = "/{id}", method = RequestMethod.PUT)
     public ResponseEntity<UserDetail> update(@PathVariable long id,
                                              @RequestBody UserDetail body) {
-        return ResponseEntity.ok(body);
+        User user = usersRepository.findOne(id);
+        if (canAccess(user)) {
+            View.update(user, body);
+            usersRepository.save(user);
+            return ResponseEntity.ok(View.to(UserDetail.class, user));
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
     }
 
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<?> delete(@PathVariable long id) {
-        return ResponseEntity.ok(null);
+        User user = usersRepository.findOne(id);
+        if (canAccess(user)) {
+            usersRepository.delete(user);
+            return ResponseEntity.ok(null);
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
     }
 
+    private boolean canAccess(User user) {
+        return user.getDomain().getId() == getDomain().getId();
+    }
 }
