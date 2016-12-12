@@ -23,7 +23,7 @@ import static ch.heig.amt.g4mify.model.view.ViewUtils.updateView;
 public class DomainsApi extends AbstractDomainApi {
 
     @RequestMapping(method = RequestMethod.GET)
-    @ApiOperation(value = "Gets info about the current domain", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Gets info about the current domain", produces = MediaType.APPLICATION_JSON_VALUE, response = DomainSummary.class)
     public ResponseEntity<DomainSummary> show() {
 
         DomainSummary domain = outputView(DomainSummary.class).from(getDomain());
@@ -32,21 +32,22 @@ public class DomainsApi extends AbstractDomainApi {
     }
 
     @RequestMapping(method = RequestMethod.PUT)
-    @ApiOperation(value = "Updates the current domain", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Domain> update(@RequestBody DomainUpdate input) {
+    @ApiOperation(value = "Updates the current domain", produces = MediaType.APPLICATION_JSON_VALUE, response = DomainSummary.class)
+    public ResponseEntity<DomainSummary> update(@RequestBody DomainUpdate input) {
         Domain domain = getDomain();
         updateView(domain).with(input);
+        domainsRepository.save(domain);
 
-        return ResponseEntity.ok(domainsRepository.save(domain));
+        return ResponseEntity.ok(outputView(DomainSummary.class).from(domain));
     }
 
     @RequestMapping(method = RequestMethod.DELETE)
-    @ApiOperation(value = "Destroy the current domain", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> delete() {
+    @ApiOperation(value = "Destroy the current domain", produces = MediaType.APPLICATION_JSON_VALUE, response = Void.class)
+    public ResponseEntity<Void> delete() {
         Domain domain = getDomain();
         domainsRepository.delete(domain);
 
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
 }

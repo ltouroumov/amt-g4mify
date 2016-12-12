@@ -2,6 +2,7 @@ package ch.heig.amt.g4mify.model.view;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 import static ch.heig.amt.g4mify.model.view.ViewUtils.fieldsOf;
@@ -26,7 +27,8 @@ public class UpdateView<TOut> {
     }
 
     public TOut with(Object fromObj) {
-        ViewUtils.copy(input, fromObj, fieldsOf(input, fromObj), mappers);
+        Set<String> fields = fieldsOf(input, fromObj);
+        ViewUtils.copy(input, fromObj, fields, mappers);
         return input;
     }
 }

@@ -50,7 +50,7 @@ public class ViewUtils {
                 .map(fields -> fields.map(Field::getName).collect(Collectors.toSet()))
                 .reduce((lista, listb) -> {
                     Set<String> res = new HashSet<>(lista);
-                    lista.retainAll(listb);
+                    res.retainAll(listb);
                     return res;
                 }).orElseGet(HashSet::new);
     }

@@ -14,6 +14,8 @@ import ch.heig.amt.g4mify.model.view.event.EventSummary;
 import ch.heig.amt.g4mify.model.view.user.UserSummary;
 import ch.heig.amt.g4mify.repository.EventsRepository;
 import ch.heig.amt.g4mify.repository.UsersRepository;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +34,7 @@ import static ch.heig.amt.g4mify.model.view.ViewUtils.*;
  */
 @RestController
 @RequestMapping("/api/events")
+@Api(value = "events", description = "Received events for users")
 public class EventsApi extends AbstractDomainApi {
 
     @Autowired
@@ -47,7 +50,8 @@ public class EventsApi extends AbstractDomainApi {
     private SpringExtension ext;
 
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<?> get(@RequestParam(name = "user") long userId,
+    @ApiOperation(value = "Obtain events for a user")
+    public ResponseEntity<EventInfos> get(@RequestParam(name = "user") long userId,
                                  @RequestParam(required = false, defaultValue = "0") long page,
                                  @RequestParam(required = false, defaultValue = "50") long pageSize) {
         Domain domain = getDomain();
@@ -70,7 +74,8 @@ public class EventsApi extends AbstractDomainApi {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<?> post(@RequestBody EventSubmit input) {
+    @ApiOperation(value = "Publish an event to a user")
+    public ResponseEntity<EventResult> post(@RequestBody EventSubmit input) {
         Domain domain = getDomain();
         User user = usersRepository.findOne(input.user);
 
