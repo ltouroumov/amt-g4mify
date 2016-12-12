@@ -8,19 +8,21 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
+import java.util.HashMap;
+
 import static org.junit.Assert.assertEquals;
 
 /**
  * Created by Le Poulet Suisse on 05.12.2016.
  */
-public class AbstractDomainApiTest {
+public class DomainApiTest {
     private Domain testDomain = null;
 
     @Before
     public void init(){
         HttpTestRequest request = new HttpTestRequest();
         Gson gson = new Gson();
-        testDomain = gson.fromJson(request.test("domains", "{\"name\": \"asdasd\"}", null, "POST"), Domain.class);
+        testDomain = gson.fromJson(request.test("/register", "{\"name\": \"TestDomain\"}", null, "POST"), Domain.class);
         System.out.println("Response-------------");
         System.out.println("Name: " + testDomain.getName() + " // Id: " + testDomain.getId() + " // Key: " + testDomain.getKey());
     }
@@ -29,7 +31,9 @@ public class AbstractDomainApiTest {
     public void getDomain() {
         HttpTestRequest request = new HttpTestRequest();
         Gson gson = new Gson();
-        Domain domain = gson.fromJson(request.test("domains/" + testDomain.getId(), null, null, "GET"), Domain.class);
+        HashMap<String, String> headers = new HashMap<>();
+        headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
+        Domain domain = gson.fromJson(request.test("/api/domain", null, headers, "GET"), Domain.class);
         System.out.println("Response-------------");
         System.out.println("Name: " + domain.getName() + " // Id: " + domain.getId() + " // Key: " + domain.getKey());
         assertEquals(testDomain.getName(), domain.getName());
