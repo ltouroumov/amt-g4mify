@@ -54,4 +54,16 @@ public class Domain {
     public void setKey(String key) {
         this.key = key;
     }
+
+    public List<User> getUsers() {
+        return users;
+    }
+
+    public List<Counter> getCounters() {
+        return counters;
+    }
+
+    public List<Rule> getRules() {
+        return rules;
+    }
 }

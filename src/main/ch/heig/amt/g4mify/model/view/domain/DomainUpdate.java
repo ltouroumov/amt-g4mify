@@ -6,9 +6,6 @@ package ch.heig.amt.g4mify.model.view.domain;
  */
 public class DomainUpdate {
 
-    public DomainUpdate() {
-    }
-
     public String name;
 
 }
