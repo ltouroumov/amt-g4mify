@@ -6,9 +6,7 @@ import java.time.Duration;
  * @author ldavid
  * @created 12/7/16
  */
-public class MetricSummary {
-
-    public long id;
+public class MetricUpdate {
 
     public String name;
 

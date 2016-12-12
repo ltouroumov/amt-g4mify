@@ -12,6 +12,9 @@ import java.util.List;
 public class Counter {
 
     @Id
+    @GeneratedValue
+    private long id;
+
     private String name;
 
     @ManyToOne
@@ -19,6 +22,14 @@ public class Counter {
 
     @OneToMany(mappedBy = "counter")
     private List<Metric> metrics;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;

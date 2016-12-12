@@ -2,6 +2,7 @@ package ch.heig.amt.g4mify.model.view;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 import static ch.heig.amt.g4mify.model.view.ViewUtils.fieldsOf;
@@ -37,7 +38,8 @@ public class InputView<TOut> {
             ));
         }
 
-        ViewUtils.copy(toObj, fromObj, fieldsOf(fromObj), mappers);
+        Set<String> fields = fieldsOf(fromObj);
+        ViewUtils.copy(toObj, fromObj, fields, mappers);
 
         return toObj;
     }

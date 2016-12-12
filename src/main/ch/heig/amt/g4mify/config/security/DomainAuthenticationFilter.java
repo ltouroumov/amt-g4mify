@@ -2,6 +2,7 @@ package ch.heig.amt.g4mify.config.security;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.FilterChain;
@@ -13,6 +14,7 @@ import ch.heig.amt.g4mify.model.Domain;
 import ch.heig.amt.g4mify.repository.DomainsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -20,6 +22,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
 public class DomainAuthenticationFilter extends OncePerRequestFilter {
+
+    private static final Logger LOG = Logger.getLogger(DomainAuthenticationFilter.class.getSimpleName());
 
     private static final Pattern authPattern = Pattern.compile("^(\\d+):(\\w+)$");
 
@@ -34,6 +38,8 @@ public class DomainAuthenticationFilter extends OncePerRequestFilter {
         String authorization = request.getHeader("Identity"); // <domain-id>:<domain-key>
 
         if (authorization == null) {
+            LOG.info("Request Identity: Anonymous");
+            SecurityContextHolder.getContext().setAuthentication(null);
             filterChain.doFilter(request, response);
             return;
         }
@@ -57,6 +63,7 @@ public class DomainAuthenticationFilter extends OncePerRequestFilter {
         if (domain == null || !domain.getKey().equalsIgnoreCase(domainKey)) {
             doError(response);
         } else {
+            LOG.info("Request Identity: " + domain.getName());
             // Create our Authentication and let Spring know about it
             Authentication auth = new DomainAuthenticationToken(domainId, domainKey);
             SecurityContextHolder.getContext().setAuthentication(auth);

@@ -30,7 +30,7 @@ public class ApplicationSecurityConfiguration extends WebSecurityConfigurerAdapt
                 .addFilterBefore(domainAuthenticationFilter, BasicAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers("/register", "/v2/api-docs", "/swagger-resources", "/swagger**").permitAll()
-                .antMatchers("/api/**").authenticated()
+                .antMatchers("/api/**").fullyAuthenticated()
         ;
 
     }

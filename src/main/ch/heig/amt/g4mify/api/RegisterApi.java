@@ -1,7 +1,6 @@
 package ch.heig.amt.g4mify.api;
 
 import ch.heig.amt.g4mify.model.Domain;
-import ch.heig.amt.g4mify.model.view.View;
 import ch.heig.amt.g4mify.model.view.domain.DomainUpdate;
 import ch.heig.amt.g4mify.repository.DomainsRepository;
 import io.swagger.annotations.Api;
@@ -12,15 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MimeType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
-import static ch.heig.amt.g4mify.model.view.ViewUtils.outputView;
+import static ch.heig.amt.g4mify.model.view.ViewUtils.inputView;
 
 /**
  * @author ldavid
@@ -41,7 +37,7 @@ public class RegisterApi {
     })
     public ResponseEntity<Domain> register(@RequestBody DomainUpdate body) {
 
-        Domain input = outputView(Domain.class).from(body);
+        Domain input = inputView(Domain.class).from(body);
         input.setKey("secret");
         Domain domain = domainsRepository.save(input);
 

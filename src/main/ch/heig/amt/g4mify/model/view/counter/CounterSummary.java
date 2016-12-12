@@ -10,8 +10,10 @@ import java.util.List;
  */
 public class CounterSummary {
 
-    private String name;
+    public long id;
 
-    private List<MetricSummary> metrics;
+    public String name;
+
+    public List<MetricSummary> metrics;
 
 }

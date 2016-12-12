@@ -3,7 +3,6 @@ package ch.heig.amt.g4mify.api;
 import ch.heig.amt.g4mify.model.Badge;
 import ch.heig.amt.g4mify.model.Domain;
 import ch.heig.amt.g4mify.model.User;
-import ch.heig.amt.g4mify.model.view.View;
 import ch.heig.amt.g4mify.model.view.user.UserDetail;
 import ch.heig.amt.g4mify.model.view.user.UserSummary;
 import ch.heig.amt.g4mify.repository.UsersRepository;
@@ -58,7 +57,7 @@ public class UsersApi extends AbstractDomainApi {
                 .buildAndExpand(user.getId())
                 .toUri();
 
-        return ResponseEntity.created(uri).body(input);
+        return ResponseEntity.created(uri).body(outputView(UserSummary.class).from(user));
     }
 
     @RequestMapping("/{id}")
