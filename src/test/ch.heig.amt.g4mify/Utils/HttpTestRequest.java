@@ -22,7 +22,7 @@ public class HttpTestRequest {
 
         try{
             //create connection
-            URL url = new URL("http://localhost:8080/api/" + endpoint);
+            URL url = new URL("http://localhost:8080" + endpoint);
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod(method);
             conn.setRequestProperty("Accept", "application/json");
