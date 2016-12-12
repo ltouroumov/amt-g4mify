@@ -1,6 +1,7 @@
 package ch.heig.amt.g4mify.model;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,6 +29,11 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Event> events;
+
+    public User() {
+        this.badges = new ArrayList<>();
+        this.events = new ArrayList<>();
+    }
 
     public long getId() {
         return id;

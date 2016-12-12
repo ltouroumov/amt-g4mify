@@ -12,6 +12,6 @@ public class MetricSummary {
 
     public String name;
 
-    public Duration duration;
+    public int duration;
 
 }

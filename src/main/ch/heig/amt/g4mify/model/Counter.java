@@ -1,6 +1,7 @@
 package ch.heig.amt.g4mify.model;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,7 +22,7 @@ public class Counter {
     private Domain domain;
 
     @OneToMany(mappedBy = "counter")
-    private List<Metric> metrics;
+    private List<Metric> metrics = new ArrayList<>();
 
     public long getId() {
         return id;

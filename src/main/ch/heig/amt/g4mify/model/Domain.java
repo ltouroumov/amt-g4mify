@@ -1,6 +1,7 @@
 package ch.heig.amt.g4mify.model;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,6 +28,12 @@ public class Domain {
 
     @OneToMany(mappedBy = "domain", cascade = CascadeType.ALL)
     private List<Rule> rules;
+
+    public Domain() {
+        this.users = new ArrayList<>();
+        this.counters = new ArrayList<>();
+        this.rules = new ArrayList<>();
+    }
 
     public long getId() {
         return id;

@@ -64,8 +64,7 @@ public class UsersApi extends AbstractDomainApi {
     public ResponseEntity<UserDetail> show(@PathVariable long id) {
         User user = usersRepository.findOne(id);
         if (canAccess(user)) {
-            UserDetail userDetail = outputView(UserDetail.class).from(user);
-            return ResponseEntity.ok(userDetail);
+            return ResponseEntity.ok(outputView(UserDetail.class).from(user));
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }

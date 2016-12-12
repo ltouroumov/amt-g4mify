@@ -2,11 +2,13 @@ package ch.heig.amt.g4mify.api;
 
 import ch.heig.amt.g4mify.model.Counter;
 import ch.heig.amt.g4mify.model.Domain;
+import ch.heig.amt.g4mify.model.Metric;
 import ch.heig.amt.g4mify.model.view.OutputView;
 import ch.heig.amt.g4mify.model.view.counter.CounterSummary;
 import ch.heig.amt.g4mify.model.view.counter.CounterUpdate;
 import ch.heig.amt.g4mify.model.view.metric.MetricSummary;
 import ch.heig.amt.g4mify.repository.CountersRepository;
+import ch.heig.amt.g4mify.repository.MetricsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,6 +32,9 @@ public class CountersApi extends AbstractDomainApi {
 
     @Autowired
     private CountersRepository countersRepository;
+
+    @Autowired
+    private MetricsRepository metricsRepository;
 
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<List<CounterSummary>> index(@RequestParam(required = false, defaultValue = "0") long page,
@@ -52,15 +58,22 @@ public class CountersApi extends AbstractDomainApi {
         Counter input = inputView(Counter.class).from(body);
         input.setDomain(domain);
 
-        Counter counter = countersRepository.save(input);
+        countersRepository.save(input);
+        Metric total = new Metric();
+        total.setName("total");
+        total.setDuration(-1);
+        total.setCounter(input);
+
+        metricsRepository.save(total);
+        input.getMetrics().add(total);
 
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(counter.getId())
+                .buildAndExpand(input.getId())
                 .toUri();
 
-        return ResponseEntity.created(uri).body(outputView(CounterSummary.class).from(counter));
+        return ResponseEntity.created(uri).body(getView().from(input));
     }
 
     @RequestMapping("/{id}")

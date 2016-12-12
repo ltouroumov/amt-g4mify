@@ -3,6 +3,7 @@ package ch.heig.amt.g4mify.model;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,6 +26,7 @@ public class Event {
     private List<CounterUpdate> updates;
 
     public Event() {
+        this.updates = new ArrayList<>();
     }
 
     public long getId() {

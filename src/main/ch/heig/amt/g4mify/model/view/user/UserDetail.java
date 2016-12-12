@@ -10,6 +10,6 @@ import java.util.List;
  */
 public class UserDetail extends UserSummary {
 
-    private List<Badge> badges;
+    public List<Badge> badges;
 
 }

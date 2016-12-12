@@ -2,6 +2,7 @@ package ch.heig.amt.g4mify.model;
 
 import javax.persistence.*;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,13 +19,20 @@ public class Metric {
 
     private String name;
 
-    private Duration duration;
+    /**
+     * Duration in minutes (will be rounded to the nearest 15 minutes, -1 means infinite)
+     */
+    private int duration;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     private Counter counter;
 
     @OneToMany(mappedBy = "metric", cascade = CascadeType.ALL)
     private List<Bucket> buckets;
+
+    public Metric() {
+        this.buckets = new ArrayList<>();
+    }
 
     public long getId() {
         return id;
@@ -42,11 +50,11 @@ public class Metric {
         this.name = name;
     }
 
-    public Duration getDuration() {
+    public int getDuration() {
         return duration;
     }
 
-    public void setDuration(Duration duration) {
+    public void setDuration(int duration) {
         this.duration = duration;
     }
 
