@@ -3,6 +3,7 @@ package ch.heig.amt.g4mify.model;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,11 +19,17 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @ManyToOne
+    @Column(nullable = false)
+    private Timestamp received;
+
+    @Column(nullable = true)
+    private Timestamp processed = null;
+
+    @ManyToOne(optional = false)
     private User user;
 
     @Type(type = "jsonb")
-    @Column(columnDefinition = "jsonb")
+    @Column(columnDefinition = "jsonb", nullable = false)
     private List<CounterUpdate> updates;
 
     public Event() {
@@ -31,6 +38,22 @@ public class Event {
 
     public long getId() {
         return id;
+    }
+
+    public Timestamp getReceived() {
+        return received;
+    }
+
+    public void setReceived(Timestamp received) {
+        this.received = received;
+    }
+
+    public Timestamp getProcessed() {
+        return processed;
+    }
+
+    public void setProcessed(Timestamp processed) {
+        this.processed = processed;
     }
 
     public User getUser() {

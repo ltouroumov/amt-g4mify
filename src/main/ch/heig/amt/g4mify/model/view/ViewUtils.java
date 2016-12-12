@@ -1,10 +1,11 @@
 package ch.heig.amt.g4mify.model.view;
 
+import com.google.common.collect.Lists;
+
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 /**
  * @author ldavid
@@ -44,8 +45,8 @@ public class ViewUtils {
     public static Set<String> fieldsOf(Object... obj) {
         return Arrays.stream(obj)
                 .map(Object::getClass)
-                .map(Class::getDeclaredFields)
-                .map(Arrays::stream)
+                .map(ViewUtils::getAllFieldsOf)
+                .map(List::stream)
                 .map(fields -> fields.map(Field::getName).collect(Collectors.toSet()))
                 .reduce((lista, listb) -> {
                     Set<String> res = new HashSet<>(lista);
@@ -54,14 +55,39 @@ public class ViewUtils {
                 }).orElseGet(HashSet::new);
     }
 
+    public static List<Field> getAllFieldsOf(Class<?> cls) {
+        List<Field> fields = new ArrayList<>();
+
+        Class<?> current = cls;
+        while (!Object.class.equals(current)) {
+            List<Field> currentFields = Lists.newArrayList(current.getDeclaredFields());
+            fields.addAll(currentFields);
+            current = current.getSuperclass();
+        }
+
+        return fields;
+    }
+
+    public static Field getFieldOf(String name, Class<?> cls) throws NoSuchFieldException {
+        if (Object.class.equals(cls)) {
+            throw new NoSuchFieldException(name);
+        }
+
+        try {
+            return cls.getDeclaredField(name);
+        } catch (NoSuchFieldException ex) {
+            return getFieldOf(name, cls.getSuperclass());
+        }
+    }
+
     public static void copy(Object dstObj, Object srcObj, Set<String> fields, Map<String, Function<Object, Object>> mappers) {
         Class<?> srcClass = srcObj.getClass();
         Class<?> dstClass = dstObj.getClass();
 
         for (String field : fields) {
             try {
-                Field srcField = srcClass.getDeclaredField(field);
-                Field dstField = dstClass.getDeclaredField(field);
+                Field srcField = getFieldOf(field, srcClass);
+                Field dstField = getFieldOf(field, dstClass);
 
                 srcField.setAccessible(true);
                 dstField.setAccessible(true);
@@ -88,8 +114,9 @@ public class ViewUtils {
                 dstField.set(dstObj, value);
             } catch (NoSuchFieldException ex) {
                 throw new ViewException(String.format(
-                        "Input (%s) does not have property %s",
+                        "%s or %s does not have property %s",
                         srcClass.getSimpleName(),
+                        dstClass.getSimpleName(),
                         field
                 ));
             } catch (IllegalAccessException ex){

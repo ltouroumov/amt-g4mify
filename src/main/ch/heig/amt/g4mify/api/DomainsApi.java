@@ -1,7 +1,6 @@
 package ch.heig.amt.g4mify.api;
 
 import ch.heig.amt.g4mify.model.Domain;
-import ch.heig.amt.g4mify.model.view.View;
 import ch.heig.amt.g4mify.model.view.domain.DomainSummary;
 import ch.heig.amt.g4mify.model.view.domain.DomainUpdate;
 import io.swagger.annotations.Api;
@@ -43,8 +42,9 @@ public class DomainsApi extends AbstractDomainApi {
 
     @RequestMapping(method = RequestMethod.DELETE)
     @ApiOperation(value = "Destroy the current domain", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> delete(@PathVariable long id) {
-        domainsRepository.delete(id);
+    public ResponseEntity<?> delete() {
+        Domain domain = getDomain();
+        domainsRepository.delete(domain);
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
