@@ -14,6 +14,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static ch.heig.amt.g4mify.model.view.ViewUtils.*;
@@ -50,14 +51,20 @@ public class UsersApi extends AbstractDomainApi {
         User input = inputView(User.class).from(body);
         input.setDomain(domain);
 
-        User user = usersRepository.save(input);
-        URI uri = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(user.getId())
-                .toUri();
+        Optional<User> userOpt = usersRepository.findByDomainAndUsername(domain, body.username);
 
-        return ResponseEntity.created(uri).body(outputView(UserSummary.class).from(user));
+        if (userOpt.isPresent()) {
+            throw new ApiException("Username " + body.username + " is already taken'");
+        } else {
+            User user = usersRepository.save(input);
+            URI uri = ServletUriComponentsBuilder
+                    .fromCurrentRequest()
+                    .path("/{id}")
+                    .buildAndExpand(user.getId())
+                    .toUri();
+
+            return ResponseEntity.created(uri).body(outputView(UserSummary.class).from(user));
+        }
     }
 
     @RequestMapping("/{id}")

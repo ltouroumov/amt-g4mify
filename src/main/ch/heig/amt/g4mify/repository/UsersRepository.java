@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
@@ -16,5 +17,7 @@ import java.util.stream.Stream;
 public interface UsersRepository extends JpaRepository<User, Long> {
 
     Stream<User> findByDomain(Domain domain);
+
+    Optional<User> findByDomainAndUsername(Domain domain, String username);
 
 }
