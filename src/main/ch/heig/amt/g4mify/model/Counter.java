@@ -24,7 +24,7 @@ public class Counter {
     @ManyToOne(optional = false)
     private Domain domain;
 
-    @OneToMany(mappedBy = "counter")
+    @OneToMany(mappedBy = "counter", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Metric> metrics = new ArrayList<>();
 
     public long getId() {

@@ -34,7 +34,7 @@ public class BadgeType {
     @ManyToOne(optional = false)
     private Domain domain;
 
-    @OneToMany(mappedBy = "type", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "type", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Badge> badges;
 
     public BadgeType() {

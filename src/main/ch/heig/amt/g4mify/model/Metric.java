@@ -31,7 +31,7 @@ public class Metric {
     @ManyToOne(optional = false)
     private Counter counter;
 
-    @OneToMany(mappedBy = "metric", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "metric", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Bucket> buckets;
 
     public Metric() {
