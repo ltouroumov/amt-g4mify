@@ -8,6 +8,7 @@ import ch.heig.amt.g4mify.model.view.metric.MetricUpdate;
 import ch.heig.amt.g4mify.repository.CountersRepository;
 import ch.heig.amt.g4mify.repository.MetricsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -64,19 +65,22 @@ public class MetricApi extends AbstractDomainApi {
         if (counter.getDomain().getId() != domain.getId()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
+        try {
+            Metric input = inputView(Metric.class).from(body);
+            input.setCounter(counter);
 
-        Metric input = inputView(Metric.class).from(body);
-        input.setCounter(counter);
+            metricsRepository.save(input);
 
-        metricsRepository.save(input);
+            URI uri = ServletUriComponentsBuilder
+                    .fromCurrentRequest()
+                    .path("/{id}")
+                    .buildAndExpand(input.getId())
+                    .toUri();
 
-        URI uri = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(input.getId())
-                .toUri();
-
-        return ResponseEntity.created(uri).body(outputView(MetricSummary.class).from(input));
+            return ResponseEntity.created(uri).body(outputView(MetricSummary.class).from(input));
+        } catch (DataIntegrityViolationException ex) {
+            throw new ApiException("Failed to create metric, most probable cause: duplicate name");
+        }
     }
 
     @RequestMapping("/{id}")
