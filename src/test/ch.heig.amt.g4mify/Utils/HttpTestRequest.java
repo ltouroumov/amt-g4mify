@@ -18,6 +18,9 @@ import static org.junit.Assert.fail;
  */
 public class HttpTestRequest {
 
+    private static final int minGoodStatusCode = 100;
+    private static final int maxGoodStatusCode = 399;
+
     public TestResponse test(String endpoint, String payload, HashMap<String, String> headers, String method){
         HttpURLConnection conn = null;
         Gson gson = new Gson();
@@ -49,7 +52,7 @@ public class HttpTestRequest {
             String bodyMessage = null;
             InputStream is;
 
-            if(conn.getResponseCode() == 500){
+            if(conn.getResponseCode() < minGoodStatusCode || conn.getResponseCode() > maxGoodStatusCode){
                 is = conn.getErrorStream();
                 BufferedReader rd = new BufferedReader(new InputStreamReader(is));
                 StringBuilder resultIs = new StringBuilder(); // or StringBuffer if Java version 5+
@@ -95,13 +98,13 @@ public class HttpTestRequest {
         }
     }
 
-    public static boolean is500(TestResponse response){
-        if(response.getStatusCode() == 500){
-            System.err.println("Error: 500");
+    public static boolean isError(TestResponse response){
+        if(response.getStatusCode() < minGoodStatusCode || response.getStatusCode() > maxGoodStatusCode){
+            System.err.println("Error: " + response.getStatusCode());
             for(Map.Entry<String, Object> entry : response.getError().entrySet()){
                 System.err.println("\t" + entry.getKey() + ": " + entry.getValue());
             }
-            fail("Got 500, see the error message in the console!");
+            fail("Got " + response.getStatusCode() + ", see the error message in the console!");
             return true;
         }
         return false;
