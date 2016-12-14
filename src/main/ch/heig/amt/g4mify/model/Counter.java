@@ -9,7 +9,9 @@ import java.util.List;
  * @created 11/14/16
  */
 @Entity
-@Table(name = "counters")
+@Table(name = "counters", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"name", "domain_id"})
+})
 public class Counter {
 
     @Id

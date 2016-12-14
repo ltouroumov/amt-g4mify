@@ -10,7 +10,9 @@ import java.util.List;
  * @created 11/14/16
  */
 @Entity
-@Table(name = "metrics")
+@Table(name = "metrics", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"name", "counter_id"})
+})
 public class Metric {
 
     @Id
