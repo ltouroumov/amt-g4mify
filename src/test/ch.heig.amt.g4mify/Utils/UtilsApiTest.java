@@ -12,8 +12,19 @@ import static org.junit.Assert.assertEquals;
  * Created by Le Poulet Suisse on 14.12.2016.
  */
 public class UtilsApiTest {
-    public static Domain baseInit(){
-        System.out.println("- INITIALISATION");
+    public static final int BEFORE = 0;
+    public static final int BEFORE_CLASS = 1;
+    public static final int AFTER = 0;
+    public static final int AFTER_CLASS = 1;
+
+    public static Domain baseDomainInit(int type){
+        if(type == BEFORE){
+            System.out.println("- METHOD INITIALISATION");
+        }else if(type == BEFORE_CLASS){
+            System.out.println("- CLASS INITIALISATION");
+        }else{
+            System.err.println("Error in the type specified in init");
+        }
         HttpTestRequest request = new HttpTestRequest();
         Gson gson = new Gson();
         TestResponse response = request.test("/register", "{\"name\": \"TestDomain\"}", null, "POST");
@@ -21,11 +32,18 @@ public class UtilsApiTest {
         Domain testDomain = gson.fromJson(response.getBody(), Domain.class);
         System.out.println("Name: " + testDomain.getName() + " // Id: " + testDomain.getId() + " // Key: " + testDomain.getKey());
         assertEquals(201, response.getStatusCode());
+        System.out.println("");
         return testDomain;
     }
 
-    public static void basePostExec(Domain testDomain){
-        System.out.println("- POST EXECUTION");
+    public static void baseDomainPostExec(Domain testDomain, int type){
+        if(type == AFTER){
+            System.out.println("- METHOD POST_EXECUTION");
+        }else if(type == AFTER_CLASS){
+            System.out.println("- CLASS POST_EXECUTION");
+        }else{
+            System.err.println("Error in the type specified in Post Exec!");
+        }
         HttpTestRequest request = new HttpTestRequest();
         HashMap<String, String> headers = new HashMap<>();
         headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());

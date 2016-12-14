@@ -13,8 +13,7 @@ import org.junit.rules.TestName;
 import java.util.HashMap;
 
 import static ch.heig.amt.g4mify.Utils.HttpTestRequest.isError;
-import static ch.heig.amt.g4mify.Utils.UtilsApiTest.baseInit;
-import static ch.heig.amt.g4mify.Utils.UtilsApiTest.basePostExec;
+import static ch.heig.amt.g4mify.Utils.UtilsApiTest.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
@@ -30,12 +29,12 @@ public class DomainApiTest {
     @Before
     public void init(){
         System.out.println("-- " + name.getMethodName() + " --");
-        testDomain = baseInit();
+        testDomain = baseDomainInit(BEFORE);
     }
 
     @Test
     public void getDomain() {
-        System.out.println("- getDomain");
+        System.out.println("- " + name.getMethodName());
         HttpTestRequest request = new HttpTestRequest();
         Gson gson = new Gson();
         HashMap<String, String> headers = new HashMap<>();
@@ -51,7 +50,7 @@ public class DomainApiTest {
 
     @Test
     public void putDomain(){
-        System.out.println("- putDomain");
+        System.out.println("- " + name.getMethodName());
         HttpTestRequest request = new HttpTestRequest();
         Gson gson = new Gson();
         HashMap<String, String> headers = new HashMap<>();
@@ -67,6 +66,6 @@ public class DomainApiTest {
 
     @After
     public void postExec(){
-        basePostExec(testDomain);
+        baseDomainPostExec(testDomain, AFTER);
     }
 }
