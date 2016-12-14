@@ -60,6 +60,10 @@ public class BadgeType {
         this.image = image;
     }
 
+    public Domain getDomain() { return domain; }
+
+    public void setDomain(Domain domain) { this.domain = domain; }
+
     public List<Badge> getBadges() {
         return badges;
     }
