@@ -14,8 +14,8 @@ Domain -- "*" Rule
 
 class User {
     + id: long
-    + username: String
-    + displayname: String
+    + profileId: String
+    + profileUrl: String
 }
 
 User -- "*" Bucket

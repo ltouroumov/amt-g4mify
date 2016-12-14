@@ -18,6 +18,6 @@ public interface UsersRepository extends JpaRepository<User, Long> {
 
     Stream<User> findByDomain(Domain domain);
 
-    Optional<User> findByDomainAndUsername(Domain domain, String username);
+    Optional<User> findByDomainAndProfileId(Domain domain, String profileId);
 
 }

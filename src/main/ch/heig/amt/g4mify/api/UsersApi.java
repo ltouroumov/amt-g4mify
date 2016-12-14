@@ -51,10 +51,10 @@ public class UsersApi extends AbstractDomainApi {
         User input = inputView(User.class).from(body);
         input.setDomain(domain);
 
-        Optional<User> userOpt = usersRepository.findByDomainAndUsername(domain, body.username);
+        Optional<User> userOpt = usersRepository.findByDomainAndProfileId(domain, body.profileId);
 
         if (userOpt.isPresent()) {
-            throw new ApiException("Username " + body.username + " is already taken'");
+            throw new ApiException("ProfileID '" + body.profileId + "' is already in use'");
         } else {
             User user = usersRepository.save(input);
             URI uri = ServletUriComponentsBuilder
@@ -70,7 +70,9 @@ public class UsersApi extends AbstractDomainApi {
     @RequestMapping("/{id}")
     public ResponseEntity<UserDetail> show(@PathVariable long id) {
         User user = usersRepository.findOne(id);
-        if (canAccess(user)) {
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } else if (canAccess(user)) {
             return ResponseEntity.ok(outputView(UserDetail.class).from(user));
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -81,7 +83,9 @@ public class UsersApi extends AbstractDomainApi {
     public ResponseEntity<UserDetail> update(@PathVariable long id,
                                              @RequestBody UserDetail body) {
         User user = usersRepository.findOne(id);
-        if (canAccess(user)) {
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } else if (canAccess(user)) {
             updateView(user).with(body);
             usersRepository.save(user);
             return ResponseEntity.ok(outputView(UserDetail.class).from(user));
@@ -93,7 +97,9 @@ public class UsersApi extends AbstractDomainApi {
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<?> delete(@PathVariable long id) {
         User user = usersRepository.findOne(id);
-        if (canAccess(user)) {
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } else if (canAccess(user)) {
             usersRepository.delete(user);
             return ResponseEntity.ok(null);
         } else {
@@ -106,7 +112,9 @@ public class UsersApi extends AbstractDomainApi {
                                              @RequestParam(required = false, defaultValue = "0") long page,
                                              @RequestParam(required = false, defaultValue = "50") long pageSize) {
         User user = usersRepository.findOne(id);
-        if (canAccess(user)) {
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } else if (canAccess(user)) {
             List<Badge> badges = user.getBadges()
                     .stream()
                     .skip(page * pageSize)
