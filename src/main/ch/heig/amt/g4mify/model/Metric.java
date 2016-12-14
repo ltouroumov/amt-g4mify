@@ -19,11 +19,13 @@ public class Metric {
     @GeneratedValue
     private long id;
 
+    @Column(nullable = false)
     private String name;
 
     /**
      * Duration in minutes (will be rounded to the nearest 15 minutes, -1 means infinite)
      */
+    @Column(nullable = false)
     private int duration;
 
     @ManyToOne(optional = false)

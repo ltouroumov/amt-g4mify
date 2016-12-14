@@ -18,9 +18,10 @@ public class Counter {
     @GeneratedValue
     private long id;
 
+    @Column(nullable = false)
     private String name;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     private Domain domain;
 
     @OneToMany(mappedBy = "counter")

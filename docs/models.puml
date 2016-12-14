@@ -44,6 +44,10 @@ class Bucket {
 class BadgeType {
     + id: long
     + name: String
+    + color: String
+    + image: String
+    + isSingleton: boolean
+    + parent: BadgeType
 }
 
 BadgeType "1" -- Badge

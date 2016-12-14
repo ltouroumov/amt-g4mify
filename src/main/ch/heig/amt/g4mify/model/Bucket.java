@@ -14,14 +14,19 @@ public class Bucket {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
+    @Column(nullable = false)
     private long time;
 
+    @Column(nullable = false)
     private long value;
 
-    @ManyToOne
+    @Column(nullable = false)
+    private long version = 0;
+
+    @ManyToOne(optional = false)
     private User user;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     private Metric metric;
 
     public long getId() {
@@ -44,6 +49,22 @@ public class Bucket {
         this.value = value;
     }
 
+    public long getVersion() {
+        return version;
+    }
+
+    public void setVersion(long version) {
+        this.version = version;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     public Metric getMetric() {
         return metric;
     }
@@ -51,4 +72,5 @@ public class Bucket {
     public void setMetric(Metric metric) {
         this.metric = metric;
     }
+
 }

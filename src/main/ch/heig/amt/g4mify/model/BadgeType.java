@@ -26,9 +26,9 @@ public class BadgeType {
     private String image;
 
     @Column(nullable = false)
-    private boolean singleton = false;
+    private boolean isSingleton = true;
 
-    @ManyToOne
+    @ManyToOne(optional = true)
     private BadgeType previous;
 
     @ManyToOne(optional = false)
@@ -70,11 +70,11 @@ public class BadgeType {
     }
 
     public boolean isSingleton() {
-        return singleton;
+        return isSingleton;
     }
 
     public void setSingleton(boolean singleton) {
-        this.singleton = singleton;
+        this.isSingleton = singleton;
     }
 
     public BadgeType getPrevious() {
