@@ -1,7 +1,13 @@
 package ch.heig.amt.g4mify.api;
 
 import ch.heig.amt.g4mify.model.Counter;
+import ch.heig.amt.g4mify.model.Domain;
 import ch.heig.amt.g4mify.model.Rule;
+import ch.heig.amt.g4mify.model.view.rules.RulesDetail;
+import ch.heig.amt.g4mify.model.view.rules.RulesSummary;
+import ch.heig.amt.g4mify.repository.RulesRepository;
+import org.apache.tomcat.util.digester.Rules;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -9,6 +15,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static ch.heig.amt.g4mify.model.view.ViewUtils.outputView;
 
 /**
  * @author ldavid
@@ -16,13 +25,24 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/rules")
-public class RulesApi {
+public class RulesApi extends AbstractDomainApi {
+
+    @Autowired
+    private RulesRepository rulesRepository;
 
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List<Rule>> index(@RequestParam("domain") long domainId,
+    public ResponseEntity<List<RulesDetail>> index(@RequestParam("domain") long domainId,
                                             @RequestParam(required = false, defaultValue = "0") long page,
                                             @RequestParam(required = false, defaultValue = "50") long pageSize) {
-        return ResponseEntity.ok(new ArrayList<>());
+
+        Domain domain = getDomain();
+        List<RulesDetail> rules = rulesRepository.findByDomain(domain)
+                .skip(page * pageSize)
+                .limit(pageSize)
+                .map(outputView(RulesDetail.class)::from)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(rules);
     }
 
     @RequestMapping(method = RequestMethod.POST)

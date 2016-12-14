@@ -1,10 +1,9 @@
 package ch.heig.amt.g4mify.api;
 
 import ch.heig.amt.g4mify.model.BadgeType;
-import ch.heig.amt.g4mify.model.Counter;
 import ch.heig.amt.g4mify.model.Domain;
-import ch.heig.amt.g4mify.model.view.badgeTypes.BadgeTypesDetail;
 import ch.heig.amt.g4mify.model.view.badgeTypes.BadgeTypesSummary;
+import ch.heig.amt.g4mify.model.view.badgeTypes.BadgeTypesDetail;
 import ch.heig.amt.g4mify.repository.BadgeTypesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,14 +31,14 @@ public class BadgeTypesApi extends AbstractDomainApi {
     private BadgeTypesRepository badgeTypesRepository;
 
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List<BadgeTypesSummary>> index(@RequestParam(required = false, defaultValue = "0") long page,
-                                                 @RequestParam(required = false, defaultValue = "50") long pageSize) {
+    public ResponseEntity<List<BadgeTypesDetail>> index(@RequestParam(required = false, defaultValue = "0") long page,
+                                                        @RequestParam(required = false, defaultValue = "50") long pageSize) {
 
         Domain domain = getDomain();
-        List<BadgeTypesSummary> badgeTypes = badgeTypesRepository.findByDomain(domain)
+        List<BadgeTypesDetail> badgeTypes = badgeTypesRepository.findByDomain(domain)
                 .skip(page * pageSize)
                 .limit(pageSize)
-                .map(outputView(BadgeTypesSummary.class)::from)
+                .map(outputView(BadgeTypesDetail.class)::from)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(badgeTypes);
@@ -61,29 +59,29 @@ public class BadgeTypesApi extends AbstractDomainApi {
                 .buildAndExpand(badgeType.getId())
                 .toUri();
 
-        return ResponseEntity.created(uri).body(outputView(BadgeTypesSummary.class).from(badgeType));
+        return ResponseEntity.created(uri).body(outputView(BadgeTypesDetail.class).from(badgeType));
     }
 
     @RequestMapping("/{id}")
-    public ResponseEntity<BadgeTypesSummary> show(@PathVariable long id) {
+    public ResponseEntity<BadgeTypesDetail> show(@PathVariable long id) {
 
         BadgeType badgeType = badgeTypesRepository.findOne(id);
         if (canAccess(badgeType)) {
-            return ResponseEntity.ok(outputView(BadgeTypesSummary.class).from(badgeType));
+            return ResponseEntity.ok(outputView(BadgeTypesDetail.class).from(badgeType));
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
     }
 
     @RequestMapping(path = "/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<BadgeTypesDetail> update(@PathVariable long id,
-                                          @RequestBody BadgeTypesDetail body) {
+    public ResponseEntity<BadgeTypesSummary> update(@PathVariable long id,
+                                                    @RequestBody BadgeTypesSummary body) {
 
         BadgeType badgeType = badgeTypesRepository.findOne(id);
         if (canAccess(badgeType)) {
             updateView(badgeType).with(body);
             badgeTypesRepository.save(badgeType);
-            return ResponseEntity.ok(outputView(BadgeTypesDetail.class).from(badgeType));
+            return ResponseEntity.ok(outputView(BadgeTypesSummary.class).from(badgeType));
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }

@@ -12,5 +12,4 @@ import java.util.stream.Stream;
 public interface BadgeTypesRepository extends JpaRepository<BadgeType, Long> {
 
     Stream<BadgeType> findByDomain(Domain domain);
-
 }
