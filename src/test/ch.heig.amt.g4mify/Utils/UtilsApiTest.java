@@ -18,12 +18,13 @@ public class UtilsApiTest {
     public static final int AFTER_CLASS = 1;
 
     public static Domain baseDomainInit(int type){
+        System.out.print("\n");
         if(type == BEFORE){
-            System.out.println("- METHOD INITIALISATION");
+            System.out.println("- BEFORE -");
         }else if(type == BEFORE_CLASS){
-            System.out.println("- CLASS INITIALISATION");
+            System.out.println("-- BEFORE CLASS --");
         }else{
-            System.err.println("Error in the type specified in init");
+            System.err.println("Error in the type specified in before");
         }
         HttpTestRequest request = new HttpTestRequest();
         Gson gson = new Gson();
@@ -32,17 +33,17 @@ public class UtilsApiTest {
         Domain testDomain = gson.fromJson(response.getBody(), Domain.class);
         System.out.println("Name: " + testDomain.getName() + " // Id: " + testDomain.getId() + " // Key: " + testDomain.getKey());
         assertEquals(201, response.getStatusCode());
-        System.out.println("");
         return testDomain;
     }
 
     public static void baseDomainPostExec(Domain testDomain, int type){
+        System.out.print("\n");
         if(type == AFTER){
-            System.out.println("- METHOD POST_EXECUTION");
+            System.out.println("- AFTER -");
         }else if(type == AFTER_CLASS){
-            System.out.println("- CLASS POST_EXECUTION");
+            System.out.println("-- AFTER CLASS --");
         }else{
-            System.err.println("Error in the type specified in Post Exec!");
+            System.err.println("Error in the type specified in after!");
         }
         HttpTestRequest request = new HttpTestRequest();
         HashMap<String, String> headers = new HashMap<>();
@@ -52,7 +53,6 @@ public class UtilsApiTest {
         if(response.getStatusCode() == 200){
             System.out.println("Correctly deleted domain " + testDomain.getId());
         }
-        System.out.println("\n");
         assertEquals(200, response.getStatusCode());
     }
 }

@@ -27,14 +27,14 @@ public class DomainApiTest {
     public TestName name = new TestName();
 
     @Before
-    public void init(){
+    public void before(){
         System.out.println("-- " + name.getMethodName() + " --");
         testDomain = baseDomainInit(BEFORE);
     }
 
     @Test
     public void getDomain() {
-        System.out.println("- " + name.getMethodName());
+        System.out.println("\n- " + name.getMethodName() + " -");
         HttpTestRequest request = new HttpTestRequest();
         Gson gson = new Gson();
         HashMap<String, String> headers = new HashMap<>();
@@ -50,7 +50,7 @@ public class DomainApiTest {
 
     @Test
     public void putDomain(){
-        System.out.println("- " + name.getMethodName());
+        System.out.println("\n- " + name.getMethodName() + " -");
         HttpTestRequest request = new HttpTestRequest();
         Gson gson = new Gson();
         HashMap<String, String> headers = new HashMap<>();
@@ -65,7 +65,7 @@ public class DomainApiTest {
     }
 
     @After
-    public void postExec(){
+    public void after(){
         baseDomainPostExec(testDomain, AFTER);
     }
 }

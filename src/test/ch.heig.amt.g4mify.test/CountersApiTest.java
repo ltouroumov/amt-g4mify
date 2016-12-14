@@ -2,21 +2,16 @@ package ch.heig.amt.g4mify.test;
 
 import ch.heig.amt.g4mify.Utils.HttpTestRequest;
 import ch.heig.amt.g4mify.Utils.TestResponse;
-import ch.heig.amt.g4mify.model.Counter;
 import ch.heig.amt.g4mify.model.Domain;
-import ch.heig.amt.g4mify.model.Metric;
 import ch.heig.amt.g4mify.model.view.counter.CounterSummary;
 import ch.heig.amt.g4mify.model.view.metric.MetricSummary;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import org.junit.*;
 import org.junit.rules.TestName;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 import static ch.heig.amt.g4mify.Utils.HttpTestRequest.isError;
 import static ch.heig.amt.g4mify.Utils.UtilsApiTest.*;
@@ -33,13 +28,14 @@ public class CountersApiTest {
     public TestName name = new TestName();
 
     @BeforeClass
-    public static void initClass(){
+    public static void beforeClass(){
         testDomain = baseDomainInit(BEFORE_CLASS);
     }
 
     @Before
-    public void init(){
-        System.out.println("- METHOD INITIALISATION " + name.getMethodName());
+    public void before(){
+        System.out.println("\n-- " + name.getMethodName() + " --");
+        System.out.println("- BEFORE -");
         HttpTestRequest request = new HttpTestRequest();
         Gson gson = new Gson();
         HashMap<String, String> headers = new HashMap<>();
@@ -54,7 +50,7 @@ public class CountersApiTest {
 
     @Test
     public void getCounters(){
-        System.out.println("- " + name.getMethodName());
+        System.out.println("\n- " + name.getMethodName() + " -");
         HttpTestRequest request = new HttpTestRequest();
         Gson gson = new Gson();
         HashMap<String, String> headers = new HashMap<>();
@@ -68,13 +64,28 @@ public class CountersApiTest {
         assertEquals(200, response.getStatusCode());
     }
 
+    @After
+    public void after(){
+        System.out.println("\n- AFTER -");
+        HttpTestRequest request = new HttpTestRequest();
+        HashMap<String, String> headers = new HashMap<>();
+        headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
+        for(CounterSummary counter : counters){
+            TestResponse response = request.test("/api/counters/" + counter.id, null, headers, "DELETE");
+            if(isError(response)) return;
+            System.out.println("Successfully deleted counter with id " + counter.id);
+            assertEquals(200, response.getStatusCode());
+        }
+        counters.clear();
+    }
+
     @AfterClass
-    public static void postExecClass(){
+    public static void afterClass(){
         baseDomainPostExec(testDomain, AFTER_CLASS);
     }
 
     private void displayCounter(CounterSummary counter){
-        System.out.println("New counter!");
+        System.out.println("\nNew counter!");
         System.out.println("Name: " + counter.name);
         System.out.println("Id: " + counter.id);
         System.out.println("Metrics: ");
