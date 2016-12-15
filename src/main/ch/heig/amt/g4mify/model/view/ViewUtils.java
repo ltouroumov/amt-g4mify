@@ -98,19 +98,6 @@ public class ViewUtils {
                     value = mapper.apply(value);
                 }
 
-                /*
-                Type check fails with primitive types, found no workaround -_-
-                if (!dstField.getType().isAssignableFrom(value.getClass())) {
-                    throw new ViewException(String.format(
-                            "Type mismatch for property %s (expected: %s, got: %s, hasMapper: %s)",
-                            dstField.getName(),
-                            srcField.getType().getSimpleName(),
-                            dstField.getType().getSimpleName(),
-                            hasMapper ? "true" : "false"
-                    ));
-                }
-                */
-
                 dstField.set(dstObj, value);
             } catch (NoSuchFieldException ex) {
                 throw new ViewException(String.format(

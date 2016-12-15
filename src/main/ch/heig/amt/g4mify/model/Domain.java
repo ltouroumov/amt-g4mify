@@ -16,17 +16,19 @@ public class Domain {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
+    @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
     private String key;
 
-    @OneToMany(mappedBy = "domain", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "domain", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<User> users;
 
-    @OneToMany(mappedBy = "domain", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "domain", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Counter> counters;
 
-    @OneToMany(mappedBy = "domain", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "domain", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Rule> rules;
 
     public Domain() {

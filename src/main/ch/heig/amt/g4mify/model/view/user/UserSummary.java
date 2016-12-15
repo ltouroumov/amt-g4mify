@@ -8,8 +8,8 @@ public class UserSummary {
 
     public long id;
 
-    public String username;
+    public String profileId;
 
-    public String displayname;
+    public String profileUrl;
 
 }

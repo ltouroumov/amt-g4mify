@@ -9,19 +9,22 @@ import java.util.List;
  * @created 11/14/16
  */
 @Entity
-@Table(name = "counters")
+@Table(name = "counters", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"name", "domain_id"})
+})
 public class Counter {
 
     @Id
     @GeneratedValue
     private long id;
 
+    @Column(nullable = false)
     private String name;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     private Domain domain;
 
-    @OneToMany(mappedBy = "counter")
+    @OneToMany(mappedBy = "counter", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Metric> metrics = new ArrayList<>();
 
     public long getId() {

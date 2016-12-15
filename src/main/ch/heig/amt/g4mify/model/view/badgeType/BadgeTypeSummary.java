@@ -10,4 +10,5 @@ public class BadgeTypeSummary {
     public String color;
 
     public String image;
+
 }

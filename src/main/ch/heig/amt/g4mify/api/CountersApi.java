@@ -10,6 +10,7 @@ import ch.heig.amt.g4mify.model.view.metric.MetricSummary;
 import ch.heig.amt.g4mify.repository.CountersRepository;
 import ch.heig.amt.g4mify.repository.MetricsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -58,22 +59,26 @@ public class CountersApi extends AbstractDomainApi {
         Counter input = inputView(Counter.class).from(body);
         input.setDomain(domain);
 
-        countersRepository.save(input);
-        Metric total = new Metric();
-        total.setName("total");
-        total.setDuration(-1);
-        total.setCounter(input);
+        try {
+            countersRepository.save(input);
+            Metric total = new Metric();
+            total.setName("total");
+            total.setDuration(-1);
+            total.setCounter(input);
 
-        metricsRepository.save(total);
-        input.getMetrics().add(total);
+            metricsRepository.save(total);
+            input.getMetrics().add(total);
 
-        URI uri = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(input.getId())
-                .toUri();
+            URI uri = ServletUriComponentsBuilder
+                    .fromCurrentRequest()
+                    .path("/{id}")
+                    .buildAndExpand(input.getId())
+                    .toUri();
 
-        return ResponseEntity.created(uri).body(getView().from(input));
+            return ResponseEntity.created(uri).body(getView().from(input));
+        } catch (DataIntegrityViolationException ex) {
+            throw new ApiException("Failed to create counter, most probable cause: duplicate name");
+        }
     }
 
     @RequestMapping("/{id}")
@@ -88,7 +93,7 @@ public class CountersApi extends AbstractDomainApi {
 
     @RequestMapping(path = "/{id}", method = RequestMethod.PUT)
     public ResponseEntity<CounterSummary> update(@PathVariable long id,
-                                          @RequestBody CounterUpdate body) {
+                                                 @RequestBody CounterUpdate body) {
         Counter counter = countersRepository.findOne(id);
         if (canAccess(counter)) {
             updateView(counter).with(body);

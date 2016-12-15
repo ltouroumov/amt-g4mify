@@ -14,6 +14,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static ch.heig.amt.g4mify.model.view.ViewUtils.*;
@@ -50,31 +51,41 @@ public class UsersApi extends AbstractDomainApi {
         User input = inputView(User.class).from(body);
         input.setDomain(domain);
 
-        User user = usersRepository.save(input);
-        URI uri = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(user.getId())
-                .toUri();
+        Optional<User> userOpt = usersRepository.findByDomainAndProfileId(domain, body.profileId);
 
-        return ResponseEntity.created(uri).body(outputView(UserSummary.class).from(user));
+        if (userOpt.isPresent()) {
+            throw new ApiException("ProfileID '" + body.profileId + "' is already in use'");
+        } else {
+            User user = usersRepository.save(input);
+            URI uri = ServletUriComponentsBuilder
+                    .fromCurrentRequest()
+                    .path("/{id}")
+                    .buildAndExpand(user.getId())
+                    .toUri();
+
+            return ResponseEntity.created(uri).body(outputView(UserSummary.class).from(user));
+        }
     }
 
-    @RequestMapping("/{id}")
-    public ResponseEntity<UserDetail> show(@PathVariable long id) {
-        User user = usersRepository.findOne(id);
-        if (canAccess(user)) {
+    @RequestMapping("/{pid}")
+    public ResponseEntity<UserDetail> show(@PathVariable String pid) {
+        User user = usersRepository.findByProfileId(pid);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } else if (canAccess(user)) {
             return ResponseEntity.ok(outputView(UserDetail.class).from(user));
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
     }
 
-    @RequestMapping(path = "/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<UserDetail> update(@PathVariable long id,
+    @RequestMapping(path = "/{pid}", method = RequestMethod.PUT)
+    public ResponseEntity<UserDetail> update(@PathVariable String pid,
                                              @RequestBody UserDetail body) {
-        User user = usersRepository.findOne(id);
-        if (canAccess(user)) {
+        User user = usersRepository.findByProfileId(pid);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } else if (canAccess(user)) {
             updateView(user).with(body);
             usersRepository.save(user);
             return ResponseEntity.ok(outputView(UserDetail.class).from(user));
@@ -83,10 +94,12 @@ public class UsersApi extends AbstractDomainApi {
         }
     }
 
-    @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<?> delete(@PathVariable long id) {
-        User user = usersRepository.findOne(id);
-        if (canAccess(user)) {
+    @RequestMapping(path = "/{pid}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> delete(@PathVariable String pid) {
+        User user = usersRepository.findByProfileId(pid);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } else if (canAccess(user)) {
             usersRepository.delete(user);
             return ResponseEntity.ok(null);
         } else {
@@ -94,12 +107,14 @@ public class UsersApi extends AbstractDomainApi {
         }
     }
 
-    @RequestMapping(path = "/{id}/badges", method = RequestMethod.GET)
-    public ResponseEntity<List<Badge>> index(@PathVariable long id,
+    @RequestMapping(path = "/{pid}/badges", method = RequestMethod.GET)
+    public ResponseEntity<List<Badge>> index(@PathVariable String pid,
                                              @RequestParam(required = false, defaultValue = "0") long page,
                                              @RequestParam(required = false, defaultValue = "50") long pageSize) {
-        User user = usersRepository.findOne(id);
-        if (canAccess(user)) {
+        User user = usersRepository.findByProfileId(pid);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } else if (canAccess(user)) {
             List<Badge> badges = user.getBadges()
                     .stream()
                     .skip(page * pageSize)

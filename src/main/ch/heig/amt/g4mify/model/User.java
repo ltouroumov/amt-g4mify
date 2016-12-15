@@ -9,25 +9,28 @@ import java.util.List;
  * @created 11/14/16
  */
 @Entity
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"profileId", "domain_id"})
+})
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @Column(unique = true)
-    private String username;
+    @Column(nullable = false)
+    private String profileId;
 
-    private String displayname;
+    @Column(nullable = false)
+    private String profileUrl;
 
     @ManyToOne
     private Domain domain;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Badge> badges;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Event> events;
 
     public User() {
@@ -39,20 +42,20 @@ public class User {
         return id;
     }
 
-    public String getUsername() {
-        return username;
+    public String getProfileId() {
+        return profileId;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setProfileId(String profileId) {
+        this.profileId = profileId;
     }
 
-    public String getDisplayname() {
-        return displayname;
+    public String getProfileUrl() {
+        return profileUrl;
     }
 
-    public void setDisplayname(String displayname) {
-        this.displayname = displayname;
+    public void setProfileUrl(String profileUrl) {
+        this.profileUrl = profileUrl;
     }
 
     public Domain getDomain() {

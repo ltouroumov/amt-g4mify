@@ -14,13 +14,14 @@ public class Rule {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @ManyToOne
-    private Domain domain;
-
+    @Column(nullable = false)
     private String condition;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     private BadgeType grants;
+
+    @ManyToOne(optional = false)
+    private Domain domain;
 
     public long getId() {
         return id;

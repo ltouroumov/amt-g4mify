@@ -1,6 +1,7 @@
 package ch.heig.amt.g4mify.model;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 
 /**
  * @author ldavid
@@ -14,14 +15,36 @@ public class Badge {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @ManyToOne
+    @Column(nullable = false)
+    private Timestamp awarded;
+
+    @Column(nullable = false)
+    private long level = 0;
+
+    @ManyToOne(optional = false)
     private User user;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     private BadgeType type;
 
     public long getId() {
         return id;
+    }
+
+    public Timestamp getAwarded() {
+        return awarded;
+    }
+
+    public void setAwarded(Timestamp awarded) {
+        this.awarded = awarded;
+    }
+
+    public long getLevel() {
+        return level;
+    }
+
+    public void setLevel(long level) {
+        this.level = level;
     }
 
     public User getUser() {
