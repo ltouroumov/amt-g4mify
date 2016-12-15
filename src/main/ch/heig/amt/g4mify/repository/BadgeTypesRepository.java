@@ -1,5 +1,6 @@
 package ch.heig.amt.g4mify.repository;
 
+import ch.heig.amt.g4mify.model.Badge;
 import ch.heig.amt.g4mify.model.BadgeType;
 import ch.heig.amt.g4mify.model.Domain;
 import org.springframework.data.jpa.repository.JpaRepository;

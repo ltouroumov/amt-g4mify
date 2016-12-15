@@ -1,9 +1,9 @@
-package ch.heig.amt.g4mify.model.view.badgeTypes;
+package ch.heig.amt.g4mify.model.view.badgeType;
 
 /**
  * Created by Frederic on 14.12.16.
  */
-public class BadgeTypesSummary {
+public class BadgeTypeSummary {
 
     public String name;
 

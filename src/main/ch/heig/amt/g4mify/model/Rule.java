@@ -7,7 +7,7 @@ import javax.persistence.*;
  * @created 11/14/16
  */
 @Entity
-@Table(name = "rules")
+@Table(name = "rule")
 public class Rule {
 
     @Id
