@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -81,38 +80,38 @@ public class CountersApi extends AbstractDomainApi {
         }
     }
 
-    @RequestMapping("/{id}")
-    public ResponseEntity<CounterSummary> show(@PathVariable long id) {
-        Counter counter = countersRepository.findOne(id);
-        if (canAccess(counter)) {
-            return ResponseEntity.ok(getView().from(counter));
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+    @RequestMapping("/{name}")
+    public ResponseEntity<CounterSummary> show(@PathVariable String name) {
+        return countersRepository.findByDomainAndName(getDomain(), name)
+                .filter(this::canAccess)
+                .map(this.getView()::from)
+                .map(ResponseEntity::ok)
+                .orElseGet(ResponseEntity.status(HttpStatus.NOT_FOUND)::build);
     }
 
-    @RequestMapping(path = "/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<CounterSummary> update(@PathVariable long id,
+    @RequestMapping(path = "/{name}", method = RequestMethod.PUT)
+    public ResponseEntity<CounterSummary> update(@PathVariable String name,
                                                  @RequestBody CounterUpdate body) {
-        Counter counter = countersRepository.findOne(id);
-        if (canAccess(counter)) {
-            updateView(counter).with(body);
-            countersRepository.save(counter);
-            return ResponseEntity.ok(getView().from(counter));
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        return countersRepository.findByDomainAndName(getDomain(), name)
+                .filter(this::canAccess)
+                .map(counter -> {
+                    updateView(counter).with(body);
+                    return countersRepository.save(counter);
+                })
+                .map(this.getView()::from)
+                .map(ResponseEntity::ok)
+                .orElseGet(ResponseEntity.status(HttpStatus.NOT_FOUND)::build);
     }
 
-    @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<?> delete(@PathVariable long id) {
-        Counter counter = countersRepository.findOne(id);
-        if (canAccess(counter)) {
-            countersRepository.delete(counter);
-            return ResponseEntity.ok(null);
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+    @RequestMapping(path = "/{name}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> delete(@PathVariable String name) {
+        return countersRepository.findByDomainAndName(getDomain(), name)
+                .filter(this::canAccess)
+                .map(counter -> {
+                    countersRepository.delete(counter);
+                    return ResponseEntity.ok().build();
+                })
+                .orElseGet(ResponseEntity.status(HttpStatus.NOT_FOUND)::build);
     }
 
     private OutputView<CounterSummary> getView() {

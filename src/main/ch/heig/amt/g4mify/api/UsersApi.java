@@ -69,62 +69,53 @@ public class UsersApi extends AbstractDomainApi {
 
     @RequestMapping("/{pid}")
     public ResponseEntity<UserDetail> show(@PathVariable String pid) {
-        User user = usersRepository.findByProfileId(pid);
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } else if (canAccess(user)) {
-            return ResponseEntity.ok(outputView(UserDetail.class).from(user));
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        return usersRepository.findByProfileId(pid)
+                .filter(this::canAccess)
+                .map(outputView(UserDetail.class)::from)
+                .map(ResponseEntity::ok)
+                .orElseGet(ResponseEntity.status(HttpStatus.NOT_FOUND)::build);
     }
 
     @RequestMapping(path = "/{pid}", method = RequestMethod.PUT)
     public ResponseEntity<UserDetail> update(@PathVariable String pid,
                                              @RequestBody UserDetail body) {
-        User user = usersRepository.findByProfileId(pid);
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } else if (canAccess(user)) {
-            updateView(user).with(body);
-            usersRepository.save(user);
-            return ResponseEntity.ok(outputView(UserDetail.class).from(user));
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+
+        return usersRepository.findByProfileId(pid)
+                .filter(this::canAccess)
+                .map(user -> {
+                    updateView(user).with(body);
+                    return usersRepository.save(user);
+                })
+                .map(outputView(UserDetail.class)::from)
+                .map(ResponseEntity::ok)
+                .orElseGet(ResponseEntity.status(HttpStatus.NOT_FOUND)::build);
     }
 
     @RequestMapping(path = "/{pid}", method = RequestMethod.DELETE)
     public ResponseEntity<?> delete(@PathVariable String pid) {
-        User user = usersRepository.findByProfileId(pid);
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } else if (canAccess(user)) {
-            usersRepository.delete(user);
-            return ResponseEntity.ok(null);
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        return usersRepository.findByProfileId(pid)
+                .filter(this::canAccess)
+                .map(user -> {
+                    usersRepository.delete(user);
+                    return ResponseEntity.ok().build();
+                })
+                .orElseGet(ResponseEntity.status(HttpStatus.NOT_FOUND)::build);
     }
 
     @RequestMapping(path = "/{pid}/badges", method = RequestMethod.GET)
     public ResponseEntity<List<Badge>> index(@PathVariable String pid,
                                              @RequestParam(required = false, defaultValue = "0") long page,
                                              @RequestParam(required = false, defaultValue = "50") long pageSize) {
-        User user = usersRepository.findByProfileId(pid);
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } else if (canAccess(user)) {
-            List<Badge> badges = user.getBadges()
-                    .stream()
-                    .skip(page * pageSize)
-                    .limit(pageSize)
-                    .collect(Collectors.toList());
-
-            return ResponseEntity.ok(badges);
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        return usersRepository.findByProfileId(pid)
+                .filter(this::canAccess)
+                .map(user -> user.getBadges()
+                        .stream()
+                        .skip(page * pageSize)
+                        .limit(pageSize)
+                        .collect(Collectors.toList())
+                )
+                .map(ResponseEntity::ok)
+                .orElseGet(ResponseEntity.status(HttpStatus.NOT_FOUND)::build);
     }
 
     private boolean canAccess(User user) {

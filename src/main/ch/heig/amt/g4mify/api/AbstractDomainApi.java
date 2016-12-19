@@ -18,7 +18,6 @@ public class AbstractDomainApi {
     protected Domain getDomain() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         long id = (Long)auth.getPrincipal();
-
         return domainsRepository.findOne(id);
     }
 

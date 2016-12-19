@@ -1,10 +1,10 @@
 package ch.heig.amt.g4mify.repository;
 
-import ch.heig.amt.g4mify.model.Badge;
 import ch.heig.amt.g4mify.model.BadgeType;
 import ch.heig.amt.g4mify.model.Domain;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
@@ -13,4 +13,7 @@ import java.util.stream.Stream;
 public interface BadgeTypesRepository extends JpaRepository<BadgeType, Long> {
 
     Stream<BadgeType> findByDomain(Domain domain);
+
+    Optional<BadgeType> findById(long id);
+
 }

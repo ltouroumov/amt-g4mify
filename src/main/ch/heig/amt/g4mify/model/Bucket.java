@@ -1,6 +1,7 @@
 package ch.heig.amt.g4mify.model;
 
 import javax.persistence.*;
+import java.time.Instant;
 
 /**
  * @author ldavid
@@ -20,6 +21,7 @@ public class Bucket {
     @Column(nullable = false)
     private long value;
 
+    @Version
     @Column(nullable = false)
     private long version = 0;
 
@@ -35,6 +37,10 @@ public class Bucket {
 
     public long getTime() {
         return time;
+    }
+
+    public Instant getTimeAsInstant() {
+        return Instant.ofEpochSecond(time);
     }
 
     public void setTime(long time) {

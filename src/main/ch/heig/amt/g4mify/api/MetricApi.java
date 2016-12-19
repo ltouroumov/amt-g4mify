@@ -16,6 +16,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static ch.heig.amt.g4mify.model.view.ViewUtils.*;
@@ -25,7 +26,7 @@ import static ch.heig.amt.g4mify.model.view.ViewUtils.*;
  * @created 12/5/16
  */
 @RestController
-@RequestMapping("/api/counters/{counterId}/metrics")
+@RequestMapping("/api/counters/{counterName}/metrics")
 public class MetricApi extends AbstractDomainApi {
 
     @Autowired
@@ -35,91 +36,98 @@ public class MetricApi extends AbstractDomainApi {
     private MetricsRepository metricsRepository;
 
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List<MetricSummary>> index(@PathVariable long counterId,
-                                              @RequestParam(required = false, defaultValue = "0") long page,
-                                              @RequestParam(required = false, defaultValue = "50") long pageSize) {
+    public ResponseEntity<List<MetricSummary>> index(@PathVariable String counterName,
+                                                     @RequestParam(required = false, defaultValue = "0") long page,
+                                                     @RequestParam(required = false, defaultValue = "50") long pageSize) {
         Domain domain = getDomain();
-        Counter counter = countersRepository.findOne(counterId);
+        Optional<Counter> counterOpt = countersRepository.findByDomainAndName(domain, counterName);
 
-        if (counter.getDomain().getId() != domain.getId()) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        return counterOpt
+                .filter(counter -> counter.getDomain().getId() != domain.getId())
+                .map(counter -> {
+                    List<MetricSummary> users = counter.getMetrics()
+                            .stream()
+                            .skip(page * pageSize)
+                            .limit(pageSize)
+                            .map(outputView(MetricSummary.class)::from)
+                            .collect(Collectors.toList());
 
-        List<MetricSummary> users = counter.getMetrics()
-                .stream()
-                .skip(page * pageSize)
-                .limit(pageSize)
-                .map(outputView(MetricSummary.class)::from)
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(users);
+                    return ResponseEntity.ok(users);
+                })
+                .orElseGet(ResponseEntity.status(HttpStatus.NOT_FOUND)::build);
 
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<?> create(@PathVariable long counterId,
+    public ResponseEntity<?> create(@PathVariable String counterName,
                                     @RequestBody MetricUpdate body) {
         Domain domain = getDomain();
-        Counter counter = countersRepository.findOne(counterId);
+        Optional<Counter> counterOpt = countersRepository.findByDomainAndName(domain, counterName);
 
-        if (counter.getDomain().getId() != domain.getId()) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-        try {
-            Metric input = inputView(Metric.class).from(body);
-            input.setCounter(counter);
+        return counterOpt
+                .filter(counter -> counter.getDomain().getId() != domain.getId())
+                .map(counter -> {
+                    try {
+                        Metric input = inputView(Metric.class).from(body);
+                        input.setCounter(counter);
 
-            metricsRepository.save(input);
+                        metricsRepository.save(input);
 
-            URI uri = ServletUriComponentsBuilder
-                    .fromCurrentRequest()
-                    .path("/{id}")
-                    .buildAndExpand(input.getId())
-                    .toUri();
+                        URI uri = ServletUriComponentsBuilder
+                                .fromCurrentRequest()
+                                .path("/{id}")
+                                .buildAndExpand(input.getId())
+                                .toUri();
 
-            return ResponseEntity.created(uri).body(outputView(MetricSummary.class).from(input));
-        } catch (DataIntegrityViolationException ex) {
-            throw new ApiException("Failed to create metric, most probable cause: duplicate name");
-        }
+                        return ResponseEntity.created(uri).body(outputView(MetricSummary.class).from(input));
+                    } catch (DataIntegrityViolationException ex) {
+                        throw new ApiException("Failed to create metric, most probable cause: duplicate name");
+                    }
+                })
+                .orElseGet(ResponseEntity.status(HttpStatus.NOT_FOUND)::build);
+
     }
 
-    @RequestMapping("/{id}")
-    public ResponseEntity<MetricSummary> show(@PathVariable long id) {
-        Metric metric = metricsRepository.findOne(id);
+    @RequestMapping("/{metricName}")
+    public ResponseEntity<MetricSummary> show(@PathVariable String counterName,
+                                              @PathVariable String metricName) {
 
-        if (canAccess(metric)) {
-            return ResponseEntity.ok(outputView(MetricSummary.class).from(metric));
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        return findMetric(counterName, metricName)
+                .map(metric -> ResponseEntity.ok(outputView(MetricSummary.class).from(metric)))
+                .orElseGet(ResponseEntity.status(HttpStatus.NOT_FOUND)::build);
+
     }
 
     @RequestMapping(path = "/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<MetricSummary> update(@PathVariable long id,
-                                          @RequestBody Counter body) {
-        Metric metric = metricsRepository.findOne(id);
+    public ResponseEntity<MetricSummary> update(@PathVariable String counterName,
+                                                @PathVariable String metricName,
+                                                @RequestBody MetricUpdate body) {
 
-        if (canAccess(metric)) {
-            updateView(metric).with(body);
-            return ResponseEntity.ok(outputView(MetricSummary.class).from(metric));
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        return findMetric(counterName, metricName)
+                .map(metric -> updateView(metric).with(body))
+                .map(metric -> ResponseEntity.ok(outputView(MetricSummary.class).from(metric)))
+                .orElseGet(ResponseEntity.status(HttpStatus.NOT_FOUND)::build);
+
     }
 
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<?> delete(@PathVariable long id) {
-        Metric metric = metricsRepository.findOne(id);
+    public ResponseEntity<?> delete(@PathVariable String counterName,
+                                    @PathVariable String metricName) {
 
-        if (canAccess(metric)) {
-            metricsRepository.delete(metric);
-            return ResponseEntity.ok(null);
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        return findMetric(counterName, metricName)
+                .map(metric -> {
+                    metricsRepository.delete(metric);
+                    return ResponseEntity.ok(null);
+                })
+                .orElseGet(ResponseEntity.status(HttpStatus.NOT_FOUND)::build);
+
     }
 
-    private boolean canAccess(Metric metric) {
-        return metric.getCounter().getDomain().getId() != getDomain().getId();
+    private Optional<Metric> findMetric(String counterName, String metricName) {
+        Domain domain = getDomain();
+        return countersRepository.findByDomainAndName(domain, counterName)
+                .flatMap(counter -> metricsRepository.findByCounterAndName(counter, metricName))
+                .filter(metric -> metric.getCounter().getDomain().getId() != domain.getId());
     }
+
 }

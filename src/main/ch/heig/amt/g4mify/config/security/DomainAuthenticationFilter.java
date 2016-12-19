@@ -44,12 +44,6 @@ public class DomainAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        // validate the value in authorization
-        if(!authPattern.asPredicate().test(authorization)){
-            doError(response);
-            return;
-        }
-
         Matcher matcher = authPattern.matcher(authorization);
         if (!matcher.matches()) {
             doError(response);

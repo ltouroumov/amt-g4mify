@@ -64,54 +64,36 @@ public class BadgeTypesApi extends AbstractDomainApi {
 
     @RequestMapping("/{id}")
     public ResponseEntity<BadgeTypeDetail> show(@PathVariable long id) {
-
-        BadgeType badgeType = badgeTypesRepository.findOne(id);
-
-        if(badgeType == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
-        if (canAccess(badgeType)) {
-            return ResponseEntity.ok(outputView(BadgeTypeDetail.class).from(badgeType));
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        return badgeTypesRepository.findById(id)
+                .filter(this::canAccess)
+                .map(badgeType -> outputView(BadgeTypeDetail.class).from(badgeType))
+                .map(ResponseEntity::ok)
+                .orElseGet(ResponseEntity.status(HttpStatus.NOT_FOUND)::build);
     }
 
     @RequestMapping(path = "/{id}", method = RequestMethod.PUT)
     public ResponseEntity<BadgeTypeSummary> update(@PathVariable long id,
                                                    @RequestBody BadgeTypeSummary body) {
-
-        BadgeType badgeType = badgeTypesRepository.findOne(id);
-
-        if(badgeType == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
-        if (canAccess(badgeType)) {
-            updateView(badgeType).with(body);
-            badgeTypesRepository.save(badgeType);
-            return ResponseEntity.ok(outputView(BadgeTypeSummary.class).from(badgeType));
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        return badgeTypesRepository.findById(id)
+                .filter(this::canAccess)
+                .map(badgeType -> {
+                    updateView(badgeType).with(body);
+                    return badgeTypesRepository.save(badgeType);
+                })
+                .map(badgeType -> outputView(BadgeTypeSummary.class).from(badgeType))
+                .map(ResponseEntity::ok)
+                .orElseGet(ResponseEntity.status(HttpStatus.NOT_FOUND)::build);
     }
 
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<?> delete(@PathVariable long id) {
-
-        BadgeType badgeType = badgeTypesRepository.findOne(id);
-
-        if(badgeType == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
-        if (canAccess(badgeType)) {
-            badgeTypesRepository.delete(badgeType);
-            return ResponseEntity.ok(null);
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        return badgeTypesRepository.findById(id)
+                .filter(this::canAccess)
+                .map(badgeType -> {
+                    badgeTypesRepository.delete(badgeType);
+                    return ResponseEntity.ok().build();
+                })
+                .orElseGet(ResponseEntity.status(HttpStatus.NOT_FOUND)::build);
     }
 
     private boolean canAccess(BadgeType badgeType) {
