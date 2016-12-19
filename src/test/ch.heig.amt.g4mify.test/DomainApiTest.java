@@ -39,7 +39,7 @@ public class DomainApiTest {
         Gson gson = new Gson();
         HashMap<String, String> headers = new HashMap<>();
         headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
-        TestResponse response = request.test("/api/domain", null, headers, "GET");
+        TestResponse response = request.test("/api/domain", null, null, headers, "GET");
         if(isError(response)) return;
         Domain domain = gson.fromJson(response.getBody(), Domain.class);
         System.out.println("Name: " + domain.getName() + " // Id: " + domain.getId() + " // Key: " + domain.getKey());
@@ -55,7 +55,7 @@ public class DomainApiTest {
         Gson gson = new Gson();
         HashMap<String, String> headers = new HashMap<>();
         headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
-        TestResponse response = request.test("/api/domain", "{\"name\": \"This domain name has changed\"}", headers, "PUT");
+        TestResponse response = request.test("/api/domain", "{\"name\": \"This domain name has changed\"}", null, headers, "PUT");
         if(isError(response)) return;
         Domain domain = gson.fromJson(response.getBody(), Domain.class);
         System.out.println("Name: " + domain.getName() + " // Id: " + domain.getId() + " // Key: " + domain.getKey());

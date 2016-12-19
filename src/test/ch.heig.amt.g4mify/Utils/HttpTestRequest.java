@@ -21,12 +21,20 @@ public class HttpTestRequest {
     private static final int minGoodStatusCode = 100;
     private static final int maxGoodStatusCode = 399;
 
-    public TestResponse test(String endpoint, String payload, HashMap<String, String> headers, String method){
+    public TestResponse test(String endpoint, String payload, HashMap<String, String> parameters, HashMap<String, String> headers, String method){
         HttpURLConnection conn = null;
         Gson gson = new Gson();
         try {
+            StringBuilder parametersURL = new StringBuilder();
+            if(parameters != null){
+                parametersURL.append("?");
+                for(Map.Entry<String, String> parameter : parameters.entrySet()){
+                    parametersURL.append(parameter.getKey() + "=" + parameter.getValue() + "&");
+                }
+                parametersURL.deleteCharAt(parametersURL.length() - 1);
+            }
             //create connection
-            URL url = new URL("http://localhost:8080" + endpoint);
+            URL url = new URL("http://localhost:8080" + endpoint + parametersURL);
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod(method);
             conn.setRequestProperty("Accept", "application/json");

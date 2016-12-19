@@ -40,7 +40,7 @@ public class CountersApiTest {
         Gson gson = new Gson();
         HashMap<String, String> headers = new HashMap<>();
         headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
-        TestResponse response = request.test("/api/counters", "{\"name\":\"myCounter\"}", headers, "POST");
+        TestResponse response = request.test("/api/counters", "{\"name\":\"myCounter\"}", null, headers, "POST");
         if(isError(response)) return;
         CounterSummary counter = gson.fromJson(response.getBody(), CounterSummary.class);
         counters.add(counter);
@@ -55,7 +55,7 @@ public class CountersApiTest {
         Gson gson = new Gson();
         HashMap<String, String> headers = new HashMap<>();
         headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
-        TestResponse response = request.test("/api/counters", null, headers, "GET");
+        TestResponse response = request.test("/api/counters", null, null, headers, "GET");
         if(isError(response)) return;
 
         CounterSummary[] countersList = gson.fromJson(response.getBody(), CounterSummary[].class);
@@ -71,7 +71,7 @@ public class CountersApiTest {
         HashMap<String, String> headers = new HashMap<>();
         headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
         for(CounterSummary counter : counters){
-            TestResponse response = request.test("/api/counters/" + counter.id, null, headers, "DELETE");
+            TestResponse response = request.test("/api/counters/" + counter.id, null, null, headers, "DELETE");
             if(isError(response)) return;
             System.out.println("Successfully deleted counter with id " + counter.id);
             assertEquals(200, response.getStatusCode());

@@ -1,0 +1,53 @@
+2. domains:
+	- WeShouldBeAbleToGetADomainWithTheCorrectKey
+	- WeShouldntBeAbleToGetADomainWithTheWrongKey
+	The Check of the key will be done only one time here. Same function for all the endpoints (Filter at the message's reception). The filter is used to determine the domain on which we work, so we haven't to give the id to the server for next requests.
+	- WeShouldntBeAbleToGetADomainWithANonExistingIdentity
+	- WeShouldBeAbleToUpdateADomain
+	- WeShouldntBeAbleToChangeADomainWithAWrongBody
+	- WeShouldBeAbleToDeleteADomain
+	We can't delete others ID because of the authentification filter in any case. No mandatory test for check it. (Check the WeShouldntBeAbleToGetADomainWithTheWrongKey test)
+
+4. metric-api:
+	- WeShouldBeAbleToGetAMetric
+	- WeShouldntBeAbleToGetAMetricInAWrongCounter
+	- WeShouldBeAbleToSetThePageAndPageSize
+	- WeShouldntBeAbleToSetThePageAndPageSizeWithBadValue
+	- WeShouldBeAbleToCreateANewMetric
+	- WeShouldBeAbleToGetAllTheMetrics
+	- WeShouldBeAbleToUpdateAMetric
+	- WeShouldBeAbleToDeleteAMetric
+
+6. rules-api:
+	- WeShouldBeAbleToGetAllTheRules
+	- WeShouldBeAbleToCreateARule
+	- WeShouldBeAbleToGetARule
+	- WeShouldBeAbleToUpdateARule
+	- WeShouldBeAbleToDeleteARule
+
+7. events:
+
+5. badge-types-api:
+	- WeShouldBeAbleToGetAllTheBadge
+	- WeShouldBeAbleToCreateABadge
+	- WeShouldBeAbleToGetABadge
+	- WeShouldBeAbleToUpdateABadge
+	- WeShouldBeAbleToDeleteABadge
+
+3. counters-api:
+	- WeShouldBeAbleToCreateANewCounter
+	- WeShouldBeAbleToGetAllCounters
+	- WeShouldBeAbleToGetACounter
+	- WeShouldBeAbleToDeleteACounter
+	- WeShouldntBeABleToGetACounterWithABadID
+	Also check the alphaNumeric ID (Only number are accepted)
+	- WeShouldntBeAbleToDeleteACounterWithABadID
+	- WeShouldBeAbleToUpdateACounter
+	- WeShouldntBeAbleToGetACounterInAnOtherDomain
+	
+
+1. register:
+	- WeShouldBeAbleToCreateANewDomain
+	- WeShouldntBeAbleToCreateANewDomainWithAWrongBody
+
+8. users-api:
