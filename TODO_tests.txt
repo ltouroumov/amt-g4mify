@@ -51,3 +51,9 @@
 	- WeShouldntBeAbleToCreateANewDomainWithAWrongBody
 
 8. users-api:
+	- WeShouldBeAbleToGetAllTheUsers
+	- WeShouldBeAbleToCreateAUser
+	- WeShouldBeAbleToGetAUser
+	- WeShouldBeAbleToUpdateAUser
+	- WeShouldBeAbleToDeleteAUser
+	- WeShouldBeAbleToGetAllBadgesForAUser
