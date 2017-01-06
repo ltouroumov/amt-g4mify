@@ -1,5 +1,7 @@
 package ch.heig.amt.g4mify.model;
 
+import org.hibernate.annotations.Type;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +12,11 @@ import java.util.List;
  */
 @Entity
 @Table(name = "event_rules")
+@NamedNativeQuery(
+        name = "EventRule.FindByTypesInDomain",
+        query = "select * from event_rules where types <@ jsonb_build_array(?1) and domain_id = ?2",
+        resultClass = EventRule.class
+)
 public class EventRule {
 
     @Id
@@ -20,11 +27,11 @@ public class EventRule {
     private Domain domain;
 
     @Column(nullable = false)
-    @ElementCollection
-    private List<String> types;
-
-    @Column(nullable = false)
     private String script;
+
+    @Type(type = "jsonb")
+    @Column(nullable = false, columnDefinition = "jsonb")
+    private List<String> types;
 
     public EventRule() {
         this.types = new ArrayList<>();

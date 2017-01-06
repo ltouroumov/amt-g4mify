@@ -15,6 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.persistence.Entity;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,18 +36,33 @@ public class EventRulesApi extends AbstractDomainApi {
     @Autowired
     private EventRulesRepository eventRulesRepository;
 
+    @Autowired
+    private EntityManager em;
+
     @RequestMapping(method = RequestMethod.GET)
     @Transactional
     public ResponseEntity<List<EventRuleDetail>> index(@RequestParam(required = false, defaultValue = "0") long page,
-                                                       @RequestParam(required = false, defaultValue = "50") long pageSize) {
+                                                       @RequestParam(required = false, defaultValue = "50") long pageSize,
+                                                       @RequestParam(required = false, defaultValue = "") String type) {
 
         Domain domain = getDomain();
-        List<EventRuleDetail> rules = eventRulesRepository.findByDomain(domain)
-                .skip(page * pageSize)
-                .limit(pageSize)
-                .map(outputView(EventRuleDetail.class)::from)
-                .collect(Collectors.toList());
+        List<EventRuleDetail> rules;
+        if (!type.isEmpty()) {
+            TypedQuery<EventRule> query = em.createNamedQuery("EventRule.FindByTypesInDomain", EventRule.class);
+            query.setParameter(1, type);
+            query.setParameter(2, domain.getId());
 
+            rules = query.getResultList()
+                    .stream()
+                    .map(outputView(EventRuleDetail.class)::from)
+                    .collect(Collectors.toList());
+        } else {
+            rules = eventRulesRepository.findByDomain(domain)
+                        .skip(page * pageSize)
+                        .limit(pageSize)
+                        .map(outputView(EventRuleDetail.class)::from)
+                        .collect(Collectors.toList());
+        }
         return ResponseEntity.ok(rules);
     }
 

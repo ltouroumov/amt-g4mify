@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class EventSubmit {
 
-    public long user;
+    public String user;
 
     public String type;
 

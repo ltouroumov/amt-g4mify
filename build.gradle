@@ -12,15 +12,18 @@ buildscript {
 
 // Apply the java plugin to add support for Java
 apply plugin: 'java'
+apply plugin: 'groovy'
 apply plugin: 'org.springframework.boot'
 
 sourceSets {
     main {
-        java.srcDirs = ['src/main']
+        java.srcDirs = []
+        groovy.srcDirs = ['src/main']
         resources.srcDirs = ['res/main']
     }
     test {
-        java.srcDirs = ['src/test']
+        java.srcDirs = []
+        groovy.srcDirs = ['src/main']
         resources.srcDirs = ['res/test']
     }
 }
@@ -46,4 +49,5 @@ dependencies {
     compile 'com.typesafe.akka:akka-actor_2.12:2.4.13'
     compile 'io.springfox:springfox-swagger-ui:2.2.2'
     compile 'io.springfox:springfox-swagger2:2.2.2'
+    compile 'org.codehaus.groovy:groovy:2.4.7'
 }

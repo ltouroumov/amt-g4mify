@@ -3,21 +3,29 @@ package ch.heig.amt.g4mify.actors;
 import akka.actor.UntypedActor;
 import ch.heig.amt.g4mify.actors.messages.ReceivedEvent;
 import ch.heig.amt.g4mify.api.ApiException;
+import ch.heig.amt.g4mify.dsl.Award;
+import ch.heig.amt.g4mify.dsl.Changeset;
+import ch.heig.amt.g4mify.dsl.CounterUpdate;
 import ch.heig.amt.g4mify.model.*;
-import ch.heig.amt.g4mify.repository.BucketsRepository;
-import ch.heig.amt.g4mify.repository.CountersRepository;
-import ch.heig.amt.g4mify.repository.EventsRepository;
-import ch.heig.amt.g4mify.repository.MetricsRepository;
+import ch.heig.amt.g4mify.repository.*;
+import groovy.lang.Binding;
+import groovy.lang.GroovyShell;
+import org.codehaus.groovy.control.CompilerConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import javax.persistence.OptimisticLockException;
+import javax.persistence.TypedQuery;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -33,17 +41,27 @@ public class EventActor extends UntypedActor {
 
     private static Logger LOG = Logger.getLogger(EventActor.class.getSimpleName());
 
-    @Autowired
-    private EventsRepository eventsRepository;
+    private final EventsRepository eventsRepository;
+
+    private final CountersRepository countersRepository;
+
+    private final MetricsRepository metricsRepository;
+
+    private final BucketsRepository bucketsRepository;
+
+    private final EventRulesRepository eventRulesRepository;
+
+    private final EntityManager em;
 
     @Autowired
-    private CountersRepository countersRepository;
-
-    @Autowired
-    private MetricsRepository metricsRepository;
-
-    @Autowired
-    private BucketsRepository bucketsRepository;
+    public EventActor(EventsRepository eventsRepository, CountersRepository countersRepository, MetricsRepository metricsRepository, BucketsRepository bucketsRepository, EventRulesRepository eventRulesRepository, EntityManager em) {
+        this.eventsRepository = eventsRepository;
+        this.countersRepository = countersRepository;
+        this.metricsRepository = metricsRepository;
+        this.bucketsRepository = bucketsRepository;
+        this.eventRulesRepository = eventRulesRepository;
+        this.em = em;
+    }
 
     @Override
     public void onReceive(Object message) throws Throwable {
@@ -60,38 +78,79 @@ public class EventActor extends UntypedActor {
     private void processEvent(ReceivedEvent message) throws InterruptedException {
         Event event = eventsRepository.findOne(message.getEventId());
         User user = event.getUser();
-        /*
-        for (EventData update : event.getUpdates()) {
-            updateBucket(user, update);
+
+        TypedQuery<EventRule> query = em.createNamedQuery("EventRule.FindByTypesInDomain", EventRule.class);
+        query.setParameter(1, event.getType());
+        query.setParameter(2, event.getUser().getDomain().getId());
+
+        List<EventRule> rules = query.getResultList();
+
+        Changeset totalChanges = new Changeset();
+        for (EventRule rule : rules) {
+            Changeset ruleChanges = processRule(rule, event);
+            totalChanges.merge(ruleChanges);
         }
-        */
+
+        applyChangeset(user, totalChanges);
+
         event.setProcessed(Timestamp.from(Instant.now()));
         eventsRepository.save(event);
     }
-    /*
-    @Transactional
-    private void updateBucket(User user, EventData update) {
-        Metric metric = findMetric(user.getDomain(), update.getCounter());
 
-        Instant now = Instant.now();
-        Instant last15 = now.minus(Duration.ofMinutes(15));
-        Instant at15 = now.with(ChronoField.MINUTE_OF_HOUR, (now.get(ChronoField.MINUTE_OF_HOUR) / 15) * 15);
+    private Changeset processRule(EventRule rule, Event event) {
+        Binding binding = new Binding();
+        binding.setVariable("event", event);
+
+        CompilerConfiguration configuration = new CompilerConfiguration();
+        configuration.setScriptBaseClass("ch.heig.amt.g4mify.dsl.EventRuleScript");
+
+        //TODO: Implement basic security -_-
+        //TODO: Setup a secure class loader
+        GroovyShell shell = new GroovyShell(getClass().getClassLoader(), binding, configuration);
+        return (Changeset)shell.evaluate(rule.getScript());
+    }
+
+    private void applyChangeset(User user, Changeset changes) {
+        for (CounterUpdate update : changes.updates.values()) {
+            updateBucket(user, update);
+        }
+
+        for (Award award : changes.awards) {
+            awardBadge(user, award);
+        }
+    }
+
+    private void awardBadge(User user, Award award) {
+
+    }
+
+    @Transactional
+    private void updateBucket(User user, CounterUpdate update) {
+        Metric metric = findMetric(user.getDomain(), update.counter);
+
+        ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
+        ZonedDateTime last15 = now.minus(Duration.ofMinutes(15));
+        ZonedDateTime at15 = now.with(ChronoField.MINUTE_OF_HOUR, (now.get(ChronoField.MINUTE_OF_HOUR) / 15) * 15);
 
         boolean ok;
         do {
-            Bucket lastBucket = bucketsRepository.findBucketForUpdate(user, metric, last15.getEpochSecond())
+            Bucket lastBucket = bucketsRepository.findBucketForUpdate(user, metric, last15.toInstant().getEpochSecond())
                     .orElseGet(() -> {
                         Bucket theBucket = new Bucket();
                         theBucket.setUser(user);
                         theBucket.setMetric(metric);
                         theBucket.setValue(0);
                         theBucket.setVersion(0);
-                        theBucket.setTime(at15.getEpochSecond());
+                        theBucket.setTime(at15.toInstant().getEpochSecond());
 
                         return theBucket;
                     });
 
-            lastBucket.setValue(lastBucket.getValue() + update.getAmount());
+            if (update.set) {
+                lastBucket.setValue(update.amount);
+            } else {
+                lastBucket.setValue(lastBucket.getValue() + update.amount);
+            }
             try {
                 bucketsRepository.save(lastBucket);
                 ok = true;
@@ -101,7 +160,6 @@ public class EventActor extends UntypedActor {
             }
         } while (!ok);
     }
-    */
 
     private static final Pattern counterPattern = Pattern.compile("^(\\w+)(.(\\w+))?$");
 

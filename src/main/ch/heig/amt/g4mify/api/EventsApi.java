@@ -57,8 +57,8 @@ public class EventsApi extends AbstractDomainApi {
         Domain domain = getDomain();
         User user = usersRepository.findOne(userId);
 
-        if (user.getDomain().getId() != domain.getId()) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        if (user == null || user.getDomain().getId() != domain.getId()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
         List<EventSummary> events = eventsRepository.findByUser(user)
@@ -76,16 +76,25 @@ public class EventsApi extends AbstractDomainApi {
     @RequestMapping(method = RequestMethod.POST)
     @ApiOperation(value = "Publish an event to a user")
     public ResponseEntity<EventResult> post(@RequestBody EventSubmit input) {
-        Domain domain = getDomain();
-        User user = usersRepository.findOne(input.user);
 
-        if (user.getDomain().getId() != domain.getId()) {
+        Domain domain = getDomain();
+        Event event = inputView(Event.class)
+                .map("user", profileId -> usersRepository.findByDomainAndProfileId(domain, (String) profileId)
+                        .orElseGet(() -> {
+                            User user = new User();
+                            user.setDomain(domain);
+                            user.setProfileId((String) profileId);
+                            user.setProfileUrl("http://example.com");
+
+                            return usersRepository.save(user);
+                        }))
+                .from(input);
+
+        event.setReceived(Timestamp.from(Instant.now()));
+
+        if (event.getUser().getDomain().getId() != domain.getId()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-
-        Event event = inputView(Event.class).ignore("user").from(input);
-        event.setUser(user);
-        event.setReceived(Timestamp.from(Instant.now()));
 
         eventsRepository.save(event);
 
