@@ -5,7 +5,9 @@ import org.hibernate.annotations.Type;
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author ldavid
@@ -28,12 +30,15 @@ public class Event {
     @ManyToOne(optional = false)
     private User user;
 
+    @Column(nullable = false)
+    private String type;
+
     @Type(type = "jsonb")
     @Column(columnDefinition = "jsonb", nullable = false)
-    private List<CounterUpdate> updates;
+    private Map<String, EventData> data;
 
     public Event() {
-        this.updates = new ArrayList<>();
+        this.data = new HashMap<>();
     }
 
     public long getId() {
@@ -64,7 +69,20 @@ public class Event {
         this.user = user;
     }
 
-    public List<CounterUpdate> getUpdates() {
-        return updates;
+    public String getType() {
+        return type;
     }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public Map<String, EventData> getData() {
+        return data;
+    }
+
+    public EventData getData(String key) {
+        return data.get(key);
+    }
+
 }

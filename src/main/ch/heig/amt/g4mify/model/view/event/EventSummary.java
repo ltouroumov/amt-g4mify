@@ -1,11 +1,10 @@
 package ch.heig.amt.g4mify.model.view.event;
 
-import ch.heig.amt.g4mify.model.CounterUpdate;
-import ch.heig.amt.g4mify.model.view.user.UserSummary;
+import ch.heig.amt.g4mify.model.EventData;
 
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author ldavid
@@ -19,6 +18,8 @@ public class EventSummary {
 
     public Timestamp processed;
 
-    public List<CounterUpdate> updates;
+    public String type;
+
+    public Map<String, EventData> data;
 
 }

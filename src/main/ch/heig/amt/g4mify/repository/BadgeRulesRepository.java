@@ -1,7 +1,7 @@
 package ch.heig.amt.g4mify.repository;
 
 import ch.heig.amt.g4mify.model.Domain;
-import ch.heig.amt.g4mify.model.Rule;
+import ch.heig.amt.g4mify.model.BadgeRule;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.stream.Stream;
@@ -9,8 +9,8 @@ import java.util.stream.Stream;
 /**
  * Created by Frederic on 14.12.16.
  */
-public interface RulesRepository extends JpaRepository<Rule, Long> {
+public interface BadgeRulesRepository extends JpaRepository<BadgeRule, Long> {
 
-    Stream<Rule> findByDomain(Domain domain);
+    Stream<BadgeRule> findByDomain(Domain domain);
 
 }

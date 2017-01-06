@@ -1,18 +1,23 @@
 package ch.heig.amt.g4mify.model;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author ldavid
  * @created 11/14/16
  */
 @Entity
-@Table(name = "rule")
-public class Rule {
+@Table(name = "badge_rules")
+public class BadgeRule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
+
+    @ManyToMany()
+    private List<Counter> badgeTypes;
 
     @Column(nullable = false)
     private String condition;
@@ -22,6 +27,10 @@ public class Rule {
 
     @ManyToOne(optional = false)
     private Domain domain;
+
+    public BadgeRule() {
+        this.badgeTypes = new ArrayList<>();
+    }
 
     public long getId() {
         return id;
@@ -49,5 +58,9 @@ public class Rule {
 
     public void setGrants(BadgeType grants) {
         this.grants = grants;
+    }
+
+    public List<Counter> getBadgeTypes() {
+        return badgeTypes;
     }
 }

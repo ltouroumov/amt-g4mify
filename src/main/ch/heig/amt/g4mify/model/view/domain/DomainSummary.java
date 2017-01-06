@@ -10,4 +10,6 @@ public class DomainSummary {
 
     public String name;
 
+    public String key;
+
 }

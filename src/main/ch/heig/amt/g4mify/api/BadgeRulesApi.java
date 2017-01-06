@@ -1,14 +1,13 @@
 package ch.heig.amt.g4mify.api;
 
-import ch.heig.amt.g4mify.model.BadgeType;
 import ch.heig.amt.g4mify.model.Domain;
-import ch.heig.amt.g4mify.model.Rule;
+import ch.heig.amt.g4mify.model.BadgeRule;
 import ch.heig.amt.g4mify.model.view.badgeType.BadgeTypeSummary;
-import ch.heig.amt.g4mify.model.view.rule.RuleDetail;
-import ch.heig.amt.g4mify.model.view.rule.RuleOutputView;
-import ch.heig.amt.g4mify.model.view.rule.RuleSummary;
+import ch.heig.amt.g4mify.model.view.badgeRule.BadgeRuleDetail;
+import ch.heig.amt.g4mify.model.view.badgeRule.BadgeRuleOutputView;
+import ch.heig.amt.g4mify.model.view.badgeRule.BadgeRuleSummary;
 import ch.heig.amt.g4mify.repository.BadgeTypesRepository;
-import ch.heig.amt.g4mify.repository.RulesRepository;
+import ch.heig.amt.g4mify.repository.BadgeRulesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,34 +25,34 @@ import static ch.heig.amt.g4mify.model.view.ViewUtils.*;
  * @created 12/5/16
  */
 @RestController
-@RequestMapping("/api/rules")
-public class RulesApi extends AbstractDomainApi {
+@RequestMapping("/api/badge-rules")
+public class BadgeRulesApi extends AbstractDomainApi {
 
     @Autowired
-    private RulesRepository rulesRepository;
+    private BadgeRulesRepository badgeRulesRepository;
     @Autowired
     private BadgeTypesRepository badgeTypesRepository;
 
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List<RuleDetail>> index(@RequestParam(required = false, defaultValue = "0") long page,
-                                                  @RequestParam(required = false, defaultValue = "50") long pageSize) {
+    public ResponseEntity<List<BadgeRuleDetail>> index(@RequestParam(required = false, defaultValue = "0") long page,
+                                                       @RequestParam(required = false, defaultValue = "50") long pageSize) {
 
         Domain domain = getDomain();
-        List<RuleDetail> rules = rulesRepository.findByDomain(domain)
+        List<BadgeRuleDetail> rules = badgeRulesRepository.findByDomain(domain)
                 .skip(page * pageSize)
                 .limit(pageSize)
-                .map(outputView(RuleDetail.class)::from)
+                .map(outputView(BadgeRuleDetail.class)::from)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(rules);
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<?> create(@RequestBody RuleSummary body) {
+    public ResponseEntity<?> create(@RequestBody BadgeRuleSummary body) {
 
 
         Domain domain = getDomain();
-        Rule input = inputView(Rule.class)
+        BadgeRule input = inputView(BadgeRule.class)
                 .map("grants", badgeTypeId -> badgeTypesRepository.findOne((long)badgeTypeId))
                 .from(body);
         input.setDomain(domain);
@@ -62,60 +61,60 @@ public class RulesApi extends AbstractDomainApi {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        Rule rule = rulesRepository.save(input);
+        BadgeRule badgeRule = badgeRulesRepository.save(input);
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(rule.getId())
+                .buildAndExpand(badgeRule.getId())
                 .toUri();
 
-        return ResponseEntity.created(uri).body(outputView(RuleOutputView.class)
+        return ResponseEntity.created(uri).body(outputView(BadgeRuleOutputView.class)
                 .map("grants", viewMap(BadgeTypeSummary.class))
-                .from(rule));
+                .from(badgeRule));
     }
 
     @RequestMapping("/{id}")
     public ResponseEntity<?> show(@PathVariable long id) {
 
-        Rule rule = rulesRepository.findOne(id);
+        BadgeRule badgeRule = badgeRulesRepository.findOne(id);
 
-        if(rule == null){
+        if(badgeRule == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        if (canAccess(rule)) {
-            return ResponseEntity.ok(outputView(RuleOutputView.class)
+        if (canAccess(badgeRule)) {
+            return ResponseEntity.ok(outputView(BadgeRuleOutputView.class)
                     .map("grants", viewMap(BadgeTypeSummary.class))
-                    .from(rule));
+                    .from(badgeRule));
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
     }
 
     @RequestMapping(path = "/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<RuleOutputView> update(@PathVariable long id, @RequestBody RuleSummary body) {
+    public ResponseEntity<BadgeRuleOutputView> update(@PathVariable long id, @RequestBody BadgeRuleSummary body) {
 
-        Rule rule = rulesRepository.findOne(id);
+        BadgeRule badgeRule = badgeRulesRepository.findOne(id);
 
-        if(rule == null){
+        if(badgeRule == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        if (canAccess(rule)) {
+        if (canAccess(badgeRule)) {
 
-            updateView(rule)
+            updateView(badgeRule)
                     .map("grants", badgeTypeId -> badgeTypesRepository.findOne((long)badgeTypeId))
                     .with(body);
 
-            if(rule.getGrants() == null){
+            if(badgeRule.getGrants() == null){
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
 
-            rulesRepository.save(rule);
+            badgeRulesRepository.save(badgeRule);
 
-            return ResponseEntity.ok(outputView(RuleOutputView.class)
+            return ResponseEntity.ok(outputView(BadgeRuleOutputView.class)
                     .map("grants", viewMap(BadgeTypeSummary.class))
-                    .from(rule));
+                    .from(badgeRule));
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -124,21 +123,21 @@ public class RulesApi extends AbstractDomainApi {
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<?> delete(@PathVariable long id) {
 
-        Rule rule = rulesRepository.findOne(id);
+        BadgeRule badgeRule = badgeRulesRepository.findOne(id);
 
-        if(rule == null){
+        if(badgeRule == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        if (canAccess(rule)) {
-            rulesRepository.delete(rule);
+        if (canAccess(badgeRule)) {
+            badgeRulesRepository.delete(badgeRule);
             return ResponseEntity.ok(null);
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
     }
 
-    private boolean canAccess(Rule rule) {
-        return rule.getDomain().getId() == getDomain().getId();
+    private boolean canAccess(BadgeRule badgeRule) {
+        return badgeRule.getDomain().getId() == getDomain().getId();
     }
 }

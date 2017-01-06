@@ -1,6 +1,7 @@
 package ch.heig.amt.g4mify.api;
 
 import ch.heig.amt.g4mify.model.Domain;
+import ch.heig.amt.g4mify.model.view.domain.DomainSummary;
 import ch.heig.amt.g4mify.model.view.domain.DomainUpdate;
 import ch.heig.amt.g4mify.repository.DomainsRepository;
 import io.swagger.annotations.Api;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import static ch.heig.amt.g4mify.model.view.ViewUtils.inputView;
+import static ch.heig.amt.g4mify.model.view.ViewUtils.outputView;
 
 /**
  * @author ldavid
@@ -35,13 +37,13 @@ public class RegisterApi {
             @ApiResponse(code = 201, message = "Created"),
             @ApiResponse(code = 500, message = "Error during creation")
     })
-    public ResponseEntity<Domain> register(@RequestBody DomainUpdate body) {
+    public ResponseEntity<DomainSummary> register(@RequestBody DomainUpdate body) {
 
         Domain input = inputView(Domain.class).from(body);
         input.setKey("secret");
         Domain domain = domainsRepository.save(input);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(domain);
+        return ResponseEntity.status(HttpStatus.CREATED).body(outputView(DomainSummary.class).from(domain));
 
     }
 

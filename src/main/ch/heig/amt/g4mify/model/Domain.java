@@ -29,12 +29,12 @@ public class Domain {
     private List<Counter> counters;
 
     @OneToMany(mappedBy = "domain", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Rule> rules;
+    private List<BadgeRule> badgeRules;
 
     public Domain() {
         this.users = new ArrayList<>();
         this.counters = new ArrayList<>();
-        this.rules = new ArrayList<>();
+        this.badgeRules = new ArrayList<>();
     }
 
     public long getId() {
@@ -65,7 +65,7 @@ public class Domain {
         return counters;
     }
 
-    public List<Rule> getRules() {
-        return rules;
+    public List<BadgeRule> getBadgeRules() {
+        return badgeRules;
     }
 }

@@ -4,16 +4,13 @@ This document describes the object model used by the g4mify platform. These obje
 
 ![](models.png)
 
-### Domain
-
-Represents a client interacting with the API, for example *StackOverflow* or *Reddit* would be domains.
+All model object are contained within a **Domain** which represents a client interacting with the API, for example *StackOverflow* or *Reddit* would be domains.
 
 ### User
 
 **API endpoint** `/api/users`
 
 Represents a user of the domain. (ex: *StackOverflow's Users*)
-
 
 ### Counter
 
@@ -45,13 +42,19 @@ Represents a template for a badge to be awarded to a user. `BadgeTypes` can be e
 
 Is an instance of a `BadgeType` awarded to a user.
 
-### Rule
+### BadgeRule
 
-**API endpoint** `/api/rules`
+**API endpoint** `/api/badge-rules`
 
 Allows the domain owner to define rules to award badges when certain conditions are met. Conditions can observe counter metrics and compare them to constant values.
 
 *TODO*: Allow conditions to compare to aggregate values (ex: average counter values)
+
+### EventRule
+
+**API endpoint** `/api/event-rules`
+
+Allows the domain owner to define rules to process incoming events to trigger some changes within the system's state.
 
 ### Event (*internal*)
 

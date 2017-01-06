@@ -37,8 +37,12 @@ public class BadgeType {
     @OneToMany(mappedBy = "type", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Badge> badges;
 
+    @ManyToMany(mappedBy = "badgeTypes")
+    private List<BadgeRule> badgeRules;
+
     public BadgeType() {
         this.badges = new ArrayList<>();
+        this.badgeRules = new ArrayList<>();
     }
 
     public long getId() {
@@ -91,5 +95,9 @@ public class BadgeType {
 
     public List<Badge> getBadges() {
         return badges;
+    }
+
+    public List<BadgeRule> getBadgeRules() {
+        return badgeRules;
     }
 }

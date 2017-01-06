@@ -2,16 +2,6 @@
 
 hide empty methods
 
-class Domain {
-    + id: long
-    + name: String
-}
-
-Domain -- "*" User
-Domain -- "*" Counter
-Domain -- "*" BadgeType
-Domain -- "*" Rule
-
 class User {
     + id: long
     + profileId: String
@@ -19,7 +9,7 @@ class User {
 }
 
 User -- "*" Bucket
-User -- "*" Event
+User - "*" Event
 User -- "*" Badge
 
 class Counter {
@@ -27,14 +17,14 @@ class Counter {
     + name: String
 }
 
-Counter -- "*" Metric
+Metric "*" - Counter
 
 class Metric {
     + id: long
     + name: String
 }
 
-Metric - "*" Bucket
+Bucket "*" - Metric
 
 class Bucket {
     + time: Date
@@ -50,24 +40,35 @@ class BadgeType {
     + parent: BadgeType
 }
 
-BadgeType "1" -- Badge
+Badge -- BadgeType
 
 class Badge {
     + id: long
     + awarded: Date
 }
 
-class Rule {
+class BadgeRule {
     + id: long
     + condition: String
 }
 
-BadgeType "1" - Rule : "awards"
+BadgeType "1" - BadgeRule : "awards"
+Counter "1" -- BadgeRule : "observes"
+
+class EventRule {
+    + id: Long
+    + types: [String]
+    + script: Text
+}
+
+Event "*" <. "*" EventRule : "handles"
+EventRule ..> "*" Counter : "affects"
 
 class Event {
     + id: long
     + time: Date
-    + updates: [{Counter, long}]
+    + type: String
+    + data: [{String, Int|String}]
 }
 
 @enduml

@@ -1,9 +1,13 @@
 package ch.heig.amt.g4mify.model.view.event;
 
-import ch.heig.amt.g4mify.model.CounterUpdate;
+import ch.heig.amt.g4mify.model.EventData;
+import org.hibernate.annotations.Type;
 
+import javax.persistence.Column;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author ldavid
@@ -13,9 +17,12 @@ public class EventSubmit {
 
     public long user;
 
-    public List<CounterUpdate> updates;
+    public String type;
+
+    public Map<String, EventData> data;
 
     public EventSubmit() {
-        this.updates = new ArrayList<>();
+        this.data = new HashMap<>();
     }
+
 }

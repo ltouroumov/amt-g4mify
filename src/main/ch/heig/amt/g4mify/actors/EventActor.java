@@ -60,17 +60,17 @@ public class EventActor extends UntypedActor {
     private void processEvent(ReceivedEvent message) throws InterruptedException {
         Event event = eventsRepository.findOne(message.getEventId());
         User user = event.getUser();
-
-        for (CounterUpdate update : event.getUpdates()) {
+        /*
+        for (EventData update : event.getUpdates()) {
             updateBucket(user, update);
         }
-
+        */
         event.setProcessed(Timestamp.from(Instant.now()));
         eventsRepository.save(event);
     }
-
+    /*
     @Transactional
-    private void updateBucket(User user, CounterUpdate update) {
+    private void updateBucket(User user, EventData update) {
         Metric metric = findMetric(user.getDomain(), update.getCounter());
 
         Instant now = Instant.now();
@@ -101,6 +101,7 @@ public class EventActor extends UntypedActor {
             }
         } while (!ok);
     }
+    */
 
     private static final Pattern counterPattern = Pattern.compile("^(\\w+)(.(\\w+))?$");
 
