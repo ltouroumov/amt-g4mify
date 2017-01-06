@@ -11,13 +11,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.transaction.Transactional;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ch.heig.amt.g4mify.model.view.ViewUtils.inputView;
-import static ch.heig.amt.g4mify.model.view.ViewUtils.outputView;
-import static ch.heig.amt.g4mify.model.view.ViewUtils.updateView;
+import static ch.heig.amt.g4mify.model.view.ViewUtils.*;
 
 /**
  * @author ldavid
@@ -31,63 +30,68 @@ public class BadgeTypesApi extends AbstractDomainApi {
     private BadgeTypesRepository badgeTypesRepository;
 
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List<BadgeTypeDetail>> index(@RequestParam(required = false, defaultValue = "0") long page,
+    @Transactional
+    public ResponseEntity<List<BadgeTypeSummary>> index(@RequestParam(required = false, defaultValue = "0") long page,
                                                        @RequestParam(required = false, defaultValue = "50") long pageSize) {
 
         Domain domain = getDomain();
-        List<BadgeTypeDetail> badgeTypes = badgeTypesRepository.findByDomain(domain)
+        List<BadgeTypeSummary> badgeTypes = badgeTypesRepository.findByDomain(domain)
                 .skip(page * pageSize)
                 .limit(pageSize)
-                .map(outputView(BadgeTypeDetail.class)::from)
+                .map(outputView(BadgeTypeSummary.class)::from)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(badgeTypes);
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<?> create(@RequestBody BadgeType body) {
+    public ResponseEntity<?> create(@RequestBody BadgeTypeDetail body) {
 
         Domain domain = getDomain();
-        BadgeType input = inputView(BadgeType.class).from(body);
+        BadgeType input = inputView(BadgeType.class)
+                .map("previous", orNull(prevKey -> badgeTypesRepository.findByDomainAndKey(domain, (String) prevKey).orElse(null)))
+                .from(body);
         input.setDomain(domain);
 
         BadgeType badgeType = badgeTypesRepository.save(input);
 
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(badgeType.getId())
+                .path("/{key}")
+                .buildAndExpand(badgeType.getKey())
                 .toUri();
 
-        return ResponseEntity.created(uri).body(outputView(BadgeTypeSummary.class).from(badgeType));
+        return ResponseEntity.created(uri).body(outputView(BadgeTypeDetail.class).map("previous", orNull(prev -> ((BadgeType)prev).getKey())).from(badgeType));
     }
 
-    @RequestMapping("/{id}")
-    public ResponseEntity<BadgeTypeDetail> show(@PathVariable long id) {
-        return badgeTypesRepository.findById(id)
+    @RequestMapping("/{key}")
+    public ResponseEntity<BadgeTypeDetail> show(@PathVariable String key) {
+        return badgeTypesRepository.findByDomainAndKey(getDomain(), key)
                 .filter(this::canAccess)
-                .map(badgeType -> outputView(BadgeTypeDetail.class).from(badgeType))
+                .map(badgeType -> outputView(BadgeTypeDetail.class).map("previous", orNull(prev -> ((BadgeType)prev).getKey())).from(badgeType))
                 .map(ResponseEntity::ok)
                 .orElseGet(ResponseEntity.status(HttpStatus.NOT_FOUND)::build);
     }
 
-    @RequestMapping(path = "/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<BadgeTypeSummary> update(@PathVariable long id,
-                                                   @RequestBody BadgeTypeSummary body) {
-        return badgeTypesRepository.findById(id)
+    @RequestMapping(path = "/{key}", method = RequestMethod.PUT)
+    public ResponseEntity<BadgeTypeSummary> update(@PathVariable String key,
+                                                   @RequestBody BadgeTypeDetail body) {
+        return badgeTypesRepository.findByDomainAndKey(getDomain(), key)
                 .filter(this::canAccess)
                 .map(badgeType -> {
-                    updateView(badgeType).with(body);
+                    updateView(badgeType)
+                            .map("previous", orNull(prevKey -> badgeTypesRepository.findByDomainAndKey(getDomain(), (String) prevKey).orElse(null)))
+                            .with(body);
                     return badgeTypesRepository.save(badgeType);
                 })
-                .map(badgeType -> outputView(BadgeTypeSummary.class).from(badgeType))
+                .map(badgeType -> outputView(BadgeTypeSummary.class).map("previous", orNull(prev -> ((BadgeType)prev).getKey())).from(badgeType))
                 .map(ResponseEntity::ok)
                 .orElseGet(ResponseEntity.status(HttpStatus.NOT_FOUND)::build);
     }
 
-    @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<?> delete(@PathVariable long id) {
-        return badgeTypesRepository.findById(id)
+    @RequestMapping(path = "/{key}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> delete(@PathVariable String key) {
+        return badgeTypesRepository.findByDomainAndKey(getDomain(), key)
                 .filter(this::canAccess)
                 .map(badgeType -> {
                     badgeTypesRepository.delete(badgeType);

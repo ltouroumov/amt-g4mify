@@ -3,6 +3,8 @@ package ch.heig.amt.g4mify.api;
 import ch.heig.amt.g4mify.model.Badge;
 import ch.heig.amt.g4mify.model.Domain;
 import ch.heig.amt.g4mify.model.User;
+import ch.heig.amt.g4mify.model.view.badge.BadgeSummary;
+import ch.heig.amt.g4mify.model.view.badgeType.BadgeTypeSummary;
 import ch.heig.amt.g4mify.model.view.user.UserDetail;
 import ch.heig.amt.g4mify.model.view.user.UserSummary;
 import ch.heig.amt.g4mify.repository.UsersRepository;
@@ -68,16 +70,16 @@ public class UsersApi extends AbstractDomainApi {
     }
 
     @RequestMapping("/{pid}")
-    public ResponseEntity<UserDetail> show(@PathVariable String pid) {
+    public ResponseEntity<UserSummary> show(@PathVariable String pid) {
         return usersRepository.findByProfileId(pid)
                 .filter(this::canAccess)
-                .map(outputView(UserDetail.class)::from)
+                .map(outputView(UserSummary.class)::from)
                 .map(ResponseEntity::ok)
                 .orElseGet(ResponseEntity.status(HttpStatus.NOT_FOUND)::build);
     }
 
     @RequestMapping(path = "/{pid}", method = RequestMethod.PUT)
-    public ResponseEntity<UserDetail> update(@PathVariable String pid,
+    public ResponseEntity<UserSummary> update(@PathVariable String pid,
                                              @RequestBody UserDetail body) {
 
         return usersRepository.findByProfileId(pid)
@@ -86,7 +88,7 @@ public class UsersApi extends AbstractDomainApi {
                     updateView(user).with(body);
                     return usersRepository.save(user);
                 })
-                .map(outputView(UserDetail.class)::from)
+                .map(outputView(UserSummary.class)::from)
                 .map(ResponseEntity::ok)
                 .orElseGet(ResponseEntity.status(HttpStatus.NOT_FOUND)::build);
     }
@@ -103,15 +105,16 @@ public class UsersApi extends AbstractDomainApi {
     }
 
     @RequestMapping(path = "/{pid}/badges", method = RequestMethod.GET)
-    public ResponseEntity<List<Badge>> index(@PathVariable String pid,
-                                             @RequestParam(required = false, defaultValue = "0") long page,
-                                             @RequestParam(required = false, defaultValue = "50") long pageSize) {
+    public ResponseEntity<List<BadgeSummary>> index(@PathVariable String pid,
+                                                    @RequestParam(required = false, defaultValue = "0") long page,
+                                                    @RequestParam(required = false, defaultValue = "50") long pageSize) {
         return usersRepository.findByProfileId(pid)
                 .filter(this::canAccess)
                 .map(user -> user.getBadges()
                         .stream()
                         .skip(page * pageSize)
                         .limit(pageSize)
+                        .map(outputView(BadgeSummary.class).map("type", viewMap(BadgeTypeSummary.class))::from)
                         .collect(Collectors.toList())
                 )
                 .map(ResponseEntity::ok)

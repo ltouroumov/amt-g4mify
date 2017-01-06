@@ -5,6 +5,8 @@ package ch.heig.amt.g4mify.model.view.badgeType;
  */
 public class BadgeTypeSummary {
 
+    public String key;
+
     public String name;
 
     public String color;

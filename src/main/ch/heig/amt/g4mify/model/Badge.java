@@ -27,6 +27,10 @@ public class Badge {
     @ManyToOne(optional = false)
     private BadgeType type;
 
+    @Version
+    @Column(nullable = false)
+    private long version = 0;
+
     public long getId() {
         return id;
     }
@@ -61,5 +65,13 @@ public class Badge {
 
     public void setType(BadgeType type) {
         this.type = type;
+    }
+
+    public long getVersion() {
+        return version;
+    }
+
+    public void setVersion(long version) {
+        this.version = version;
     }
 }

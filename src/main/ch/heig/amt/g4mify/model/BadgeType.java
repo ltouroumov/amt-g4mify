@@ -9,12 +9,17 @@ import java.util.List;
  * @created 11/14/16
  */
 @Entity
-@Table(name = "badge_types")
+@Table(name = "badge_types", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"domain_id", "key"})
+})
 public class BadgeType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
+
+    @Column(nullable = false)
+    private String key;
 
     @Column(nullable = false)
     private String name;
@@ -47,6 +52,14 @@ public class BadgeType {
 
     public long getId() {
         return id;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public String getName() {

@@ -5,9 +5,9 @@ package ch.heig.amt.g4mify.dsl
  * @created 1/6/17
  */
 class Award {
-    long id
+    String id
 
-    Award(long id) {
+    Award(String id) {
         this.id = id
     }
 }

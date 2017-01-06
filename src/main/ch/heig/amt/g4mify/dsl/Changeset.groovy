@@ -25,7 +25,7 @@ class Changeset {
         }
     }
 
-    def award(long id) {
+    def award(String id) {
         awards << new Award(id)
     }
 

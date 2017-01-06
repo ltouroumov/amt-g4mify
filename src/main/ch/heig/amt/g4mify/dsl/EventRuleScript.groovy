@@ -20,7 +20,7 @@ abstract class EventRuleScript extends Script {
          set: { long amount -> changeset.update(counter, amount, true) }]
     }
 
-    def award(long badgeType) {
+    def award(String badgeType) {
         changeset.award(badgeType)
     }
 

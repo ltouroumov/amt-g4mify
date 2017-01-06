@@ -5,6 +5,8 @@ package ch.heig.amt.g4mify.model.view.badgeType;
  */
 public class BadgeTypeDetail extends BadgeTypeSummary {
 
-    public long id;
+    public boolean isSingleton;
+
+    public String previous;
 
 }

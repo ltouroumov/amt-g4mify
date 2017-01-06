@@ -49,17 +49,20 @@ public class EventActor extends UntypedActor {
 
     private final BucketsRepository bucketsRepository;
 
-    private final EventRulesRepository eventRulesRepository;
+    private final BadgeTypesRepository badgeTypesRepository;
+
+    private final BadgesRepository badgesRepository;
 
     private final EntityManager em;
 
     @Autowired
-    public EventActor(EventsRepository eventsRepository, CountersRepository countersRepository, MetricsRepository metricsRepository, BucketsRepository bucketsRepository, EventRulesRepository eventRulesRepository, EntityManager em) {
+    public EventActor(EventsRepository eventsRepository, CountersRepository countersRepository, MetricsRepository metricsRepository, BucketsRepository bucketsRepository, BadgeTypesRepository badgeTypesRepository, BadgesRepository badgesRepository, EntityManager em) {
         this.eventsRepository = eventsRepository;
         this.countersRepository = countersRepository;
         this.metricsRepository = metricsRepository;
         this.bucketsRepository = bucketsRepository;
-        this.eventRulesRepository = eventRulesRepository;
+        this.badgeTypesRepository = badgeTypesRepository;
+        this.badgesRepository = badgesRepository;
         this.em = em;
     }
 
@@ -121,7 +124,42 @@ public class EventActor extends UntypedActor {
     }
 
     private void awardBadge(User user, Award award) {
+        BadgeType badgeType = badgeTypesRepository.findByDomainAndKey(user.getDomain(), award.getId())
+                .orElseThrow(() -> new ApiException("Could not find badge type " + award.getId()));
 
+        boolean ok;
+        do {
+            Optional<Badge> instance = badgesRepository.findByUserAndType(user, badgeType);
+            Badge badge = null;
+            if (!instance.isPresent()) {
+                // If the badge has never been awarded
+                // then create and add badge
+
+                badge = new Badge();
+                badge.setUser(user);
+                badge.setType(badgeType);
+                badge.setLevel(1);
+                badge.setAwarded(Timestamp.from(Instant.now()));
+            } else if (instance.isPresent() && !badgeType.isSingleton()) {
+                // If the badge has already been awarded AND the badge-type is not a singleton
+                // then increase badge level
+
+                badge = instance.get();
+                badge.setLevel(badge.getLevel() + 1);
+            }
+
+            if (badge != null) {
+                try {
+                    badgesRepository.save(badge);
+                    ok = true;
+                } catch (OptimisticLockException ex) {
+                    LOG.warning("Concurrent Badge Update, retrying");
+                    ok = false;
+                }
+            } else {
+                ok = true;
+            }
+        } while (!ok);
     }
 
     @Transactional

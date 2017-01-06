@@ -1,21 +1,20 @@
 package ch.heig.amt.g4mify.repository;
 
+import ch.heig.amt.g4mify.model.Badge;
 import ch.heig.amt.g4mify.model.BadgeType;
 import ch.heig.amt.g4mify.model.Domain;
+import ch.heig.amt.g4mify.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
  * Created by Frederic on 12.12.16.
  */
-public interface BadgeTypesRepository extends JpaRepository<BadgeType, Long> {
+public interface BadgesRepository extends JpaRepository<Badge, Long> {
 
-    Stream<BadgeType> findByDomain(Domain domain);
-
-    Optional<BadgeType> findById(long id);
-
-    Optional<BadgeType> findByDomainAndKey(Domain domain, String key);
+    Optional<Badge> findByUserAndType(User user, BadgeType badgeType);
 
 }

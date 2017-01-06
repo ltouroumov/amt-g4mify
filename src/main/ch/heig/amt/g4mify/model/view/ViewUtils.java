@@ -1,6 +1,7 @@
 package ch.heig.amt.g4mify.model.view;
 
 import com.google.common.collect.Lists;
+import net.bytebuddy.asm.Advice;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -40,6 +41,10 @@ public class ViewUtils {
 
     public static Function<Object, Object> viewMap(Class<?> viewClass) {
         return item -> outputView(viewClass).from(item);
+    }
+
+    public static Function<Object, Object> orNull(Function<Object, Object> mapper) {
+        return value -> value != null ? mapper.apply(value) : null;
     }
 
     public static Set<String> fieldsOf(Object... obj) {
