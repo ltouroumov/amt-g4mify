@@ -17,6 +17,8 @@ public class UtilsApiTest {
     public static final int AFTER = 0;
     public static final int AFTER_CLASS = 1;
 
+    private static String domainName = "TestDomain";
+
     public static Domain baseDomainInit(int type){
         System.out.print("\n");
         if(type == BEFORE){
@@ -28,11 +30,14 @@ public class UtilsApiTest {
         }
         HttpTestRequest request = new HttpTestRequest();
         Gson gson = new Gson();
-        TestResponse response = request.test("/register", "{\"name\": \"TestDomain\"}", null, "POST");
+        TestResponse response = request.test("/register", "{\"name\": \"" + domainName + "\"}", null, null, "POST");
         if(isError(response)) return null;
         Domain testDomain = gson.fromJson(response.getBody(), Domain.class);
-        System.out.println("Name: " + testDomain.getName() + " // Id: " + testDomain.getId() + " // Key: " + testDomain.getKey());
-        assertEquals(201, response.getStatusCode());
+        if(response.getStatusCode() == 201){
+            System.out.println("Correctly create a new domain with name " + domainName + " and ID " + testDomain.getId());
+        }else{
+            throw new RuntimeException("Couldn't create a new domain! Please run the RegisterApiTest test class!");
+        }
         return testDomain;
     }
 
@@ -48,10 +53,12 @@ public class UtilsApiTest {
         HttpTestRequest request = new HttpTestRequest();
         HashMap<String, String> headers = new HashMap<>();
         headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
-        TestResponse response = request.test("/api/domain", null, headers, "DELETE");
+        TestResponse response = request.test("/api/domain", null, null, headers, "DELETE");
         if(isError(response)) return;
         if(response.getStatusCode() == 200){
             System.out.println("Correctly deleted domain " + testDomain.getId());
+        }else{
+            throw new RuntimeException("Couldn't delete the domain " + testDomain.getId() + "! Please run the DomainApiTest test class!");
         }
         assertEquals(200, response.getStatusCode());
     }
