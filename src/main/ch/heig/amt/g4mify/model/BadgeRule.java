@@ -16,8 +16,8 @@ public class BadgeRule {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @ManyToMany()
-    private List<Counter> badgeTypes;
+    @ManyToMany(mappedBy = "badgeRules")
+    private List<Counter> depends;
 
     @Column(nullable = false)
     private String condition;
@@ -29,7 +29,7 @@ public class BadgeRule {
     private Domain domain;
 
     public BadgeRule() {
-        this.badgeTypes = new ArrayList<>();
+        this.depends = new ArrayList<>();
     }
 
     public long getId() {
@@ -60,7 +60,7 @@ public class BadgeRule {
         this.grants = grants;
     }
 
-    public List<Counter> getBadgeTypes() {
-        return badgeTypes;
+    public List<Counter> getDepends() {
+        return depends;
     }
 }

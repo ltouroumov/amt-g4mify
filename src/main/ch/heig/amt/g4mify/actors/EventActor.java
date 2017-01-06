@@ -25,8 +25,10 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,16 +55,19 @@ public class EventActor extends UntypedActor {
 
     private final BadgesRepository badgesRepository;
 
+    private final BadgeRulesRepository badgeRulesRepository;
+
     private final EntityManager em;
 
     @Autowired
-    public EventActor(EventsRepository eventsRepository, CountersRepository countersRepository, MetricsRepository metricsRepository, BucketsRepository bucketsRepository, BadgeTypesRepository badgeTypesRepository, BadgesRepository badgesRepository, EntityManager em) {
+    public EventActor(EventsRepository eventsRepository, CountersRepository countersRepository, MetricsRepository metricsRepository, BucketsRepository bucketsRepository, BadgeTypesRepository badgeTypesRepository, BadgesRepository badgesRepository, BadgeRulesRepository badgeRulesRepository, EntityManager em) {
         this.eventsRepository = eventsRepository;
         this.countersRepository = countersRepository;
         this.metricsRepository = metricsRepository;
         this.bucketsRepository = bucketsRepository;
         this.badgeTypesRepository = badgeTypesRepository;
         this.badgesRepository = badgesRepository;
+        this.badgeRulesRepository = badgeRulesRepository;
         this.em = em;
     }
 
@@ -86,21 +91,30 @@ public class EventActor extends UntypedActor {
         query.setParameter(1, event.getType());
         query.setParameter(2, event.getUser().getDomain().getId());
 
-        List<EventRule> rules = query.getResultList();
+        List<EventRule> eventRules = query.getResultList();
 
         Changeset totalChanges = new Changeset();
-        for (EventRule rule : rules) {
-            Changeset ruleChanges = processRule(rule, event);
+        for (EventRule rule : eventRules) {
+            Changeset ruleChanges = processEventRule(rule, event);
             totalChanges.merge(ruleChanges);
         }
 
-        applyChangeset(user, totalChanges);
+        Set<Counter> updatedCounters = applyChangeset(user, totalChanges);
+        Set<BadgeRule> badgeRules = new HashSet<>();
+        for (Counter counter : updatedCounters) {
+            List<BadgeRule> rules = badgeRulesRepository.findByDomainAndCounter(user.getDomain(), counter);
+            badgeRules.addAll(rules);
+        }
+
+        for (BadgeRule rule : badgeRules) {
+            processBadgeRule(user, rule);
+        }
 
         event.setProcessed(Timestamp.from(Instant.now()));
         eventsRepository.save(event);
     }
 
-    private Changeset processRule(EventRule rule, Event event) {
+    private Changeset processEventRule(EventRule rule, Event event) {
         Binding binding = new Binding();
         binding.setVariable("event", event);
 
@@ -113,14 +127,32 @@ public class EventActor extends UntypedActor {
         return (Changeset)shell.evaluate(rule.getScript());
     }
 
-    private void applyChangeset(User user, Changeset changes) {
+    private void processBadgeRule(User user, BadgeRule rule) {
+        Binding binding = new Binding();
+
+        CompilerConfiguration configuration = new CompilerConfiguration();
+        configuration.setScriptBaseClass("ch.heig.amt.g4mify.dsl.BadgeRuleScript");
+
+        //TODO: Implement basic security -_-
+        //TODO: Setup a secure class loader
+        GroovyShell shell = new GroovyShell(getClass().getClassLoader(), binding, configuration);
+        return (Changeset)shell.evaluate(rule.getScript());
+    }
+
+    private Set<Counter> applyChangeset(User user, Changeset changes) {
+        // Update buckets
+        Set<Counter> updatedCounters = new HashSet<>();
         for (CounterUpdate update : changes.updates.values()) {
-            updateBucket(user, update);
+            Counter updated = updateBucket(user, update);
+            updatedCounters.add(updated);
         }
 
+        // Award badges
         for (Award award : changes.awards) {
             awardBadge(user, award);
         }
+
+        return updatedCounters;
     }
 
     private void awardBadge(User user, Award award) {
@@ -163,7 +195,7 @@ public class EventActor extends UntypedActor {
     }
 
     @Transactional
-    private void updateBucket(User user, CounterUpdate update) {
+    private Counter updateBucket(User user, CounterUpdate update) {
         Metric metric = findMetric(user.getDomain(), update.counter);
 
         ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
@@ -197,6 +229,8 @@ public class EventActor extends UntypedActor {
                 ok = false;
             }
         } while (!ok);
+
+        return metric.getCounter();
     }
 
     private static final Pattern counterPattern = Pattern.compile("^(\\w+)(.(\\w+))?$");

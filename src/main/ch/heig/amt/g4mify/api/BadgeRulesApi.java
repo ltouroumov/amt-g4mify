@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.transaction.Transactional;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,6 +35,7 @@ public class BadgeRulesApi extends AbstractDomainApi {
     private BadgeTypesRepository badgeTypesRepository;
 
     @RequestMapping(method = RequestMethod.GET)
+    @Transactional
     public ResponseEntity<List<BadgeRuleDetail>> index(@RequestParam(required = false, defaultValue = "0") long page,
                                                        @RequestParam(required = false, defaultValue = "50") long pageSize) {
 
@@ -53,7 +55,7 @@ public class BadgeRulesApi extends AbstractDomainApi {
 
         Domain domain = getDomain();
         BadgeRule input = inputView(BadgeRule.class)
-                .map("grants", badgeTypeId -> badgeTypesRepository.findOne((long)badgeTypeId))
+                .map("grants", badgeKey -> badgeTypesRepository.findByDomainAndKey(domain, (String) badgeKey).orElse(null))
                 .from(body);
         input.setDomain(domain);
 
@@ -103,7 +105,7 @@ public class BadgeRulesApi extends AbstractDomainApi {
         if (canAccess(badgeRule)) {
 
             updateView(badgeRule)
-                    .map("grants", badgeTypeId -> badgeTypesRepository.findOne((long)badgeTypeId))
+                    .map("grants", badgeKey -> badgeTypesRepository.findByDomainAndKey(getDomain(), (String) badgeKey).orElse(null))
                     .with(body);
 
             if(badgeRule.getGrants() == null){

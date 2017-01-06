@@ -7,6 +7,6 @@ public class BadgeRuleSummary {
 
     public String condition;
 
-    public long grants;
+    public String grants;
 
 }
