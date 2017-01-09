@@ -23,7 +23,7 @@ sourceSets {
     }
     test {
         java.srcDirs = []
-        groovy.srcDirs = ['src/main']
+        groovy.srcDirs = ['src/test']
         resources.srcDirs = ['res/test']
     }
 }
