@@ -41,16 +41,24 @@
 	- WeShouldBeAbleToUpdateABadge
 	- WeShouldBeAbleToDeleteABadge
 
-6. rules-api:
-	- WeShouldBeAbleToGetAllTheRules
-	- WeShouldBeAbleToCreateARule
-	- WeShouldBeAbleToGetARule
-	- WeShouldBeAbleToUpdateARule
-	- WeShouldBeAbleToDeleteARule
+6. badge-rules-api:
+	- WeShouldBeAbleToGetAllBadgeRules
+	- WeShouldBeAbleToCreateABadgeRule
+	- WeShouldBeAbleToGetABadgeRule
+	- WeShouldBeAbleToUpdateABadgeRule
+	- WeShouldBeAbleToDeleteABadgeRule
 
-7. events:
+7. rules-api:
+	- WeShouldBeAbleToGetAllEventRules
+	- WeShouldBeAbleToCreateAnEventRule
+	- WeShouldBeAbleToGetAnEventRule
+	- WeShouldBeAbleToUpdateAnEventRule
+	- WeShouldBeAbleToDeleteAnEventRule
 
-8. users-api:
+8. events:
+	- WeShouldBeAbleToPublishAnEvent
+
+9. users-api:
 	- WeShouldBeAbleToGetAllTheUsers
 	- WeShouldBeAbleToCreateAUser
 	- WeShouldBeAbleToGetAUser
