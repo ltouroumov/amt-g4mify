@@ -48,8 +48,6 @@ public class UsersApiTest {
 
         testUser = gson.fromJson(response.getBody(), User.class);
 
-        //System.out.println("Profile Id: " + testUser.getProfileId() + " // Profile Url: " + testUser.getProfileUrl() + " // Id: " + testUser.getId());
-
         assertEquals(201, response.getStatusCode());
     }
 
@@ -68,14 +66,13 @@ public class UsersApiTest {
 
         User[] users = gson.fromJson(response.getBody(), User[].class);
 
-        //System.out.println("Profile Id: " + users[0].getProfileId() + " // Profile Url: " + users[0].getProfileUrl()+ " // Id: " + users[0].getId());
-
         assertEquals(testUser.getProfileId(), users[0].getProfileId());
         assertEquals(testUser.getProfileUrl(), users[0].getProfileUrl());
         assertEquals(testUser.getId(), users[0].getId());
     }
 
-    public void putUser(int id) {
+    @Test
+    public void putUser() {
         System.out.println("-- " + name.getMethodName() + " --");
 
         HttpTestRequest request = new HttpTestRequest();
@@ -85,19 +82,60 @@ public class UsersApiTest {
 
         String body = "{\n" +
                 "  \"badges\": [],\n" +
-                "  \"id\": 0,\n" +
+                "  \"id\": "+ testUser.getId() +",\n" +
                 "  \"profileId\": \"Picsou Duck\",\n" +
                 "  \"profileUrl\": \"pduck\"\n" +
                 "}";
 
-        TestResponse response = request.test("/api/users", body, null, headers, "PUT");
+        TestResponse response = request.test("/api/users/"+testUser.getProfileId(), body, null, headers, "PUT");
 
+        if(HttpTestRequest.isError(response))
+            return;
 
+        User user = gson.fromJson(response.getBody(), User.class);
+
+        assertEquals("Picsou Duck", user.getProfileId());
+        assertEquals("pduck", user.getProfileUrl());
+        assertEquals(testUser.getId(), user.getId());
     }
 
-    // getUser(id)
+    public void getUser() {
+        System.out.println("-- " + name.getMethodName() + " --");
+
+        HttpTestRequest request = new HttpTestRequest();
+        Gson gson = new Gson();
+        HashMap<String, String> headers = new HashMap<>();
+        headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
+        TestResponse response = request.test("/api/users/"+testUser.getProfileId(), null, null, headers, "GET");
+
+        if (HttpTestRequest.isError(response))
+            return;
+
+        User user = gson.fromJson(response.getBody(), User.class);
+
+        assertEquals(testUser.getProfileId(), user.getProfileId());
+        assertEquals(testUser.getProfileUrl(), user.getProfileUrl());
+        assertEquals(testUser.getId(), user.getId());
+    }
 
     // getUserBadges(id)
+
+    @After
+    public void after() {
+        System.out.println("-- AFTER --");
+
+        HttpTestRequest request = new HttpTestRequest();
+        Gson gson = new Gson();
+        HashMap<String, String> headers = new HashMap<>();
+        headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
+
+        TestResponse response = request.test("/api/users/"+testUser.getProfileId(), null, null, headers, "DELETE");
+
+        if(HttpTestRequest.isError(response))
+            return;
+
+        assertEquals(200, response.getStatusCode());
+    }
 
     @AfterClass
     public static void afterClass() {
