@@ -1,4 +1,4 @@
-package ch.heig.amt.g4mify.dsl
+package ch.heig.amt.g4mify.dsl.api
 
 import java.util.logging.Logger
 

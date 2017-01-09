@@ -2,8 +2,6 @@ package ch.heig.amt.g4mify.api;
 
 import ch.heig.amt.g4mify.model.Domain;
 import ch.heig.amt.g4mify.model.EventRule;
-import ch.heig.amt.g4mify.model.view.badgeRule.BadgeRuleDetail;
-import ch.heig.amt.g4mify.model.view.badgeRule.BadgeRuleOutputView;
 import ch.heig.amt.g4mify.model.view.eventRule.EventRuleDetail;
 import ch.heig.amt.g4mify.model.view.eventRule.EventRuleOutputView;
 import ch.heig.amt.g4mify.model.view.eventRule.EventRuleSummary;
@@ -15,9 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.persistence.Entity;
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.net.URI;
 import java.util.List;

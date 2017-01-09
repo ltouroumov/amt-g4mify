@@ -71,7 +71,7 @@ public class UsersApi extends AbstractDomainApi {
 
     @RequestMapping("/{pid}")
     public ResponseEntity<UserSummary> show(@PathVariable String pid) {
-        return usersRepository.findByProfileId(pid)
+        return usersRepository.findByDomainAndProfileId(getDomain(), pid)
                 .filter(this::canAccess)
                 .map(outputView(UserSummary.class)::from)
                 .map(ResponseEntity::ok)
@@ -82,7 +82,7 @@ public class UsersApi extends AbstractDomainApi {
     public ResponseEntity<UserSummary> update(@PathVariable String pid,
                                              @RequestBody UserDetail body) {
 
-        return usersRepository.findByProfileId(pid)
+        return usersRepository.findByDomainAndProfileId(getDomain(), pid)
                 .filter(this::canAccess)
                 .map(user -> {
                     updateView(user).with(body);
@@ -95,7 +95,7 @@ public class UsersApi extends AbstractDomainApi {
 
     @RequestMapping(path = "/{pid}", method = RequestMethod.DELETE)
     public ResponseEntity<?> delete(@PathVariable String pid) {
-        return usersRepository.findByProfileId(pid)
+        return usersRepository.findByDomainAndProfileId(getDomain(), pid)
                 .filter(this::canAccess)
                 .map(user -> {
                     usersRepository.delete(user);
@@ -108,7 +108,7 @@ public class UsersApi extends AbstractDomainApi {
     public ResponseEntity<List<BadgeSummary>> index(@PathVariable String pid,
                                                     @RequestParam(required = false, defaultValue = "0") long page,
                                                     @RequestParam(required = false, defaultValue = "50") long pageSize) {
-        return usersRepository.findByProfileId(pid)
+        return usersRepository.findByDomainAndProfileId(getDomain(), pid)
                 .filter(this::canAccess)
                 .map(user -> user.getBadges()
                         .stream()

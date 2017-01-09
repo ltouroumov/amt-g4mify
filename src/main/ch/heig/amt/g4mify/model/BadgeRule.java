@@ -16,7 +16,7 @@ public class BadgeRule {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @ManyToMany(mappedBy = "badgeRules")
+    @ManyToMany(cascade = CascadeType.ALL)
     private List<Counter> depends;
 
     @Column(nullable = false)

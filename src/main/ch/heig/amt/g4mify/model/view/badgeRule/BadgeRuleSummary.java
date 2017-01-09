@@ -5,6 +5,8 @@ package ch.heig.amt.g4mify.model.view.badgeRule;
  */
 public class BadgeRuleSummary {
 
+    public long id;
+
     public String condition;
 
     public String grants;

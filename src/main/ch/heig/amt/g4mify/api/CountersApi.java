@@ -5,7 +5,7 @@ import ch.heig.amt.g4mify.model.Domain;
 import ch.heig.amt.g4mify.model.Metric;
 import ch.heig.amt.g4mify.model.view.OutputView;
 import ch.heig.amt.g4mify.model.view.counter.CounterSummary;
-import ch.heig.amt.g4mify.model.view.counter.CounterUpdate;
+import ch.heig.amt.g4mify.model.view.counter.CounterUpdateView;
 import ch.heig.amt.g4mify.model.view.metric.MetricSummary;
 import ch.heig.amt.g4mify.repository.CountersRepository;
 import ch.heig.amt.g4mify.repository.MetricsRepository;
@@ -54,7 +54,7 @@ public class CountersApi extends AbstractDomainApi {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<?> create(@RequestBody CounterUpdate body) {
+    public ResponseEntity<?> create(@RequestBody CounterUpdateView body) {
 
         Domain domain = getDomain();
         Counter input = inputView(Counter.class).from(body);
@@ -93,7 +93,7 @@ public class CountersApi extends AbstractDomainApi {
 
     @RequestMapping(path = "/{name}", method = RequestMethod.PUT)
     public ResponseEntity<CounterSummary> update(@PathVariable String name,
-                                                 @RequestBody CounterUpdate body) {
+                                                 @RequestBody CounterUpdateView body) {
         return countersRepository.findByDomainAndName(getDomain(), name)
                 .filter(this::canAccess)
                 .map(counter -> {

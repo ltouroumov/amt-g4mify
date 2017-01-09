@@ -31,6 +31,9 @@ public class Domain {
     @OneToMany(mappedBy = "domain", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BadgeRule> badgeRules;
 
+    @OneToMany(mappedBy = "domain", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EventRule> eventRules;
+
     public Domain() {
         this.users = new ArrayList<>();
         this.counters = new ArrayList<>();
@@ -67,5 +70,9 @@ public class Domain {
 
     public List<BadgeRule> getBadgeRules() {
         return badgeRules;
+    }
+
+    public List<EventRule> getEventRules() {
+        return eventRules;
     }
 }

@@ -27,8 +27,8 @@ public class Counter {
     @OneToMany(mappedBy = "counter", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Metric> metrics = new ArrayList<>();
 
-    @ManyToMany
-    private List<BadgeRule> badgeRules;
+    /*@ManyToMany(mappedBy = "depends")
+    private List<BadgeRule> badgeRules;*/
 
     public long getId() {
         return id;
@@ -61,4 +61,5 @@ public class Counter {
     public void setMetrics(List<Metric> metrics) {
         this.metrics = metrics;
     }
+
 }

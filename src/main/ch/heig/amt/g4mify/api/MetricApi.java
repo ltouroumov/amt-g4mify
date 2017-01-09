@@ -98,7 +98,7 @@ public class MetricApi extends AbstractDomainApi {
 
     }
 
-    @RequestMapping(path = "/{id}", method = RequestMethod.PUT)
+    @RequestMapping(path = "/{metricName}", method = RequestMethod.PUT)
     public ResponseEntity<MetricSummary> update(@PathVariable String counterName,
                                                 @PathVariable String metricName,
                                                 @RequestBody MetricUpdate body) {
@@ -110,7 +110,7 @@ public class MetricApi extends AbstractDomainApi {
 
     }
 
-    @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(path = "/{metricName}", method = RequestMethod.DELETE)
     public ResponseEntity<?> delete(@PathVariable String counterName,
                                     @PathVariable String metricName) {
 

@@ -1,13 +1,17 @@
 package ch.heig.amt.g4mify.api;
 
+import ch.heig.amt.g4mify.dsl.BadgeRuleEvaluator;
+import ch.heig.amt.g4mify.model.BadgeType;
+import ch.heig.amt.g4mify.model.Counter;
 import ch.heig.amt.g4mify.model.Domain;
 import ch.heig.amt.g4mify.model.BadgeRule;
+import ch.heig.amt.g4mify.model.view.OutputView;
 import ch.heig.amt.g4mify.model.view.badgeType.BadgeTypeSummary;
 import ch.heig.amt.g4mify.model.view.badgeRule.BadgeRuleDetail;
-import ch.heig.amt.g4mify.model.view.badgeRule.BadgeRuleOutputView;
 import ch.heig.amt.g4mify.model.view.badgeRule.BadgeRuleSummary;
 import ch.heig.amt.g4mify.repository.BadgeTypesRepository;
 import ch.heig.amt.g4mify.repository.BadgeRulesRepository;
+import ch.heig.amt.g4mify.util.CounterSpecResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +21,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.transaction.Transactional;
 import java.net.URI;
 import java.util.List;
+import java.util.Set;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static ch.heig.amt.g4mify.model.view.ViewUtils.*;
@@ -29,28 +35,35 @@ import static ch.heig.amt.g4mify.model.view.ViewUtils.*;
 @RequestMapping("/api/badge-rules")
 public class BadgeRulesApi extends AbstractDomainApi {
 
+    private static final Logger LOG = Logger.getLogger(BadgeRulesApi.class.getName());
+
     @Autowired
     private BadgeRulesRepository badgeRulesRepository;
     @Autowired
     private BadgeTypesRepository badgeTypesRepository;
+    @Autowired
+    private CounterSpecResolver counterSpecResolver;
+
+    private BadgeRuleEvaluator badgeRuleEvaluator = new BadgeRuleEvaluator();
 
     @RequestMapping(method = RequestMethod.GET)
     @Transactional
-    public ResponseEntity<List<BadgeRuleDetail>> index(@RequestParam(required = false, defaultValue = "0") long page,
-                                                       @RequestParam(required = false, defaultValue = "50") long pageSize) {
+    public ResponseEntity<List<BadgeRuleSummary>> index(@RequestParam(required = false, defaultValue = "0") long page,
+                                                        @RequestParam(required = false, defaultValue = "50") long pageSize) {
 
         Domain domain = getDomain();
-        List<BadgeRuleDetail> rules = badgeRulesRepository.findByDomain(domain)
+        List<BadgeRuleSummary> rules = badgeRulesRepository.findByDomain(domain)
                 .skip(page * pageSize)
                 .limit(pageSize)
-                .map(outputView(BadgeRuleDetail.class)::from)
+                .map(outputView(BadgeRuleSummary.class)
+                        .map("grants", grant -> ((BadgeType) grant).getKey())::from)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(rules);
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<?> create(@RequestBody BadgeRuleSummary body) {
+    public ResponseEntity<BadgeRuleDetail> create(@RequestBody BadgeRuleSummary body) {
 
 
         Domain domain = getDomain();
@@ -63,6 +76,13 @@ public class BadgeRulesApi extends AbstractDomainApi {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
+        Set<String> counters = badgeRuleEvaluator.findCounters(input);
+        for (String counterSpec : counters) {
+            Counter counter = counterSpecResolver.findCounter(domain, counterSpec);
+            input.getDepends().add(counter);
+        }
+
+
         BadgeRule badgeRule = badgeRulesRepository.save(input);
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -70,13 +90,11 @@ public class BadgeRulesApi extends AbstractDomainApi {
                 .buildAndExpand(badgeRule.getId())
                 .toUri();
 
-        return ResponseEntity.created(uri).body(outputView(BadgeRuleOutputView.class)
-                .map("grants", viewMap(BadgeTypeSummary.class))
-                .from(badgeRule));
+        return ResponseEntity.created(uri).body(getView().from(badgeRule));
     }
 
     @RequestMapping("/{id}")
-    public ResponseEntity<?> show(@PathVariable long id) {
+    public ResponseEntity<BadgeRuleDetail> show(@PathVariable long id) {
 
         BadgeRule badgeRule = badgeRulesRepository.findOne(id);
 
@@ -85,16 +103,14 @@ public class BadgeRulesApi extends AbstractDomainApi {
         }
 
         if (canAccess(badgeRule)) {
-            return ResponseEntity.ok(outputView(BadgeRuleOutputView.class)
-                    .map("grants", viewMap(BadgeTypeSummary.class))
-                    .from(badgeRule));
+            return ResponseEntity.ok(getView().from(badgeRule));
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
     }
 
     @RequestMapping(path = "/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<BadgeRuleOutputView> update(@PathVariable long id, @RequestBody BadgeRuleSummary body) {
+    public ResponseEntity<BadgeRuleDetail> update(@PathVariable long id, @RequestBody BadgeRuleSummary body) {
 
         BadgeRule badgeRule = badgeRulesRepository.findOne(id);
 
@@ -114,9 +130,7 @@ public class BadgeRulesApi extends AbstractDomainApi {
 
             badgeRulesRepository.save(badgeRule);
 
-            return ResponseEntity.ok(outputView(BadgeRuleOutputView.class)
-                    .map("grants", viewMap(BadgeTypeSummary.class))
-                    .from(badgeRule));
+            return ResponseEntity.ok(getView().from(badgeRule));
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -137,6 +151,12 @@ public class BadgeRulesApi extends AbstractDomainApi {
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
+    }
+
+    private OutputView<BadgeRuleDetail> getView() {
+        return outputView(BadgeRuleDetail.class)
+                .map("depends", mapList(dep -> ((Counter)dep).getName()))
+                .map("grants", viewMap(BadgeTypeSummary.class));
     }
 
     private boolean canAccess(BadgeRule badgeRule) {

@@ -1,4 +1,4 @@
-package ch.heig.amt.g4mify.dsl
+package ch.heig.amt.g4mify.dsl.api
 
 /**
  * @author ldavid
