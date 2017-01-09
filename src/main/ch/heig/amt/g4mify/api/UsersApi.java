@@ -8,8 +8,13 @@ import ch.heig.amt.g4mify.model.view.badgeType.BadgeTypeSummary;
 import ch.heig.amt.g4mify.model.view.user.UserDetail;
 import ch.heig.amt.g4mify.model.view.user.UserSummary;
 import ch.heig.amt.g4mify.repository.UsersRepository;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -27,12 +32,19 @@ import static ch.heig.amt.g4mify.model.view.ViewUtils.*;
  */
 @RestController
 @RequestMapping("/api/users")
+@Api(value = "users", description = "Handles CRUD operations on users")
 public class UsersApi extends AbstractDomainApi {
 
     @Autowired
     private UsersRepository usersRepository;
 
+
     @RequestMapping(method = RequestMethod.GET)
+    @ApiOperation(value = "Retrieves all users from the domain", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Ok"),
+            @ApiResponse(code = 404, message = "Not found"),
+            @ApiResponse(code = 500, message = "Error retrieving users from the domain")})
     public ResponseEntity<List<UserSummary>> index(@RequestParam(required = false, defaultValue = "0") long page,
                                                    @RequestParam(required = false, defaultValue = "50") long pageSize) {
 
@@ -47,6 +59,11 @@ public class UsersApi extends AbstractDomainApi {
     }
 
     @RequestMapping(method = RequestMethod.POST)
+    @ApiOperation(value = "Creates a new user in the domain", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiResponses({
+            @ApiResponse(code = 201, message = "Created"),
+            @ApiResponse(code = 404, message = "Not found"),
+            @ApiResponse(code = 500, message = "Error creating user in the domain")})
     public ResponseEntity<?> create(@RequestBody UserSummary body) {
 
         Domain domain = getDomain();
@@ -69,7 +86,12 @@ public class UsersApi extends AbstractDomainApi {
         }
     }
 
-    @RequestMapping("/{pid}")
+    @RequestMapping(value = "/{pid}", method = RequestMethod.GET)
+    @ApiOperation(value = "Retrieves a particular user from the domain", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Ok"),
+            @ApiResponse(code = 404, message = "Not found"),
+            @ApiResponse(code = 500, message = "Error retrieving the user from the domain")})
     public ResponseEntity<UserSummary> show(@PathVariable String pid) {
         return usersRepository.findByDomainAndProfileId(getDomain(), pid)
                 .filter(this::canAccess)
@@ -79,6 +101,13 @@ public class UsersApi extends AbstractDomainApi {
     }
 
     @RequestMapping(path = "/{pid}", method = RequestMethod.PUT)
+    @ApiOperation(value = "Updates a particular user in the domain",
+            produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Ok"),
+            @ApiResponse(code = 404, message = "Not found"),
+            @ApiResponse(code = 500, message = "Error updating the user in the domain")})
     public ResponseEntity<UserSummary> update(@PathVariable String pid,
                                              @RequestBody UserDetail body) {
 
@@ -93,7 +122,12 @@ public class UsersApi extends AbstractDomainApi {
                 .orElseGet(ResponseEntity.status(HttpStatus.NOT_FOUND)::build);
     }
 
-    @RequestMapping(path = "/{pid}", method = RequestMethod.DELETE)
+    @RequestMapping(method = RequestMethod.DELETE, path = "/{pid}")
+    @ApiOperation(value = "Deletes a particular user from the domain")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Ok"),
+            @ApiResponse(code = 404, message = "Not found"),
+            @ApiResponse(code = 500, message = "Error deleting the user from the domain")})
     public ResponseEntity<?> delete(@PathVariable String pid) {
         return usersRepository.findByDomainAndProfileId(getDomain(), pid)
                 .filter(this::canAccess)
@@ -105,6 +139,11 @@ public class UsersApi extends AbstractDomainApi {
     }
 
     @RequestMapping(path = "/{pid}/badges", method = RequestMethod.GET)
+    @ApiOperation(value = "Retrieves all badges from a particular user in the domain")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Ok"),
+            @ApiResponse(code = 404, message = "Not found"),
+            @ApiResponse(code = 500, message = "Error retrieving badges from a particular user in the domain")})
     public ResponseEntity<List<BadgeSummary>> index(@PathVariable String pid,
                                                     @RequestParam(required = false, defaultValue = "0") long page,
                                                     @RequestParam(required = false, defaultValue = "50") long pageSize) {
