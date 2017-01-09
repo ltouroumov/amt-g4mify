@@ -25,14 +25,16 @@ import static ch.heig.amt.g4mify.model.view.ViewUtils.outputView;
  * @created 12/5/16
  */
 @RestController
-@Api(value = "register", description = "Handles Domain Registration", produces = MediaType.APPLICATION_JSON_VALUE)
+@Api(value = "register", description = "Handles domain registration")
 public class RegisterApi {
 
     @Autowired
     private DomainsRepository domainsRepository;
 
     @RequestMapping(path = "/register", method = RequestMethod.POST)
-    @ApiOperation(value = "Register a new Domain")
+    @ApiOperation(value = "Registers a new Domain",
+            produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiResponses({
             @ApiResponse(code = 201, message = "Created"),
             @ApiResponse(code = 500, message = "Error during creation")
@@ -46,16 +48,4 @@ public class RegisterApi {
         return ResponseEntity.status(HttpStatus.CREATED).body(outputView(DomainSummary.class).from(domain));
 
     }
-
-    /*
-    @RequestMapping(path = "/purge", method = RequestMethod.POST)
-    @ApiOperation(value = "Purges database")
-    @ApiResponses({
-            @ApiResponse(code = 200, message = "Purged")
-    })
-    public ResponseEntity<?> purge() {
-        domainsRepository.deleteAll();
-        return ResponseEntity.ok(null);
-    }
-    */
 }

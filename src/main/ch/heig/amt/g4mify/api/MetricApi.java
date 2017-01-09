@@ -7,9 +7,14 @@ import ch.heig.amt.g4mify.model.view.metric.MetricSummary;
 import ch.heig.amt.g4mify.model.view.metric.MetricUpdate;
 import ch.heig.amt.g4mify.repository.CountersRepository;
 import ch.heig.amt.g4mify.repository.MetricsRepository;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -27,6 +32,7 @@ import static ch.heig.amt.g4mify.model.view.ViewUtils.*;
  */
 @RestController
 @RequestMapping("/api/counters/{counterName}/metrics")
+@Api(value = "metrics", description = "Handles CRUD operations on metrics")
 public class MetricApi extends AbstractDomainApi {
 
     @Autowired
@@ -36,6 +42,11 @@ public class MetricApi extends AbstractDomainApi {
     private MetricsRepository metricsRepository;
 
     @RequestMapping(method = RequestMethod.GET)
+    @ApiOperation(value = "Retrieves a particular metric from the domain", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Ok"),
+            @ApiResponse(code = 404, message = "Not found"),
+            @ApiResponse(code = 500, message = "Error retrieving metric from the domain")})
     public ResponseEntity<List<MetricSummary>> index(@PathVariable String counterName,
                                                      @RequestParam(required = false, defaultValue = "0") long page,
                                                      @RequestParam(required = false, defaultValue = "50") long pageSize) {
@@ -59,6 +70,12 @@ public class MetricApi extends AbstractDomainApi {
     }
 
     @RequestMapping(method = RequestMethod.POST)
+    @ApiOperation(value = "Creates a new metric in the domain",
+            produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiResponses({
+            @ApiResponse(code = 201, message = "Created"),
+            @ApiResponse(code = 500, message = "Error creating the metric in the domain")})
     public ResponseEntity<?> create(@PathVariable String counterName,
                                     @RequestBody MetricUpdate body) {
         Domain domain = getDomain();
@@ -88,7 +105,12 @@ public class MetricApi extends AbstractDomainApi {
 
     }
 
-    @RequestMapping("/{metricName}")
+    @RequestMapping(value = "/{metricName}", method = RequestMethod.GET)
+    @ApiOperation(value = "Retrieve a particular metric from the domain", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiResponses({
+            @ApiResponse(code = 201, message = "Created"),
+            @ApiResponse(code = 404, message = "Not found"),
+            @ApiResponse(code = 500, message = "Error retrieving the metric from the domain")})
     public ResponseEntity<MetricSummary> show(@PathVariable String counterName,
                                               @PathVariable String metricName) {
 
@@ -99,6 +121,13 @@ public class MetricApi extends AbstractDomainApi {
     }
 
     @RequestMapping(path = "/{metricName}", method = RequestMethod.PUT)
+    @ApiOperation(value = "Update a particular metric from the domain",
+            produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiResponses({
+            @ApiResponse(code = 201, message = "Created"),
+            @ApiResponse(code = 404, message = "Not found"),
+            @ApiResponse(code = 500, message = "Error updating the metric from the domain")})
     public ResponseEntity<MetricSummary> update(@PathVariable String counterName,
                                                 @PathVariable String metricName,
                                                 @RequestBody MetricUpdate body) {
@@ -111,6 +140,11 @@ public class MetricApi extends AbstractDomainApi {
     }
 
     @RequestMapping(path = "/{metricName}", method = RequestMethod.DELETE)
+    @ApiOperation(value = "Delete a particular metric from the domain")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Ok"),
+            @ApiResponse(code = 404, message = "Not found"),
+            @ApiResponse(code = 500, message = "Error deleting the metric from the domain")})
     public ResponseEntity<?> delete(@PathVariable String counterName,
                                     @PathVariable String metricName) {
 
