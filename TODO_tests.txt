@@ -12,7 +12,7 @@
 	- WeShouldBeAbleToDeleteADomain
 	We can't delete others ID because of the authentification filter in any case. No mandatory test for check it. (Check the WeShouldntBeAbleToGetADomainWithTheWrongKey test)
 
-3. counters-api:
+3. (done)counters-api:
 	- WeShouldBeAbleToCreateANewCounter
 	- WeShouldBeAbleToGetAllCounters
 	- WeShouldBeAbleToGetACounter
@@ -48,7 +48,7 @@
 	- WeShouldBeAbleToUpdateABadgeRule
 	- WeShouldBeAbleToDeleteABadgeRule
 
-7. rules-api:
+7. event-rules-api:
 	- WeShouldBeAbleToGetAllEventRules
 	- WeShouldBeAbleToCreateAnEventRule
 	- WeShouldBeAbleToGetAnEventRule
