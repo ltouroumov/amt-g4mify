@@ -2,6 +2,7 @@ package ch.heig.amt.g4mify.test;
 
 import ch.heig.amt.g4mify.Utils.HttpTestRequest;
 import ch.heig.amt.g4mify.Utils.TestResponse;
+import ch.heig.amt.g4mify.model.Counter;
 import ch.heig.amt.g4mify.model.Domain;
 import ch.heig.amt.g4mify.model.view.counter.CounterSummary;
 import ch.heig.amt.g4mify.model.view.metric.MetricSummary;
@@ -64,13 +65,36 @@ public class CountersApiTest {
         assertEquals(200, response.getStatusCode());
     }
 
+    @Test
+    public void getCounter(){
+        System.out.println("\n- " + name.getMethodName() + " -");
+        HttpTestRequest request = new HttpTestRequest();
+        Gson gson = new Gson();
+        HashMap<String, String> headers = new HashMap<>();
+        headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
+        TestResponse response = request.test("/api/counters", null, null, headers, "GET");
+        if(isError(response)) return;
+        assertEquals(200, response.getStatusCode());
+
+        CounterSummary[] countersList = gson.fromJson(response.getBody(), CounterSummary[].class);
+        ArrayList<CounterSummary> counters = new ArrayList<>(Arrays.asList(countersList));
+        counters.forEach(counterSummary -> {
+            TestResponse responseCounter = request.test("/api/counters/" + counterSummary.name, null, null, headers, "GET");
+            if(isError(responseCounter)) return;
+            CounterSummary counter = gson.fromJson(responseCounter.getBody(), CounterSummary.class);
+            assertEquals(counterSummary.id, counter.id);
+            assertEquals(counterSummary.name, counter.name);
+            assertEquals(200, responseCounter.getStatusCode());
+        });
+    }
+
     @After
     public void after(){
         System.out.println("\n- AFTER -");
-        HttpTestRequest request = new HttpTestRequest();
         HashMap<String, String> headers = new HashMap<>();
         headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
         for(CounterSummary counter : counters){
+            HttpTestRequest request = new HttpTestRequest();
             TestResponse response = request.test("/api/counters/" + counter.id, null, null, headers, "DELETE");
             if(isError(response)) return;
             System.out.println("Successfully deleted counter with id " + counter.id);
