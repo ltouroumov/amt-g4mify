@@ -1,4 +1,8 @@
-2. domains:
+1. (OK)register:
+	- WeShouldBeAbleToCreateANewDomain
+	- WeShouldntBeAbleToCreateANewDomainWithAWrongBody
+
+2. (OK)domains:
 	- WeShouldBeAbleToGetADomainWithTheCorrectKey
 	- WeShouldntBeAbleToGetADomainWithTheWrongKey
 	The Check of the key will be done only one time here. Same function for all the endpoints (Filter at the message's reception). The filter is used to determine the domain on which we work, so we haven't to give the id to the server for next requests.
@@ -8,33 +12,7 @@
 	- WeShouldBeAbleToDeleteADomain
 	We can't delete others ID because of the authentification filter in any case. No mandatory test for check it. (Check the WeShouldntBeAbleToGetADomainWithTheWrongKey test)
 
-4. metric-api:
-	- WeShouldBeAbleToGetAMetric
-	- WeShouldntBeAbleToGetAMetricInAWrongCounter
-	- WeShouldBeAbleToSetThePageAndPageSize
-	- WeShouldntBeAbleToSetThePageAndPageSizeWithBadValue
-	- WeShouldBeAbleToCreateANewMetric
-	- WeShouldBeAbleToGetAllTheMetrics
-	- WeShouldBeAbleToUpdateAMetric
-	- WeShouldBeAbleToDeleteAMetric
-
-6. rules-api:
-	- WeShouldBeAbleToGetAllTheRules
-	- WeShouldBeAbleToCreateARule
-	- WeShouldBeAbleToGetARule
-	- WeShouldBeAbleToUpdateARule
-	- WeShouldBeAbleToDeleteARule
-
-7. events:
-
-5. badge-types-api:
-	- WeShouldBeAbleToGetAllTheBadge
-	- WeShouldBeAbleToCreateABadge
-	- WeShouldBeAbleToGetABadge
-	- WeShouldBeAbleToUpdateABadge
-	- WeShouldBeAbleToDeleteABadge
-
-3. counters-api:
+3. (done)counters-api:
 	- WeShouldBeAbleToCreateANewCounter
 	- WeShouldBeAbleToGetAllCounters
 	- WeShouldBeAbleToGetACounter
@@ -46,14 +24,48 @@
 	- WeShouldntBeAbleToGetACounterInAnOtherDomain
 	
 
-1. register:
-	- WeShouldBeAbleToCreateANewDomain
-	- WeShouldntBeAbleToCreateANewDomainWithAWrongBody
+4. metric-api:
+	- WeShouldBeAbleToGetAMetric
+	- WeShouldntBeAbleToGetAMetricInAWrongCounter
+	- WeShouldBeAbleToSetThePageAndPageSize
+	- WeShouldntBeAbleToSetThePageAndPageSizeWithBadValue
+	- WeShouldBeAbleToCreateANewMetric
+	- WeShouldBeAbleToGetAllTheMetrics
+	- WeShouldBeAbleToUpdateAMetric
+	- WeShouldBeAbleToDeleteAMetric
 
-8. users-api:
+5. badge-types-api:
+	- WeShouldBeAbleToGetAllTheBadge
+	- WeShouldBeAbleToCreateABadge
+	- WeShouldBeAbleToGetABadge
+	- WeShouldBeAbleToUpdateABadge
+	- WeShouldBeAbleToDeleteABadge
+
+6. badge-rules-api:
+	- WeShouldBeAbleToGetAllBadgeRules
+	- WeShouldBeAbleToCreateABadgeRule
+	- WeShouldBeAbleToGetABadgeRule
+	- WeShouldBeAbleToUpdateABadgeRule
+	- WeShouldBeAbleToDeleteABadgeRule
+
+7. event-rules-api:
+	- WeShouldBeAbleToGetAllEventRules
+	- WeShouldBeAbleToCreateAnEventRule
+	- WeShouldBeAbleToGetAnEventRule
+	- WeShouldBeAbleToUpdateAnEventRule
+	- WeShouldBeAbleToDeleteAnEventRule
+
+8. events:
+	- WeShouldBeAbleToPublishAnEvent
+
+9. users-api:
 	- WeShouldBeAbleToGetAllTheUsers
 	- WeShouldBeAbleToCreateAUser
 	- WeShouldBeAbleToGetAUser
 	- WeShouldBeAbleToUpdateAUser
 	- WeShouldBeAbleToDeleteAUser
 	- WeShouldBeAbleToGetAllBadgesForAUser
+
+Concurrency tests (JMeter)
+
+Scenario tests
