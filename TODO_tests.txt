@@ -1,8 +1,8 @@
-1. register:
+1. (OK)register:
 	- WeShouldBeAbleToCreateANewDomain
 	- WeShouldntBeAbleToCreateANewDomainWithAWrongBody
 
-2. domains:
+2. (OK)domains:
 	- WeShouldBeAbleToGetADomainWithTheCorrectKey
 	- WeShouldntBeAbleToGetADomainWithTheWrongKey
 	The Check of the key will be done only one time here. Same function for all the endpoints (Filter at the message's reception). The filter is used to determine the domain on which we work, so we haven't to give the id to the server for next requests.
