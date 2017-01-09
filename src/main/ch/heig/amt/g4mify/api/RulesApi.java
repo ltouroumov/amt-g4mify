@@ -9,8 +9,13 @@ import ch.heig.amt.g4mify.model.view.rule.RuleOutputView;
 import ch.heig.amt.g4mify.model.view.rule.RuleSummary;
 import ch.heig.amt.g4mify.repository.BadgeTypesRepository;
 import ch.heig.amt.g4mify.repository.RulesRepository;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -27,6 +32,7 @@ import static ch.heig.amt.g4mify.model.view.ViewUtils.*;
  */
 @RestController
 @RequestMapping("/api/rules")
+@Api(value = "rules", description = "Handles CRUD operations on rules")
 public class RulesApi extends AbstractDomainApi {
 
     @Autowired
@@ -35,6 +41,11 @@ public class RulesApi extends AbstractDomainApi {
     private BadgeTypesRepository badgeTypesRepository;
 
     @RequestMapping(method = RequestMethod.GET)
+    @ApiOperation(value = "Retrieves all rules from the domain", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Ok"),
+            @ApiResponse(code = 404, message = "Not found"),
+            @ApiResponse(code = 500, message = "Error retrieving rules from the domain")})
     public ResponseEntity<List<RuleDetail>> index(@RequestParam(required = false, defaultValue = "0") long page,
                                                   @RequestParam(required = false, defaultValue = "50") long pageSize) {
 
@@ -49,6 +60,12 @@ public class RulesApi extends AbstractDomainApi {
     }
 
     @RequestMapping(method = RequestMethod.POST)
+    @ApiOperation(value = "Creates a new rules in the domain",
+            produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiResponses({
+            @ApiResponse(code = 201, message = "Ok"),
+            @ApiResponse(code = 500, message = "Error creating the rule in the domain")})
     public ResponseEntity<?> create(@RequestBody RuleSummary body) {
 
 
@@ -74,7 +91,12 @@ public class RulesApi extends AbstractDomainApi {
                 .from(rule));
     }
 
-    @RequestMapping("/{id}")
+    @RequestMapping(path = "/{id}", method = RequestMethod.GET)
+    @ApiOperation(value = "Retrieves a particular rule from the domain", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Ok"),
+            @ApiResponse(code = 404, message = "Not found"),
+            @ApiResponse(code = 500, message = "Error retrieving the rule from the domain")})
     public ResponseEntity<?> show(@PathVariable long id) {
 
         Rule rule = rulesRepository.findOne(id);
@@ -93,6 +115,13 @@ public class RulesApi extends AbstractDomainApi {
     }
 
     @RequestMapping(path = "/{id}", method = RequestMethod.PUT)
+    @ApiOperation(value = "Updates a particular rule in the domain",
+            produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Ok"),
+            @ApiResponse(code = 404, message = "Not found"),
+            @ApiResponse(code = 500, message = "Error updating the rule in the domain")})
     public ResponseEntity<RuleOutputView> update(@PathVariable long id, @RequestBody RuleSummary body) {
 
         Rule rule = rulesRepository.findOne(id);
@@ -122,6 +151,11 @@ public class RulesApi extends AbstractDomainApi {
     }
 
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
+    @ApiOperation(value = "Deletes a particular rule from the domain")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Ok"),
+            @ApiResponse(code = 404, message = "Not found"),
+            @ApiResponse(code = 500, message = "Error deleting the rule from the domain")})
     public ResponseEntity<?> delete(@PathVariable long id) {
 
         Rule rule = rulesRepository.findOne(id);

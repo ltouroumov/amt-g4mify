@@ -16,8 +16,11 @@ import ch.heig.amt.g4mify.repository.EventsRepository;
 import ch.heig.amt.g4mify.repository.UsersRepository;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,7 +37,7 @@ import static ch.heig.amt.g4mify.model.view.ViewUtils.*;
  */
 @RestController
 @RequestMapping("/api/events")
-@Api(value = "events", description = "Received events for users")
+@Api(value = "events", description = "Handles events from users")
 public class EventsApi extends AbstractDomainApi {
 
     @Autowired
@@ -50,7 +53,11 @@ public class EventsApi extends AbstractDomainApi {
     private SpringExtension ext;
 
     @RequestMapping(method = RequestMethod.GET)
-    @ApiOperation(value = "Obtain events for a user")
+    @ApiOperation(value = "Obtain events for a user", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Ok"),
+            @ApiResponse(code = 404, message = "Not found"),
+            @ApiResponse(code = 500, message = "Error obtaining event from a user in the domain")})
     public ResponseEntity<EventInfos> get(@RequestParam(name = "user") long userId,
                                  @RequestParam(required = false, defaultValue = "0") long page,
                                  @RequestParam(required = false, defaultValue = "50") long pageSize) {
@@ -74,7 +81,13 @@ public class EventsApi extends AbstractDomainApi {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    @ApiOperation(value = "Publish an event to a user")
+    @ApiOperation(value = "Publishes an event to a user",
+            produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiResponses({
+            @ApiResponse(code = 201, message = "Created"),
+            @ApiResponse(code = 404, message = "Not found"),
+            @ApiResponse(code = 500, message = "Error publishing event in the domain")})
     public ResponseEntity<EventResult> post(@RequestBody EventSubmit input) {
         Domain domain = getDomain();
         User user = usersRepository.findOne(input.user);
