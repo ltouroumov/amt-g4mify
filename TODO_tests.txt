@@ -1,3 +1,7 @@
+1. register:
+	- WeShouldBeAbleToCreateANewDomain
+	- WeShouldntBeAbleToCreateANewDomainWithAWrongBody
+
 2. domains:
 	- WeShouldBeAbleToGetADomainWithTheCorrectKey
 	- WeShouldntBeAbleToGetADomainWithTheWrongKey
@@ -7,32 +11,6 @@
 	- WeShouldntBeAbleToChangeADomainWithAWrongBody
 	- WeShouldBeAbleToDeleteADomain
 	We can't delete others ID because of the authentification filter in any case. No mandatory test for check it. (Check the WeShouldntBeAbleToGetADomainWithTheWrongKey test)
-
-4. metric-api:
-	- WeShouldBeAbleToGetAMetric
-	- WeShouldntBeAbleToGetAMetricInAWrongCounter
-	- WeShouldBeAbleToSetThePageAndPageSize
-	- WeShouldntBeAbleToSetThePageAndPageSizeWithBadValue
-	- WeShouldBeAbleToCreateANewMetric
-	- WeShouldBeAbleToGetAllTheMetrics
-	- WeShouldBeAbleToUpdateAMetric
-	- WeShouldBeAbleToDeleteAMetric
-
-6. rules-api:
-	- WeShouldBeAbleToGetAllTheRules
-	- WeShouldBeAbleToCreateARule
-	- WeShouldBeAbleToGetARule
-	- WeShouldBeAbleToUpdateARule
-	- WeShouldBeAbleToDeleteARule
-
-7. events:
-
-5. badge-types-api:
-	- WeShouldBeAbleToGetAllTheBadge
-	- WeShouldBeAbleToCreateABadge
-	- WeShouldBeAbleToGetABadge
-	- WeShouldBeAbleToUpdateABadge
-	- WeShouldBeAbleToDeleteABadge
 
 3. counters-api:
 	- WeShouldBeAbleToCreateANewCounter
@@ -46,9 +24,31 @@
 	- WeShouldntBeAbleToGetACounterInAnOtherDomain
 	
 
-1. register:
-	- WeShouldBeAbleToCreateANewDomain
-	- WeShouldntBeAbleToCreateANewDomainWithAWrongBody
+4. metric-api:
+	- WeShouldBeAbleToGetAMetric
+	- WeShouldntBeAbleToGetAMetricInAWrongCounter
+	- WeShouldBeAbleToSetThePageAndPageSize
+	- WeShouldntBeAbleToSetThePageAndPageSizeWithBadValue
+	- WeShouldBeAbleToCreateANewMetric
+	- WeShouldBeAbleToGetAllTheMetrics
+	- WeShouldBeAbleToUpdateAMetric
+	- WeShouldBeAbleToDeleteAMetric
+
+5. badge-types-api:
+	- WeShouldBeAbleToGetAllTheBadge
+	- WeShouldBeAbleToCreateABadge
+	- WeShouldBeAbleToGetABadge
+	- WeShouldBeAbleToUpdateABadge
+	- WeShouldBeAbleToDeleteABadge
+
+6. rules-api:
+	- WeShouldBeAbleToGetAllTheRules
+	- WeShouldBeAbleToCreateARule
+	- WeShouldBeAbleToGetARule
+	- WeShouldBeAbleToUpdateARule
+	- WeShouldBeAbleToDeleteARule
+
+7. events:
 
 8. users-api:
 	- WeShouldBeAbleToGetAllTheUsers
@@ -57,3 +57,7 @@
 	- WeShouldBeAbleToUpdateAUser
 	- WeShouldBeAbleToDeleteAUser
 	- WeShouldBeAbleToGetAllBadgesForAUser
+
+Concurrency tests (JMeter)
+
+Scenario tests
