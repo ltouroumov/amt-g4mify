@@ -20,6 +20,7 @@ public class HttpTestRequest {
 
     private static final int minGoodStatusCode = 100;
     private static final int maxGoodStatusCode = 399;
+    private static final String baseURL = "http://localhost:8080";
 
     public TestResponse test(String endpoint, String payload, HashMap<String, String> parameters, HashMap<String, String> headers, String method){
         HttpURLConnection conn = null;
@@ -34,7 +35,7 @@ public class HttpTestRequest {
                 parametersURL.deleteCharAt(parametersURL.length() - 1);
             }
             //create connection
-            URL url = new URL("http://localhost:8080" + endpoint + parametersURL);
+            URL url = new URL(baseURL + endpoint + parametersURL);
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod(method);
             conn.setRequestProperty("Accept", "application/json");
@@ -62,6 +63,7 @@ public class HttpTestRequest {
 
             if(conn.getResponseCode() < minGoodStatusCode || conn.getResponseCode() > maxGoodStatusCode){
                 is = conn.getErrorStream();
+                System.out.println("ErrorStream: " + is);
                 BufferedReader rd = new BufferedReader(new InputStreamReader(is));
                 StringBuilder resultIs = new StringBuilder(); // or StringBuffer if Java version 5+
                 String line;
