@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.transaction.Transactional;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
@@ -45,6 +46,7 @@ public class UsersApi extends AbstractDomainApi {
             @ApiResponse(code = 200, message = "Ok"),
             @ApiResponse(code = 404, message = "Not found"),
             @ApiResponse(code = 500, message = "Error retrieving users from the domain")})
+    @Transactional
     public ResponseEntity<List<UserSummary>> index(@RequestParam(required = false, defaultValue = "0") long page,
                                                    @RequestParam(required = false, defaultValue = "50") long pageSize) {
 
@@ -109,7 +111,7 @@ public class UsersApi extends AbstractDomainApi {
             @ApiResponse(code = 404, message = "Not found"),
             @ApiResponse(code = 500, message = "Error updating the user in the domain")})
     public ResponseEntity<UserSummary> update(@PathVariable String pid,
-                                             @RequestBody UserDetail body) {
+                                             @RequestBody UserSummary body) {
 
         return usersRepository.findByDomainAndProfileId(getDomain(), pid)
                 .filter(this::canAccess)

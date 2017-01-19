@@ -6,8 +6,6 @@ package ch.heig.amt.g4mify.model.view.user;
  */
 public class UserSummary {
 
-    public long id;
-
     public String profileId;
 
     public String profileUrl;
