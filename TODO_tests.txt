@@ -60,11 +60,11 @@
 	- Concurrency tests (JMeter)
 
 9. users-api:
-	|- WeShouldBeAbleToGetAllTheUsers
+	- WeShouldBeAbleToGetAllTheUsers
 	|- WeShouldBeAbleToCreateAUser
-	|- WeShouldBeAbleToGetAUser
-	|- WeShouldBeAbleToUpdateAUser
-	|- WeShouldBeAbleToDeleteAUser
+	- WeShouldBeAbleToGetAUser
+	- WeShouldBeAbleToUpdateAUser
+	- WeShouldBeAbleToDeleteAUser
 	- WeShouldBeAbleToGetAllBadgesForAUser
 
 
