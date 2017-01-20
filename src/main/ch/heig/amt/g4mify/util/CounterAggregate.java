@@ -22,6 +22,10 @@ public class CounterAggregate {
         return name;
     }
 
+    public Map<String, Long> getMetrics() {
+        return metrics;
+    }
+
     public void setMetric(String name, long value) {
         metrics.put(name, value);
     }

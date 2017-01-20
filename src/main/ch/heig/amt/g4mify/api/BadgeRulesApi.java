@@ -1,16 +1,15 @@
 package ch.heig.amt.g4mify.api;
 
+import ch.heig.amt.g4mify.actors.EventProcessor;
 import ch.heig.amt.g4mify.dsl.BadgeRuleEvaluator;
-import ch.heig.amt.g4mify.model.BadgeType;
-import ch.heig.amt.g4mify.model.Counter;
-import ch.heig.amt.g4mify.model.Domain;
-import ch.heig.amt.g4mify.model.BadgeRule;
+import ch.heig.amt.g4mify.model.*;
 import ch.heig.amt.g4mify.model.view.OutputView;
 import ch.heig.amt.g4mify.model.view.badgeType.BadgeTypeSummary;
 import ch.heig.amt.g4mify.model.view.badgeRule.BadgeRuleDetail;
 import ch.heig.amt.g4mify.model.view.badgeRule.BadgeRuleSummary;
 import ch.heig.amt.g4mify.repository.BadgeTypesRepository;
 import ch.heig.amt.g4mify.repository.BadgeRulesRepository;
+import ch.heig.amt.g4mify.repository.UsersRepository;
 import ch.heig.amt.g4mify.util.CounterSpecResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -42,7 +41,11 @@ public class BadgeRulesApi extends AbstractDomainApi {
     @Autowired
     private BadgeTypesRepository badgeTypesRepository;
     @Autowired
+    private UsersRepository usersRepository;
+    @Autowired
     private CounterSpecResolver counterSpecResolver;
+    @Autowired
+    private EventProcessor eventProcessor;
 
     private BadgeRuleEvaluator badgeRuleEvaluator = new BadgeRuleEvaluator();
 
@@ -93,7 +96,7 @@ public class BadgeRulesApi extends AbstractDomainApi {
         return ResponseEntity.created(uri).body(getView().from(badgeRule));
     }
 
-    @RequestMapping("/{id}")
+    @RequestMapping(path = "/{id}", method = RequestMethod.GET)
     public ResponseEntity<BadgeRuleDetail> show(@PathVariable long id) {
 
         BadgeRule badgeRule = badgeRulesRepository.findOne(id);
@@ -104,6 +107,30 @@ public class BadgeRulesApi extends AbstractDomainApi {
 
         if (canAccess(badgeRule)) {
             return ResponseEntity.ok(getView().from(badgeRule));
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+    }
+
+    @RequestMapping(path = "/{id}/evaluate", method = RequestMethod.GET)
+    public ResponseEntity<EvaluationResult> eval(@PathVariable long id, @RequestParam(name = "user") String pid) {
+
+        BadgeRule badgeRule = badgeRulesRepository.findOne(id);
+
+        if(badgeRule == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        User user = usersRepository.findByDomainAndProfileId(getDomain(), pid).orElse(null);
+
+        if(user == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        if (canAccess(badgeRule)) {
+            boolean result = eventProcessor.evaluateBadgeRule(user, badgeRule);
+
+            return ResponseEntity.ok(new EvaluationResult(result));
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -161,5 +188,14 @@ public class BadgeRulesApi extends AbstractDomainApi {
 
     private boolean canAccess(BadgeRule badgeRule) {
         return badgeRule.getDomain().getId() == getDomain().getId();
+    }
+
+    private class EvaluationResult {
+
+        public final boolean result;
+
+        public EvaluationResult(boolean result) {
+            this.result = result;
+        }
     }
 }

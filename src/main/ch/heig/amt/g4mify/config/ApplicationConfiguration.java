@@ -2,20 +2,22 @@ package ch.heig.amt.g4mify.config;
 
 import akka.actor.ActorSystem;
 import ch.heig.amt.g4mify.extension.SpringExtension;
-import ch.heig.amt.g4mify.json.EntityJsonDeserializer;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.orm.hibernate5.HibernateTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+import javax.persistence.EntityManagerFactory;
 
 import static springfox.documentation.builders.PathSelectors.regex;
 
@@ -36,16 +38,6 @@ public class ApplicationConfiguration {
 
     @Autowired
     private SpringExtension springExtension;
-
-    /*
-    @Bean
-    @Autowired
-    public Jackson2ObjectMapperBuilder objectMapperBuilder(EntityJsonDeserializer entityDeserializer) {
-        Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
-        builder.deserializers(entityDeserializer);
-        return builder;
-    }
-    */
 
     @Bean
     public Docket newsApi() {

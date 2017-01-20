@@ -7,7 +7,10 @@ import ch.heig.amt.g4mify.model.view.badge.BadgeSummary;
 import ch.heig.amt.g4mify.model.view.badgeType.BadgeTypeSummary;
 import ch.heig.amt.g4mify.model.view.user.UserDetail;
 import ch.heig.amt.g4mify.model.view.user.UserSummary;
+import ch.heig.amt.g4mify.repository.CountersRepository;
 import ch.heig.amt.g4mify.repository.UsersRepository;
+import ch.heig.amt.g4mify.util.CounterAggregate;
+import ch.heig.amt.g4mify.util.CounterAggregator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -38,6 +41,12 @@ public class UsersApi extends AbstractDomainApi {
 
     @Autowired
     private UsersRepository usersRepository;
+
+    @Autowired
+    private CountersRepository countersRepository;
+
+    @Autowired
+    private CounterAggregator counterAggregator;
 
 
     @RequestMapping(method = RequestMethod.GET)
@@ -146,7 +155,7 @@ public class UsersApi extends AbstractDomainApi {
             @ApiResponse(code = 200, message = "Ok"),
             @ApiResponse(code = 404, message = "Not found"),
             @ApiResponse(code = 500, message = "Error retrieving badges from a particular user in the domain")})
-    public ResponseEntity<List<BadgeSummary>> index(@PathVariable String pid,
+    public ResponseEntity<List<BadgeSummary>> badges(@PathVariable String pid,
                                                     @RequestParam(required = false, defaultValue = "0") long page,
                                                     @RequestParam(required = false, defaultValue = "50") long pageSize) {
         return usersRepository.findByDomainAndProfileId(getDomain(), pid)
@@ -158,6 +167,22 @@ public class UsersApi extends AbstractDomainApi {
                         .map(outputView(BadgeSummary.class).map("type", viewMap(BadgeTypeSummary.class))::from)
                         .collect(Collectors.toList())
                 )
+                .map(ResponseEntity::ok)
+                .orElseGet(ResponseEntity.status(HttpStatus.NOT_FOUND)::build);
+    }
+
+    @RequestMapping(path = "/{pid}/counter/{cid}", method = RequestMethod.GET)
+    @ApiOperation(value = "Retrieves the value of a counter from a particular user in the domain")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Ok"),
+            @ApiResponse(code = 404, message = "Not found"),
+            @ApiResponse(code = 500, message = "Error retrieving badges from a particular user in the domain")})
+    public ResponseEntity<CounterAggregate> counter(@PathVariable String pid, @PathVariable String cid) {
+        return usersRepository.findByDomainAndProfileId(getDomain(), pid)
+                .filter(this::canAccess)
+                .flatMap(user ->
+                        countersRepository.findByDomainAndName(getDomain(), cid)
+                                .map(counter -> counterAggregator.aggregate(counter, user)))
                 .map(ResponseEntity::ok)
                 .orElseGet(ResponseEntity.status(HttpStatus.NOT_FOUND)::build);
     }
