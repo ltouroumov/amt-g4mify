@@ -6,14 +6,11 @@ import ch.heig.amt.g4mify.model.Badge;
 import ch.heig.amt.g4mify.model.Counter;
 import ch.heig.amt.g4mify.model.Domain;
 import ch.heig.amt.g4mify.model.User;
-import com.google.gson.*;
-
+import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.junit.*;
 import org.junit.rules.TestName;
 
-import java.lang.reflect.Type;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 
 import static ch.heig.amt.g4mify.Utils.UtilsApiTest.*;
@@ -57,7 +54,7 @@ public class UsersApiTest {
         System.out.println("sucessfully created user");
     }
 
-    //@Test
+    @Test
     public void getUsers() {
         System.out.println("-- " + name.getMethodName() + " --");
 
@@ -116,7 +113,7 @@ public class UsersApiTest {
         assertEquals(testUser.getId(), user.getId());
     }*/
 
-    //@Test
+    @Test
     public void getUser() {
         System.out.println("-- " + name.getMethodName() + " --");
 
@@ -134,7 +131,7 @@ public class UsersApiTest {
         assertEquals(testUser.getId(), user.getId());
     }
 
-    @Test
+    //@Test
     public void getUserBadges() {
         System.out.println("-- " + name.getMethodName() + " --");
 
@@ -207,7 +204,7 @@ public class UsersApiTest {
 
         System.out.println("got user's badges");
 
-        ArrayList<Badge> badges = gson.fromJson(response.getBody(), new TypeToken<ArrayList<Badge>>(){}.getType());
+        ArrayList<Badge> badges = gson.fromJson(response.getBody(), new TypeToken<ArrayList<Badge>>() {}.getType());
 
         System.out.println(response.getBody());
         //assertEquals("test-badge", badges.get(0).getType().getName());

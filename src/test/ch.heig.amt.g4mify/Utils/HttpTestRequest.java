@@ -97,7 +97,7 @@ public class HttpTestRequest {
         if(endpoint == null) throw new RuntimeException("DELETE: No URL!");
         try{
             String url = new URL(baseURL + endpoint).toString();
-            HttpRequest request = unirest.get(url);
+            HttpRequest request = unirest.delete(url);
             HttpResponse<JsonNode> responseUnirest = request.asJson();
             response = new TestResponse(
                     responseUnirest.getStatus(),
