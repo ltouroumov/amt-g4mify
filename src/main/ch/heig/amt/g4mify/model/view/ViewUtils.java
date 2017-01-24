@@ -19,7 +19,7 @@ public class ViewUtils {
     }
 
     public static <TOut> InputView<TOut> inputView(Class<TOut> inputClass) {
-        return new InputView<TOut>(inputClass);
+        return new InputView<>(inputClass);
     }
 
     public static <TOut> UpdateView<TOut> updateView(TOut output) {

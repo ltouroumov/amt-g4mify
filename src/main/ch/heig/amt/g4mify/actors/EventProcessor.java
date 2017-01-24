@@ -109,7 +109,7 @@ public class EventProcessor {
             }
         }
 
-        event.setProcessed(Timestamp.from(Instant.now()));
+        event.setProcessed(Instant.now().getEpochSecond());
         eventsRepository.save(event);
     }
 
@@ -161,7 +161,7 @@ public class EventProcessor {
                 badge.setUser(user);
                 badge.setType(badgeType);
                 badge.setLevel(1);
-                badge.setAwarded(Timestamp.from(Instant.now()));
+                badge.setAwarded(Instant.now().getEpochSecond());
             } else if (instance.isPresent() && !badgeType.isSingleton()) {
                 // If the badge has already been awarded AND the badge-type is not a singleton
                 // then increase badge level

@@ -103,7 +103,7 @@ public class EventsApi extends AbstractDomainApi {
                         }))
                 .from(input);
 
-        event.setReceived(Timestamp.from(Instant.now()));
+        event.setReceived(Instant.now().getEpochSecond());
 
         if (event.getUser().getDomain().getId() != domain.getId()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
