@@ -19,6 +19,8 @@
 	|- WeShouldBeAbleToDeleteACounter
 	- WeShouldBeAbleToUpdateACounter
 	- WeShouldntBeAbleToGetACounterInAnOtherDomain
+	- WeShouldntBeABleToGetACounterWithABadID
+	- WeShouldntBeAbleToDeleteACounterWithABadID
 	
 
 4. metric-api:
@@ -44,9 +46,7 @@
 	- WeShouldBeAbleToGetABadgeRule
 	- WeShouldBeAbleToUpdateABadgeRule
 	- WeShouldBeAbleToDeleteABadgeRule
-	- WeShouldntBeABleToGetACounterWithABadID
 	Also check the alphaNumeric ID (Only number are accepted)
-	- WeShouldntBeAbleToDeleteACounterWithABadID
 
 7. event-rules-api:
 	- WeShouldBeAbleToGetAllEventRules
@@ -56,16 +56,17 @@
 	- WeShouldBeAbleToDeleteAnEventRule
 
 8. events:
-	- WeShouldBeAbleToPublishAnEvent
+	|- WeShouldBeAbleToPublishAnEvent
 	- Concurrency tests (JMeter)
 
 9. users-api:
-	- WeShouldBeAbleToGetAllTheUsers
+	|- WeShouldBeAbleToGetAllTheUsers
 	|- WeShouldBeAbleToCreateAUser
-	- WeShouldBeAbleToGetAUser
-	- WeShouldBeAbleToUpdateAUser
-	- WeShouldBeAbleToDeleteAUser
-	- WeShouldBeAbleToGetAllBadgesForAUser
+	|- WeShouldBeAbleToGetAUser
+	|- WeShouldBeAbleToUpdateAUser
+	|- WeShouldBeAbleToDeleteAUser
+	|- WeShouldBeAbleToGetAllBadgesForAUser
+	|- WeShouldBeAbleToGetACounterFromAUser
 
 
 Scenario tests
