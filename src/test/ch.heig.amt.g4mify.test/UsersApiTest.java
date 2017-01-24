@@ -6,11 +6,15 @@ import ch.heig.amt.g4mify.model.Badge;
 import ch.heig.amt.g4mify.model.Counter;
 import ch.heig.amt.g4mify.model.Domain;
 import ch.heig.amt.g4mify.model.User;
-import com.google.gson.Gson;
+import com.google.gson.*;
+
+import com.google.gson.reflect.TypeToken;
 import org.junit.*;
 import org.junit.rules.TestName;
 
-import java.util.HashMap;
+import java.lang.reflect.Type;
+import java.sql.Timestamp;
+import java.util.ArrayList;
 
 import static ch.heig.amt.g4mify.Utils.UtilsApiTest.*;
 import static org.junit.Assert.assertEquals;
@@ -19,7 +23,8 @@ import static org.junit.Assert.assertEquals;
  * Created by Yves Athanasiadès on 05.12.2016.
  */
 public class UsersApiTest {
-    /*static private Domain testDomain = null;
+    static private HttpTestRequest tester = null;
+    static private Domain testDomain = null;
     private User testUser = null;
 
     @Rule
@@ -27,23 +32,22 @@ public class UsersApiTest {
 
     @BeforeClass
     static public void beforeClass() {
-        testDomain = baseDomainInit(BEFORE_CLASS);
+        tester = new HttpTestRequest();
+        testDomain = baseDomainInit(BEFORE_CLASS, tester);
+        tester.setDefaultHeader("Identity", testDomain.getId() + ":" + testDomain.getKey());
     }
 
     @Before
     public void before() {
         System.out.println("-- BEFORE --");
 
-        HttpTestRequest request = new HttpTestRequest();
         Gson gson = new Gson();
-        HashMap<String, String> headers = new HashMap<>();
-        headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
 
         String body = "{\n" +
                 "  \"profileId\": \"Donald Duck\",\n" +
                 "  \"profileUrl\": \"dduck\"\n" +
                 "}";
-        TestResponse response = request.test("/api/users", body, null, headers, "POST");
+        TestResponse response = tester.post("/api/users", null, body);
 
         if (HttpTestRequest.isError(response))
             return;
@@ -53,15 +57,13 @@ public class UsersApiTest {
         System.out.println("sucessfully created user");
     }
 
-    @Test
+    //@Test
     public void getUsers() {
         System.out.println("-- " + name.getMethodName() + " --");
 
-        HttpTestRequest request = new HttpTestRequest();
         Gson gson = new Gson();
-        HashMap<String, String> headers = new HashMap<>();
-        headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
-        TestResponse response = request.test("/api/users", null, null, headers, "GET");
+
+        TestResponse response = tester.get("/api/users", null);
 
         if (HttpTestRequest.isError(response))
             return;
@@ -73,7 +75,7 @@ public class UsersApiTest {
         assertEquals(testUser.getId(), users[0].getId());
     }
 
-    @Test
+    /*@Test
     public void putUser() {
         System.out.println("-- " + name.getMethodName() + " --");
 
@@ -112,18 +114,15 @@ public class UsersApiTest {
         assertEquals("Picsou Duck", user.getProfileId());
         assertEquals("pduck", user.getProfileUrl());
         assertEquals(testUser.getId(), user.getId());
-    }
+    }*/
 
-    @Test
+    //@Test
     public void getUser() {
         System.out.println("-- " + name.getMethodName() + " --");
 
-        HttpTestRequest request = new HttpTestRequest();
         Gson gson = new Gson();
-        HashMap<String, String> headers = new HashMap<>();
-        headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
 
-        TestResponse response = request.test("/api/users/" + testUser.getProfileId(), null, null, headers, "GET");
+        TestResponse response = tester.get("/api/users/" + testUser.getProfileId(), null);
 
         if (HttpTestRequest.isError(response))
             return;
@@ -140,100 +139,90 @@ public class UsersApiTest {
         System.out.println("-- " + name.getMethodName() + " --");
 
         // create badge type (test-badge)
-        HttpTestRequest request = new HttpTestRequest();
-        Gson gson = new Gson();
-        HashMap<String, String> headers = new HashMap<>();
-        headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
-
         String body = "{\n" +
                 "  \"color\": \"none\",\n" +
                 "  \"image\": \"none\",\n" +
                 "  \"isSingleton\": false,\n" +
-                "  \"key\": \"test\",\n" +
+                "  \"key\": \"test-badge\",\n" +
                 "  \"name\": \"test-badge\",\n" +
                 "  \"previous\": \"none\"\n" +
                 "}";
 
-        TestResponse response = request.test("/api/badge-types/", body, null, headers, "POST");
+        TestResponse response = tester.post("/api/badge-types", null, body);
 
         if (HttpTestRequest.isError(response)) {
             System.out.println("Error creating badge");
             return;
         }
 
-        // create eventRule that gives a badge when event is triggered
-        request = new HttpTestRequest();
-        gson = new Gson();
-        headers = new HashMap<>();
-        headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
+        System.out.println("Created badge-type");
 
+        // create eventRule that gives a badge when event is triggered
         body = "{" +
                 "  \"script\": \"award 'test-badge'\"," +
                 "  \"types\": [" +
-                "\"test\"" +
+                "\"test-badge\"" +
                 "]" +
                 "}";
 
-        response = request.test("/api/event-rules/", body, null, headers, "POST");
+        response = tester.post("/api/event-rules/", null, body);
 
         if (HttpTestRequest.isError(response)) {
             System.out.println("Error creating eventRule");
             return;
         }
 
-        // trigger events
-        request = new HttpTestRequest();
-        gson = new Gson();
-        headers = new HashMap<>();
-        headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
+        System.out.println("Created event-rule");
 
+        // trigger events
         body = "{\n" +
                 "  \"data\": {},\n" +
                 "  \"type\": \"test-badge\",\n" +
                 "  \"user\": \"" + testUser.getProfileId() + "\"\n" +
                 "}";
 
-        response = request.test("/api/events/", body, null, headers, "POST");
+        response = tester.post("/api/events/", null, body);
 
         if (HttpTestRequest.isError(response)) {
             System.out.println("Error creating event");
             return;
         }
 
+        System.out.println("Created event");
+        try {
+            Thread.sleep(1000);
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         // get badges
-        request = new HttpTestRequest();
-        gson = new Gson();
-        headers = new HashMap<>();
-        headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
+        Gson gson = new Gson();
 
-        response = request.test("/api/users/" + testUser.getProfileId() + "/badges", null, null, headers, "GET");
+        response = tester.get("/api/users/" + testUser.getProfileId() + "/badges", null);
 
         if (HttpTestRequest.isError(response)) {
             System.out.println("Error getting badge list");
             return;
         }
 
-        Badge[] badges = gson.fromJson(response.getBody(), Badge[].class);
+        System.out.println("got user's badges");
 
+        ArrayList<Badge> badges = gson.fromJson(response.getBody(), new TypeToken<ArrayList<Badge>>(){}.getType());
 
-        assertEquals("test-badge", badges[0].getType().getName());
+        System.out.println(response.getBody());
+        //assertEquals("test-badge", badges.get(0).getType().getName());
     }
 
-    @Test
+    //@Test
     public void getUserCounters() {
         System.out.println("-- " + name.getMethodName() + " --");
 
         // create counter(test)
-        HttpTestRequest request = new HttpTestRequest();
-        Gson gson = new Gson();
-        HashMap<String, String> headers = new HashMap<>();
-        headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
-
         String body = "{\n" +
                 "  \"name\": \"test\"\n" +
                 "}";
 
-        TestResponse response = request.test("/api/counters/", body, null, headers, "POST");
+        TestResponse response = tester.post("/api/counters/", null, body);
 
         if (HttpTestRequest.isError(response)) {
             System.out.println("Error creating counter");
@@ -241,12 +230,9 @@ public class UsersApiTest {
         }
 
         // get counters
-        request = new HttpTestRequest();
-        gson = new Gson();
-        headers = new HashMap<>();
-        headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
+        Gson gson = new Gson();
 
-        response = request.test("/api/users/" + testUser.getProfileId() + "/counter/test", null, null, headers, "GET");
+        response = tester.get("/api/users/" + testUser.getProfileId() + "/counter/test", null);
 
         if (HttpTestRequest.isError(response)) {
             System.out.println("Error getting counter");
@@ -263,12 +249,7 @@ public class UsersApiTest {
     public void after() {
         System.out.println("-- AFTER --");
 
-        HttpTestRequest request = new HttpTestRequest();
-        Gson gson = new Gson();
-        HashMap<String, String> headers = new HashMap<>();
-        headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
-
-        TestResponse response = request.test("/api/users/" + testUser.getProfileId(), null, null, headers, "DELETE");
+        TestResponse response = tester.delete("/api/users/" + testUser.getProfileId());
 
         if (HttpTestRequest.isError(response))
             return;
@@ -278,6 +259,6 @@ public class UsersApiTest {
 
     @AfterClass
     public static void afterClass() {
-        baseDomainPostExec(testDomain, AFTER_CLASS);
-    }*/
+        baseDomainPostExec(testDomain, AFTER_CLASS, tester);
+    }
 }

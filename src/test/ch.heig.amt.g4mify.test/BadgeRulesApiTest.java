@@ -17,6 +17,7 @@ import static org.junit.Assert.assertEquals;
  * Created by yathanasiades on 24/01/17.
  */
 public class BadgeRulesApiTest {
+    static private HttpTestRequest tester = null;
     static private Domain testDomain = null;
     private long eventRuleId;
 
@@ -25,7 +26,9 @@ public class BadgeRulesApiTest {
 
     @BeforeClass
     static public void beforeClass() {
-        testDomain = baseDomainInit(BEFORE_CLASS);
+        tester = new HttpTestRequest();
+        testDomain = baseDomainInit(BEFORE_CLASS, tester);
+        tester.setDefaultHeader("Identity", testDomain.getId() + ":" + testDomain.getKey());
     }
 
     @Before
@@ -45,7 +48,7 @@ public class BadgeRulesApiTest {
                 "]" +
                 "}";
 
-        TestResponse response = request.test("/api/event-rules", body, null, headers, "POST");
+        TestResponse response = tester.post("/api/event-rules", null, body);
 
         if (HttpTestRequest.isError(response)) {
             System.out.println("Error creating eventRule");
@@ -60,6 +63,6 @@ public class BadgeRulesApiTest {
 
     @AfterClass
     public static void afterClass() {
-        baseDomainPostExec(testDomain, AFTER_CLASS);
+        baseDomainPostExec(testDomain, AFTER_CLASS, tester);
     }
 }
