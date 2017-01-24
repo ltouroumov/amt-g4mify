@@ -1,6 +1,5 @@
 1. (OK)register:
-	|- WeShouldBeAbleToCreateANewDomain
-	|- WeShouldntBeAbleToCreateANewDomainWithAWrongBody
+    |- WeShouldBeAbleToCreateDomain (Implicitly with the Before statement)
 
 2. (OK)domains:
 	|- WeShouldBeAbleToGetADomainWithTheCorrectKey
@@ -9,7 +8,7 @@
 	|- WeShouldntBeAbleToGetADomainWithANonExistingIdentity
 	|- WeShouldBeAbleToUpdateADomain
 	|- WeShouldntBeAbleToChangeADomainWithAWrongBody
-	|- WeShouldBeAbleToDeleteADomain
+	|- WeShouldBeAbleToDeleteADomain (Implicitly with the After statement)
 	We can't delete others ID because of the authentification filter in any case. No mandatory test for check it. (Check the WeShouldntBeAbleToGetADomainWithTheWrongKey test)
 
 3. counters-api:

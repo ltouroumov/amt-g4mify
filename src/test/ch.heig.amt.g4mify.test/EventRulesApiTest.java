@@ -17,7 +17,7 @@ import static org.junit.Assert.assertEquals;
  * Created by yathanasiades on 24/01/17.
  */
 public class EventRulesApiTest {
-    static private Domain testDomain = null;
+    /*static private Domain testDomain = null;
     private long eventRuleId;
 
     @Rule
@@ -181,5 +181,5 @@ public class EventRulesApiTest {
     @AfterClass
     public static void afterClass() {
         baseDomainPostExec(testDomain, AFTER_CLASS);
-    }
+    }*/
 }

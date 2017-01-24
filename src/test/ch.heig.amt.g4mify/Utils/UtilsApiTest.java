@@ -36,7 +36,7 @@ public class UtilsApiTest {
         if(response.getStatusCode() == 201){
             System.out.println("Correctly create a new domain with name " + domainName + " and ID " + testDomain.getId());
         }else{
-            throw new RuntimeException("Couldn't create a new domain! Please run the RegisterApiTest test class!");
+            throw new RuntimeException("Couldn't create a new domain!");
         }
         return testDomain;
     }
@@ -59,6 +59,5 @@ public class UtilsApiTest {
         }else{
             throw new RuntimeException("Couldn't delete the domain " + testDomain.getId() + "! Please run the DomainApiTest test class!");
         }
-        assertEquals(200, response.getStatusCode());
     }
 }
