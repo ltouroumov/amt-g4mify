@@ -34,18 +34,16 @@ public class DomainApiTest {
         tester = new HttpTestRequest();
         testDomain = baseDomainInit(BEFORE, tester);
 
-        System.out.println("Identity: " + testDomain.getId() + ":" + testDomain.getKey());
         tester.setDefaultHeader("Identity", testDomain.getId() + ":" + testDomain.getKey());
     }
 
     @Test
-    public void getDomain() {
+    public void WeShouldBeAbleToGetADomainWithTheCorrectKey() {
         System.out.println("\n- " + name.getMethodName() + " -");
         Gson gson = new Gson();
         TestResponse response = tester.get("/api/domain", null);
         if(isError(response)) return;
         Domain domain = gson.fromJson(response.getBody(), Domain.class);
-        System.out.println("Body: " + response.getBody());
         System.out.println("Name: " + domain.getName() + " // Id: " + domain.getId() + " // Key: " + domain.getKey());
         assertEquals(response.getStatusCode(), 200);
         assertEquals(testDomain.getName(), domain.getName());
@@ -53,16 +51,48 @@ public class DomainApiTest {
     }
 
     @Test
-    public void putDomain(){
-        /*System.out.println("\n- " + name.getMethodName() + " -");
+    public void WeShouldntBeAbleToGetADomainWithTheWrongKey() {
+        System.out.println("\n- " + name.getMethodName() + " -");
         Gson gson = new Gson();
-        TestResponse response = tester.put("/api/domain", "{\"name\": \"This domain name has changed\"}", null, headers, "PUT");
+        tester.setDefaultHeader("Identity", testDomain.getId() + ":" + testDomain.getKey()+"ThisIsAWrongKey");
+        TestResponse response = tester.get("/api/domain", null);
+        tester.setDefaultHeader("Identity", testDomain.getId() + ":" + testDomain.getKey());
+        assertEquals(401, response.getStatusCode());
+    }
+
+    @Test
+    public void WeShouldntBeAbleToGetADomainWithANonExistingIdentity() {
+        System.out.println("\n- " + name.getMethodName() + " -");
+        Gson gson = new Gson();
+        tester.setDefaultHeader("Identity", -1 + ":" + testDomain.getKey());
+        TestResponse response = tester.get("/api/domain", null);
+        tester.setDefaultHeader("Identity", testDomain.getId() + ":" + testDomain.getKey());
+        assertEquals(401, response.getStatusCode());
+    }
+
+
+    @Test
+    public void WeShouldntBeAbleToChangeADomainWithAWrongBody(){
+        System.out.println("\n- " + name.getMethodName() + " -");
+        Gson gson = new Gson();
+        TestResponse response1 = tester.put("/api/domain", null, "{\"wrongBody\": \"This domain name has changed\"}");
+        assertEquals(400, response1.getStatusCode());
+        TestResponse response2 = tester.put("/api/domain", null, "{\"malformed!: \"This domain name has changed\"}");
+        assertEquals(400, response2.getStatusCode());
+
+    }
+
+    @Test
+    public void WeShouldBeAbleToUpdateADomain(){
+        System.out.println("\n- " + name.getMethodName() + " -");
+        Gson gson = new Gson();
+        TestResponse response = tester.put("/api/domain", null, "{\"name\": \"This domain name has changed\"}");
         if(isError(response)) return;
         Domain domain = gson.fromJson(response.getBody(), Domain.class);
         System.out.println("Name: " + domain.getName() + " // Id: " + domain.getId() + " // Key: " + domain.getKey());
         assertEquals(200, response.getStatusCode());
         assertNotEquals(testDomain.getName(), domain.getName());
-        assertEquals(testDomain.getId(), domain.getId());*/
+        assertEquals(testDomain.getId(), domain.getId());
     }
 
     @After

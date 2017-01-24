@@ -66,6 +66,31 @@ public class HttpTestRequest {
         return response;
     }
 
+    public TestResponse put(String endpoint, HashMap<String, Object> parameters, String body){
+        TestResponse response = null;
+        if(endpoint == null) throw new RuntimeException("PUT: No URL!");
+        try{
+            String url = new URL(baseURL + endpoint).toString();
+            HttpRequestWithBody request = unirest.put(url);
+            if(parameters != null){
+                request.queryString(parameters);
+            }
+            if(body != null){
+                request.body(body);
+            }
+
+            HttpResponse<JsonNode> responseUnirest = request.asJson();
+            response = new TestResponse(
+                    responseUnirest.getStatus(),
+                    responseUnirest.getBody().toString(),
+                    url);
+
+        }catch(Exception e){
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        return response;
+    }
     public TestResponse post(String endpoint, HashMap<String, Object> parameters, String body){
         TestResponse response = null;
         if(endpoint == null) throw new RuntimeException("POST: No URL!");
@@ -97,7 +122,7 @@ public class HttpTestRequest {
         if(endpoint == null) throw new RuntimeException("DELETE: No URL!");
         try{
             String url = new URL(baseURL + endpoint).toString();
-            HttpRequest request = unirest.get(url);
+            HttpRequest request = unirest.delete(url);
             HttpResponse<JsonNode> responseUnirest = request.asJson();
             response = new TestResponse(
                     responseUnirest.getStatus(),
