@@ -20,7 +20,7 @@ def create(what, query):
     else:
         print(" [ERR]", resp.status_code)
 
-resp = post('/register', json = { "name": "Test Domain" }).json()
+resp = post('/register', json = { "name": "BeepBoop" }).json()
 
 print("Connected to domain %s (%d:%s)" % (resp['name'], resp['id'], resp['key']))
 headers['Identity'] = "%d:%s" % (resp['id'], resp['key'])
