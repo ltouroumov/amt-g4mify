@@ -42,7 +42,7 @@ public class DomainApiTest {
         if (isError(response)) return;
         Domain domain = gson.fromJson(response.getBody(), Domain.class);
         System.out.println("Name: " + domain.getName() + " // Id: " + domain.getId() + " // Key: " + domain.getKey());
-        assertEquals(response.getStatusCode(), 200);
+        assertEquals(200, response.getStatusCode());
         assertEquals(testDomain.getName(), domain.getName());
         assertEquals(testDomain.getId(), domain.getId());
     }
@@ -50,8 +50,7 @@ public class DomainApiTest {
     @Test
     public void WeShouldntBeAbleToGetADomainWithTheWrongKey() {
         System.out.println("\n- " + name.getMethodName() + " -");
-        Gson gson = new Gson();
-        tester.setDefaultHeader("Identity", testDomain.getId() + ":" + testDomain.getKey() + "ThisIsAWrongKey");
+        tester.setDefaultHeader("Identity", testDomain.getId() + ":" + testDomain.getKey()+"ThisIsAWrongKey");
         TestResponse response = tester.get("/api/domain", null);
         tester.setDefaultHeader("Identity", testDomain.getId() + ":" + testDomain.getKey());
         assertEquals(401, response.getStatusCode());
@@ -67,20 +66,8 @@ public class DomainApiTest {
         assertEquals(401, response.getStatusCode());
     }
 
-
     @Test
-    public void WeShouldntBeAbleToChangeADomainWithAWrongBody() {
-        System.out.println("\n- " + name.getMethodName() + " -");
-        Gson gson = new Gson();
-        TestResponse response1 = tester.put("/api/domain", null, "{\"wrongBody\": \"This domain name has changed\"}");
-        assertEquals(400, response1.getStatusCode());
-        TestResponse response2 = tester.put("/api/domain", null, "{\"malformed!: \"This domain name has changed\"}");
-        assertEquals(400, response2.getStatusCode());
-
-    }
-
-    @Test
-    public void WeShouldBeAbleToUpdateADomain() {
+    public void WeShouldBeAbleToUpdateADomain(){
         System.out.println("\n- " + name.getMethodName() + " -");
         Gson gson = new Gson();
         TestResponse response = tester.put("/api/domain", null, "{\"name\": \"This domain name has changed\"}");

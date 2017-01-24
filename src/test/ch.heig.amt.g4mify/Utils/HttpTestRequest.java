@@ -29,7 +29,7 @@ public class HttpTestRequest {
     private Unirest unirest = null;
 
     public HttpTestRequest(){
-        unirest = new Unirest();
+        Unirest.clearDefaultHeaders();
         setDefaultHeader("Accept", "application/json");
         setDefaultHeader("Content-Type", "application/json");
     }

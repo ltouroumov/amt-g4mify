@@ -14,12 +14,9 @@
 3. counters-api:
 	|- WeShouldBeAbleToCreateANewCounter
 	|- WeShouldBeAbleToGetAllCounters
-	- WeShouldBeAbleToGetACounter
+	|- WeShouldBeAbleToGetACounter
 	|- WeShouldBeAbleToDeleteACounter
-	- WeShouldBeAbleToUpdateACounter
-	- WeShouldntBeAbleToGetACounterInAnOtherDomain
-	- WeShouldntBeABleToGetACounterWithABadID
-	- WeShouldntBeAbleToDeleteACounterWithABadID
+	|- WeShouldBeAbleToUpdateACounter
 	
 
 4. metric-api:

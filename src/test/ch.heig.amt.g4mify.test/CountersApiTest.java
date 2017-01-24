@@ -16,6 +16,7 @@ import java.util.HashMap;
 import static ch.heig.amt.g4mify.Utils.HttpTestRequest.isError;
 import static ch.heig.amt.g4mify.Utils.UtilsApiTest.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 /**
  * Created by Le Poulet Suisse on 05.12.2016.
@@ -51,7 +52,7 @@ public class CountersApiTest {
     }
 
     @Test
-    public void getCounters(){
+    public void WeShouldBeAbleToGetAllCounters(){
         System.out.println("\n- " + name.getMethodName() + " -");
         Gson gson = new Gson();
         TestResponse response = tester.get("/api/counters", null);
@@ -64,14 +65,14 @@ public class CountersApiTest {
     }
 
     @Test
-    public void getCounter(){
+    public void WeShouldBeAbleToGetACounter(){
         System.out.println("\n- " + name.getMethodName() + " -");
         Gson gson = new Gson();
-        TestResponse response = tester.get("/api/counters", null);
+        TestResponse response = tester.get("/api/counters/" + counters.get(0).name, null);
         if(isError(response)) return;
         assertEquals(200, response.getStatusCode());
 
-        CounterSummary[] countersList = gson.fromJson(response.getBody(), CounterSummary[].class);
+        CounterSummary countersList = gson.fromJson(response.getBody(), CounterSummary.class);
         ArrayList<CounterSummary> counters = new ArrayList<>(Arrays.asList(countersList));
         counters.forEach(counterSummary -> {
             TestResponse responseCounter = tester.get("/api/counters/" + counterSummary.name, null);
@@ -83,13 +84,40 @@ public class CountersApiTest {
         });
     }
 
+    @Test
+    public void WeShouldntBeABleToGetACounterWithABadName(){
+        System.out.println("\n- " + name.getMethodName() + " -");
+        Gson gson = new Gson();
+        TestResponse response = tester.get("/api/counters/" + "ThisIsARandomName", null);
+        assertEquals(404, response.getStatusCode());
+    }
+
+    @Test
+    public void WeShouldBeAbleToUpdateACounter(){
+        System.out.println("\n- " + name.getMethodName() + " -");
+        Gson gson = new Gson();
+        CounterSummary oldCounter = counters.get(0);
+        System.out.println("Old counter");
+        displayCounter(oldCounter);
+        TestResponse response = tester.put("/api/counters/" + counters.get(0).name, null, "{\"name\": \"updatedCounter\"}");
+        if(isError(response)) return;
+        CounterSummary counter = gson.fromJson(response.getBody(), CounterSummary.class);
+        System.out.println("New counter");
+        counters.set(0, counter);
+        displayCounter(oldCounter);
+        assertEquals(200, response.getStatusCode());
+        assertNotEquals(oldCounter.name, counter.name);
+        assertEquals(oldCounter.id, counter.id);
+
+    }
+
     @After
     public void after(){
         System.out.println("\n- AFTER -");
         HashMap<String, String> headers = new HashMap<>();
         headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
         for(CounterSummary counter : counters){
-            TestResponse response = tester.delete("/api/counters/" + counter.id);
+            TestResponse response = tester.delete("/api/counters/" + counter.name);
             if(isError(response)) return;
             System.out.println("Successfully deleted counter with id " + counter.id);
             assertEquals(200, response.getStatusCode());
