@@ -2,6 +2,7 @@ package ch.heig.amt.g4mify.test;
 
 import ch.heig.amt.g4mify.Utils.HttpTestRequest;
 import ch.heig.amt.g4mify.Utils.TestResponse;
+import ch.heig.amt.g4mify.Utils.UtilsApiTest;
 import ch.heig.amt.g4mify.model.Domain;
 import com.google.gson.Gson;
 import org.junit.After;
@@ -22,6 +23,7 @@ import static org.junit.Assert.assertNotEquals;
  */
 public class DomainApiTest {
     private Domain testDomain = null;
+    private HttpTestRequest tester = null;
 
     @Rule
     public TestName name = new TestName();
@@ -29,19 +31,21 @@ public class DomainApiTest {
     @Before
     public void before(){
         System.out.println("-- " + name.getMethodName() + " --");
-        testDomain = baseDomainInit(BEFORE);
+        tester = new HttpTestRequest();
+        testDomain = baseDomainInit(BEFORE, tester);
+
+        System.out.println("Identity: " + testDomain.getId() + ":" + testDomain.getKey());
+        tester.setDefaultHeader("Identity", testDomain.getId() + ":" + testDomain.getKey());
     }
 
     @Test
     public void getDomain() {
         System.out.println("\n- " + name.getMethodName() + " -");
-        HttpTestRequest request = new HttpTestRequest();
         Gson gson = new Gson();
-        HashMap<String, String> headers = new HashMap<>();
-        headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
-        TestResponse response = request.test("/api/domain", null, null, headers, "GET");
+        TestResponse response = tester.get("/api/domain", null);
         if(isError(response)) return;
         Domain domain = gson.fromJson(response.getBody(), Domain.class);
+        System.out.println("Body: " + response.getBody());
         System.out.println("Name: " + domain.getName() + " // Id: " + domain.getId() + " // Key: " + domain.getKey());
         assertEquals(response.getStatusCode(), 200);
         assertEquals(testDomain.getName(), domain.getName());
@@ -50,22 +54,19 @@ public class DomainApiTest {
 
     @Test
     public void putDomain(){
-        System.out.println("\n- " + name.getMethodName() + " -");
-        HttpTestRequest request = new HttpTestRequest();
+        /*System.out.println("\n- " + name.getMethodName() + " -");
         Gson gson = new Gson();
-        HashMap<String, String> headers = new HashMap<>();
-        headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
-        TestResponse response = request.test("/api/domain", "{\"name\": \"This domain name has changed\"}", null, headers, "PUT");
+        TestResponse response = tester.put("/api/domain", "{\"name\": \"This domain name has changed\"}", null, headers, "PUT");
         if(isError(response)) return;
         Domain domain = gson.fromJson(response.getBody(), Domain.class);
         System.out.println("Name: " + domain.getName() + " // Id: " + domain.getId() + " // Key: " + domain.getKey());
         assertEquals(200, response.getStatusCode());
         assertNotEquals(testDomain.getName(), domain.getName());
-        assertEquals(testDomain.getId(), domain.getId());
+        assertEquals(testDomain.getId(), domain.getId());*/
     }
 
     @After
     public void after(){
-        baseDomainPostExec(testDomain, AFTER);
+        baseDomainPostExec(testDomain, AFTER, tester);
     }
 }

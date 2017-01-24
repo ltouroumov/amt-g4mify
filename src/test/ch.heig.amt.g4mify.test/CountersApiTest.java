@@ -1,8 +1,6 @@
 package ch.heig.amt.g4mify.test;
 
 import ch.heig.amt.g4mify.Utils.HttpTestRequest;
-import ch.heig.amt.g4mify.Utils.TestResponse;
-import ch.heig.amt.g4mify.model.Counter;
 import ch.heig.amt.g4mify.model.Domain;
 import ch.heig.amt.g4mify.model.view.counter.CounterSummary;
 import ch.heig.amt.g4mify.model.view.metric.MetricSummary;
@@ -22,7 +20,7 @@ import static org.junit.Assert.assertEquals;
  * Created by Le Poulet Suisse on 05.12.2016.
  */
 public class CountersApiTest {
-    private static Domain testDomain = null;
+    /*private static Domain testDomain = null;
     private static ArrayList<CounterSummary> counters = new ArrayList<>();
 
     @Rule
@@ -41,6 +39,7 @@ public class CountersApiTest {
         Gson gson = new Gson();
         HashMap<String, String> headers = new HashMap<>();
         headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
+
         TestResponse response = request.test("/api/counters", "{\"name\":\"myCounter\"}", null, headers, "POST");
         if(isError(response)) return;
         CounterSummary counter = gson.fromJson(response.getBody(), CounterSummary.class);
@@ -118,5 +117,5 @@ public class CountersApiTest {
             System.out.println("\tName: " + metric.name);
             System.out.println("\tDuration: " + metric.duration);
         }
-    }
+    }*/
 }
