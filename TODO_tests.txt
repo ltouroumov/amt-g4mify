@@ -40,11 +40,11 @@
 	- WeShouldBeAbleToDeleteABadge
 
 6. badge-rules-api:
-	- WeShouldBeAbleToGetAllBadgeRules
-	- WeShouldBeAbleToCreateABadgeRule
-	- WeShouldBeAbleToGetABadgeRule
-	- WeShouldBeAbleToUpdateABadgeRule
-	- WeShouldBeAbleToDeleteABadgeRule
+	|- WeShouldBeAbleToGetAllBadgeRules
+	|- WeShouldBeAbleToCreateABadgeRule
+	|- WeShouldBeAbleToGetABadgeRule
+	|- WeShouldBeAbleToUpdateABadgeRule
+	|- WeShouldBeAbleToDeleteABadgeRule
 	Also check the alphaNumeric ID (Only number are accepted)
 
 7. event-rules-api:

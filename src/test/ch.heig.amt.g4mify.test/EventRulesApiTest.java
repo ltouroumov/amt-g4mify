@@ -33,7 +33,7 @@ public class EventRulesApiTest {
 
     @Before
     public void before() {
-        System.out.println("-- " + name.getMethodName() + " --");
+        System.out.println("-- BEFORE --");
 
         // create eventRule that gives a badge when event is triggered
         HttpTestRequest request = new HttpTestRequest();
@@ -65,10 +65,7 @@ public class EventRulesApiTest {
     public void getEventRules() {
         System.out.println("-- " + name.getMethodName() + " --");
 
-        HttpTestRequest request = new HttpTestRequest();
         Gson gson = new Gson();
-        HashMap<String, String> headers = new HashMap<>();
-        headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
 
         TestResponse response = tester.get("/api/event-rules", null);
 
