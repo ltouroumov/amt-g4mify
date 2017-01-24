@@ -2,7 +2,6 @@ package ch.heig.amt.g4mify.test;
 
 import ch.heig.amt.g4mify.Utils.HttpTestRequest;
 import ch.heig.amt.g4mify.Utils.TestResponse;
-import ch.heig.amt.g4mify.Utils.UtilsApiTest;
 import ch.heig.amt.g4mify.model.Domain;
 import com.google.gson.Gson;
 import org.junit.After;
@@ -10,8 +9,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
-
-import java.util.HashMap;
 
 import static ch.heig.amt.g4mify.Utils.HttpTestRequest.isError;
 import static ch.heig.amt.g4mify.Utils.UtilsApiTest.*;
@@ -29,7 +26,7 @@ public class DomainApiTest {
     public TestName name = new TestName();
 
     @Before
-    public void before(){
+    public void before() {
         System.out.println("-- " + name.getMethodName() + " --");
         tester = new HttpTestRequest();
         testDomain = baseDomainInit(BEFORE, tester);
@@ -42,7 +39,7 @@ public class DomainApiTest {
         System.out.println("\n- " + name.getMethodName() + " -");
         Gson gson = new Gson();
         TestResponse response = tester.get("/api/domain", null);
-        if(isError(response)) return;
+        if (isError(response)) return;
         Domain domain = gson.fromJson(response.getBody(), Domain.class);
         System.out.println("Name: " + domain.getName() + " // Id: " + domain.getId() + " // Key: " + domain.getKey());
         assertEquals(response.getStatusCode(), 200);
@@ -54,7 +51,7 @@ public class DomainApiTest {
     public void WeShouldntBeAbleToGetADomainWithTheWrongKey() {
         System.out.println("\n- " + name.getMethodName() + " -");
         Gson gson = new Gson();
-        tester.setDefaultHeader("Identity", testDomain.getId() + ":" + testDomain.getKey()+"ThisIsAWrongKey");
+        tester.setDefaultHeader("Identity", testDomain.getId() + ":" + testDomain.getKey() + "ThisIsAWrongKey");
         TestResponse response = tester.get("/api/domain", null);
         tester.setDefaultHeader("Identity", testDomain.getId() + ":" + testDomain.getKey());
         assertEquals(401, response.getStatusCode());
@@ -72,7 +69,7 @@ public class DomainApiTest {
 
 
     @Test
-    public void WeShouldntBeAbleToChangeADomainWithAWrongBody(){
+    public void WeShouldntBeAbleToChangeADomainWithAWrongBody() {
         System.out.println("\n- " + name.getMethodName() + " -");
         Gson gson = new Gson();
         TestResponse response1 = tester.put("/api/domain", null, "{\"wrongBody\": \"This domain name has changed\"}");
@@ -83,11 +80,11 @@ public class DomainApiTest {
     }
 
     @Test
-    public void WeShouldBeAbleToUpdateADomain(){
+    public void WeShouldBeAbleToUpdateADomain() {
         System.out.println("\n- " + name.getMethodName() + " -");
         Gson gson = new Gson();
         TestResponse response = tester.put("/api/domain", null, "{\"name\": \"This domain name has changed\"}");
-        if(isError(response)) return;
+        if (isError(response)) return;
         Domain domain = gson.fromJson(response.getBody(), Domain.class);
         System.out.println("Name: " + domain.getName() + " // Id: " + domain.getId() + " // Key: " + domain.getKey());
         assertEquals(200, response.getStatusCode());
@@ -96,7 +93,7 @@ public class DomainApiTest {
     }
 
     @After
-    public void after(){
+    public void after() {
         baseDomainPostExec(testDomain, AFTER, tester);
     }
 }

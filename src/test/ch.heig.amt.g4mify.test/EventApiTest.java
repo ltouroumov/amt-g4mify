@@ -36,10 +36,7 @@ public class EventApiTest {
     public void before() {
         System.out.println("-- BEFORE --");
 
-        HttpTestRequest request = new HttpTestRequest();
         Gson gson = new Gson();
-        HashMap<String, String> headers = new HashMap<>();
-        headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
 
         String body = "{\n" +
                 "  \"profileId\": \"Donald Duck\",\n" +
@@ -60,11 +57,6 @@ public class EventApiTest {
         System.out.println("-- " + name.getMethodName() + " --");
 
         // create an event
-        HttpTestRequest request = new HttpTestRequest();
-        Gson gson = new Gson();
-        HashMap<String, String> headers = new HashMap<>();
-        headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
-
         String body = "{\n" +
                 "  \"data\": {},\n" +
                 "  \"type\": \"test-event\",\n" +
@@ -78,15 +70,14 @@ public class EventApiTest {
             return;
         }
 
-        assertEquals("201", response.getStatusCode());
+        assertEquals(200, response.getStatusCode());
 
         // get events
-        request = new HttpTestRequest();
-        gson = new Gson();
-        headers = new HashMap<>();
-        headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
+        Gson gson = new Gson();
+        HashMap<String,Object> hm = new HashMap<>();
+        hm.put("user", testUser.getId());
 
-        response = tester.get("/api/events", null);
+        response = tester.get("/api/events", hm);
 
         if (HttpTestRequest.isError(response)) {
             System.out.println("Error creating event");
@@ -98,14 +89,9 @@ public class EventApiTest {
         assertEquals("test-event", events[0].getType());
     }
 
-    @After
+    //@After
     public void after() {
         System.out.println("-- AFTER --");
-
-        HttpTestRequest request = new HttpTestRequest();
-        Gson gson = new Gson();
-        HashMap<String, String> headers = new HashMap<>();
-        headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
 
         TestResponse response = tester.delete("/api/users/" + testUser.getProfileId());
 
@@ -115,7 +101,7 @@ public class EventApiTest {
         System.out.println("sucessfully deleted user");
     }
 
-    @AfterClass
+    //@AfterClass
     public static void afterClass() {
         baseDomainPostExec(testDomain, AFTER_CLASS, tester);
     }
