@@ -4,6 +4,7 @@ import ch.heig.amt.g4mify.actors.EventProcessor;
 import ch.heig.amt.g4mify.dsl.BadgeRuleEvaluator;
 import ch.heig.amt.g4mify.model.*;
 import ch.heig.amt.g4mify.model.view.OutputView;
+import ch.heig.amt.g4mify.model.view.badgeRule.BadgeRuleUpdate;
 import ch.heig.amt.g4mify.model.view.badgeType.BadgeTypeSummary;
 import ch.heig.amt.g4mify.model.view.badgeRule.BadgeRuleDetail;
 import ch.heig.amt.g4mify.model.view.badgeRule.BadgeRuleSummary;
@@ -66,7 +67,7 @@ public class BadgeRulesApi extends AbstractDomainApi {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<BadgeRuleDetail> create(@RequestBody BadgeRuleSummary body) {
+    public ResponseEntity<BadgeRuleDetail> create(@RequestBody BadgeRuleUpdate body) {
 
 
         Domain domain = getDomain();
@@ -137,7 +138,7 @@ public class BadgeRulesApi extends AbstractDomainApi {
     }
 
     @RequestMapping(path = "/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<BadgeRuleDetail> update(@PathVariable long id, @RequestBody BadgeRuleSummary body) {
+    public ResponseEntity<BadgeRuleDetail> update(@PathVariable long id, @RequestBody BadgeRuleUpdate body) {
 
         BadgeRule badgeRule = badgeRulesRepository.findOne(id);
 
