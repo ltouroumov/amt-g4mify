@@ -60,11 +60,11 @@ public class EventsApi extends AbstractDomainApi {
             @ApiResponse(code = 404, message = "Not found"),
             @ApiResponse(code = 500, message = "Error obtaining event from a user in the domain")})
     @Transactional
-    public ResponseEntity<EventInfos> get(@RequestParam(name = "user") long userId,
+    public ResponseEntity<EventInfos> get(@RequestParam(name = "user") String userId,
                                  @RequestParam(required = false, defaultValue = "0") long page,
                                  @RequestParam(required = false, defaultValue = "50") long pageSize) {
         Domain domain = getDomain();
-        User user = usersRepository.findOne(userId);
+        User user = usersRepository.findByDomainAndProfileId(domain, userId).orElse(null);
 
         if (user == null || user.getDomain().getId() != domain.getId()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
