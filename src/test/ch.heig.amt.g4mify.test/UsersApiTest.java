@@ -96,7 +96,7 @@ public class UsersApiTest {
 
         assertEquals("201", response.getStatusCode());
 
-
+        // get user to verify
         request = new HttpTestRequest();
         gson = new Gson();
         headers = new HashMap<>();

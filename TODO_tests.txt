@@ -49,11 +49,11 @@
 	Also check the alphaNumeric ID (Only number are accepted)
 
 7. event-rules-api:
-	- WeShouldBeAbleToGetAllEventRules
-	- WeShouldBeAbleToCreateAnEventRule
-	- WeShouldBeAbleToGetAnEventRule
-	- WeShouldBeAbleToUpdateAnEventRule
-	- WeShouldBeAbleToDeleteAnEventRule
+	|- WeShouldBeAbleToGetAllEventRules
+	|- WeShouldBeAbleToCreateAnEventRule
+	|- WeShouldBeAbleToGetAnEventRule
+	|- WeShouldBeAbleToUpdateAnEventRule
+	|- WeShouldBeAbleToDeleteAnEventRule
 
 8. events:
 	|- WeShouldBeAbleToPublishAnEvent
