@@ -48,7 +48,7 @@ public class UsersApiTest {
 
         if (HttpTestRequest.isError(response))
             return;
-
+System.out.println(response.getBody());
         testUser = gson.fromJson(response.getBody(), User.class);
 
         System.out.println("sucessfully created user");
@@ -72,46 +72,38 @@ public class UsersApiTest {
         assertEquals(testUser.getId(), users[0].getId());
     }
 
-    /*@Test
+    @Test
     public void putUser() {
         System.out.println("-- " + name.getMethodName() + " --");
-
-        HttpTestRequest request = new HttpTestRequest();
-        Gson gson = new Gson();
-        HashMap<String, String> headers = new HashMap<>();
-        headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
 
         String body = "{\n" +
                 "  \"badges\": [],\n" +
                 "  \"id\": " + testUser.getId() + ",\n" +
-                "  \"profileId\": \"Picsou Duck\",\n" +
+                "  \"profileId\": \"Donald Duck\",\n" +
                 "  \"profileUrl\": \"pduck\"\n" +
                 "}";
 
-        TestResponse response = request.test("/api/users/" + testUser.getProfileId(), body, null, headers, "PUT");
+        TestResponse response = tester.put("/api/users/" + testUser.getProfileId(), null, body);
 
         if (HttpTestRequest.isError(response))
             return;
 
-        assertEquals("201", response.getStatusCode());
+        assertEquals(200, response.getStatusCode());
 
         // get user to verify
-        request = new HttpTestRequest();
-        gson = new Gson();
-        headers = new HashMap<>();
-        headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
+        Gson gson = new Gson();
 
-        response = request.test("/api/users/" + testUser.getProfileId(), null, null, headers, "GET");
+        response = tester.get("/api/users/" + testUser.getProfileId(), null);
 
         if (HttpTestRequest.isError(response))
             return;
 
         User user = gson.fromJson(response.getBody(), User.class);
 
-        assertEquals("Picsou Duck", user.getProfileId());
+        assertEquals("Donald Duck", user.getProfileId());
         assertEquals("pduck", user.getProfileUrl());
         assertEquals(testUser.getId(), user.getId());
-    }*/
+    }
 
     @Test
     public void getUser() {
@@ -131,7 +123,7 @@ public class UsersApiTest {
         assertEquals(testUser.getId(), user.getId());
     }
 
-    //@Test
+    @Test
     public void getUserBadges() {
         System.out.println("-- " + name.getMethodName() + " --");
 
@@ -204,13 +196,14 @@ public class UsersApiTest {
 
         System.out.println("got user's badges");
 
-        ArrayList<Badge> badges = gson.fromJson(response.getBody(), new TypeToken<ArrayList<Badge>>() {}.getType());
+        ArrayList<Badge> badges = gson.fromJson(response.getBody(), new TypeToken<ArrayList<Badge>>() {
+        }.getType());
 
         System.out.println(response.getBody());
         //assertEquals("test-badge", badges.get(0).getType().getName());
     }
 
-    //@Test
+    @Test
     public void getUserCounters() {
         System.out.println("-- " + name.getMethodName() + " --");
 

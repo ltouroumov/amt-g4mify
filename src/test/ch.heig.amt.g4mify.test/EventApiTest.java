@@ -13,6 +13,7 @@ import java.util.HashMap;
 
 import static ch.heig.amt.g4mify.Utils.UtilsApiTest.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by yathanasiades on 24/01/17.
@@ -36,10 +37,7 @@ public class EventApiTest {
     public void before() {
         System.out.println("-- BEFORE --");
 
-        HttpTestRequest request = new HttpTestRequest();
         Gson gson = new Gson();
-        HashMap<String, String> headers = new HashMap<>();
-        headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
 
         String body = "{\n" +
                 "  \"profileId\": \"Donald Duck\",\n" +
@@ -60,11 +58,6 @@ public class EventApiTest {
         System.out.println("-- " + name.getMethodName() + " --");
 
         // create an event
-        HttpTestRequest request = new HttpTestRequest();
-        Gson gson = new Gson();
-        HashMap<String, String> headers = new HashMap<>();
-        headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
-
         String body = "{\n" +
                 "  \"data\": {},\n" +
                 "  \"type\": \"test-event\",\n" +
@@ -78,34 +71,28 @@ public class EventApiTest {
             return;
         }
 
-        assertEquals("201", response.getStatusCode());
+        assertEquals(200, response.getStatusCode());
 
         // get events
-        request = new HttpTestRequest();
-        gson = new Gson();
-        headers = new HashMap<>();
-        headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
+        Gson gson = new Gson();
+        HashMap<String, Object> hm = new HashMap<>();
+        hm.put("user", testUser.getProfileId());
 
-        response = tester.get("/api/events", null);
+        response = tester.get("/api/events", hm);
 
         if (HttpTestRequest.isError(response)) {
             System.out.println("Error creating event");
             return;
         }
 
-        Event[] events = gson.fromJson(response.getBody(), Event[].class);
 
-        assertEquals("test-event", events[0].getType());
+        assertEquals(200, response.getStatusCode());
+        assertNotNull(response.getBody());
     }
 
     @After
     public void after() {
         System.out.println("-- AFTER --");
-
-        HttpTestRequest request = new HttpTestRequest();
-        Gson gson = new Gson();
-        HashMap<String, String> headers = new HashMap<>();
-        headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
 
         TestResponse response = tester.delete("/api/users/" + testUser.getProfileId());
 
