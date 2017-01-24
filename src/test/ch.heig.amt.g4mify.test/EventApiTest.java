@@ -50,7 +50,7 @@ public class EventApiTest {
         testUser = gson.fromJson(response.getBody(), User.class);
 
         System.out.println("sucessfully created user");
-    }0
+    }
 
     @Test
     public void testEvents() {
