@@ -24,6 +24,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
@@ -58,6 +59,7 @@ public class EventsApi extends AbstractDomainApi {
             @ApiResponse(code = 200, message = "Ok"),
             @ApiResponse(code = 404, message = "Not found"),
             @ApiResponse(code = 500, message = "Error obtaining event from a user in the domain")})
+    @Transactional
     public ResponseEntity<EventInfos> get(@RequestParam(name = "user") long userId,
                                  @RequestParam(required = false, defaultValue = "0") long page,
                                  @RequestParam(required = false, defaultValue = "50") long pageSize) {
