@@ -63,7 +63,7 @@ public class BadgeTypesApi extends AbstractDomainApi {
             @ApiResponse(code = 201, message = "Created"),
             @ApiResponse(code = 404, message = "Not found"),
             @ApiResponse(code = 500, message = "Error creating the badge-type in the domain")})
-    public ResponseEntity<?> create(@RequestBody BadgeType body) {
+    public ResponseEntity<?> create(@RequestBody BadgeTypeDetail body) {
         Domain domain = getDomain();
         BadgeType input = inputView(BadgeType.class)
                 .map("previous", orNull(prevKey -> badgeTypesRepository.findByDomainAndKey(domain, (String) prevKey).orElse(null)))
