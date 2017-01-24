@@ -16,7 +16,7 @@ public class Badge {
     private long id;
 
     @Column(nullable = false)
-    private Timestamp awarded;
+    private long awarded;
 
     @Column(nullable = false)
     private long level = 0;
@@ -35,11 +35,11 @@ public class Badge {
         return id;
     }
 
-    public Timestamp getAwarded() {
+    public long getAwarded() {
         return awarded;
     }
 
-    public void setAwarded(Timestamp awarded) {
+    public void setAwarded(long awarded) {
         this.awarded = awarded;
     }
 
