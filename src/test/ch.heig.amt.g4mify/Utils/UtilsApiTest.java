@@ -19,7 +19,8 @@ public class UtilsApiTest {
 
     private static String domainName = "TestDomain";
 
-    public static Domain baseDomainInit(int type){
+    public static Domain baseDomainInit(int type, HttpTestRequest testerFrom){
+        HttpTestRequest tester = testerFrom;
         System.out.print("\n");
         if(type == BEFORE){
             System.out.println("- BEFORE -");
@@ -28,9 +29,8 @@ public class UtilsApiTest {
         }else{
             System.err.println("Error in the type specified in before");
         }
-        HttpTestRequest request = new HttpTestRequest();
         Gson gson = new Gson();
-        TestResponse response = request.test("/register", "{\"name\": \"" + domainName + "\"}", null, null, "POST");
+        TestResponse response = tester.post("/register", null, "{\"name\": \"" + domainName + "\"}");
         if(isError(response)) return null;
         Domain testDomain = gson.fromJson(response.getBody(), Domain.class);
         if(response.getStatusCode() == 201){
@@ -41,7 +41,8 @@ public class UtilsApiTest {
         return testDomain;
     }
 
-    public static void baseDomainPostExec(Domain testDomain, int type){
+    public static void baseDomainPostExec(Domain testDomain, int type, HttpTestRequest testerFrom){
+        HttpTestRequest tester = testerFrom;
         System.out.print("\n");
         if(type == AFTER){
             System.out.println("- AFTER -");
@@ -50,10 +51,8 @@ public class UtilsApiTest {
         }else{
             System.err.println("Error in the type specified in after!");
         }
-        HttpTestRequest request = new HttpTestRequest();
-        HashMap<String, String> headers = new HashMap<>();
-        headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
-        TestResponse response = request.test("/api/domain", null, null, headers, "DELETE");
+        //tester.setDefaultHeader("Identity", testDomain.getId() + ":" + testDomain.getKey());
+        TestResponse response = tester.delete("/api/domain");
         if(isError(response)) return;
         if(response.getStatusCode() == 200){
             System.out.println("Correctly deleted domain " + testDomain.getId());

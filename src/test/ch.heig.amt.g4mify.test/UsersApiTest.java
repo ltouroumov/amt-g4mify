@@ -1,7 +1,6 @@
 package ch.heig.amt.g4mify.test;
 
 import ch.heig.amt.g4mify.Utils.HttpTestRequest;
-import ch.heig.amt.g4mify.Utils.TestResponse;
 import ch.heig.amt.g4mify.model.Domain;
 import ch.heig.amt.g4mify.model.User;
 import com.google.gson.Gson;
@@ -17,7 +16,7 @@ import static org.junit.Assert.assertEquals;
  * Created by Yves Athanasiadès on 05.12.2016.
  */
 public class UsersApiTest {
-    static private Domain testDomain = null;
+    /*static private Domain testDomain = null;
     private User testUser = null;
 
     @Rule
@@ -142,5 +141,5 @@ public class UsersApiTest {
     @AfterClass
     public static void afterClass() {
         baseDomainPostExec(testDomain, AFTER_CLASS);
-    }
+    }*/
 }
