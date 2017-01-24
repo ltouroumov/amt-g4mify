@@ -48,7 +48,7 @@ public class UsersApiTest {
 
         if (HttpTestRequest.isError(response))
             return;
-
+System.out.println(response.getBody());
         testUser = gson.fromJson(response.getBody(), User.class);
 
         System.out.println("sucessfully created user");
@@ -247,7 +247,7 @@ public class UsersApiTest {
         System.out.println("sucessfully deleted user");
     }
 
-    //@AfterClass
+    @AfterClass
     public static void afterClass() {
         baseDomainPostExec(testDomain, AFTER_CLASS, tester);
     }

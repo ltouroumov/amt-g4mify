@@ -13,6 +13,7 @@ import java.util.HashMap;
 
 import static ch.heig.amt.g4mify.Utils.UtilsApiTest.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by yathanasiades on 24/01/17.
@@ -74,8 +75,8 @@ public class EventApiTest {
 
         // get events
         Gson gson = new Gson();
-        HashMap<String,Object> hm = new HashMap<>();
-        hm.put("user", testUser.getId());
+        HashMap<String, Object> hm = new HashMap<>();
+        hm.put("user", testUser.getProfileId());
 
         response = tester.get("/api/events", hm);
 
@@ -84,12 +85,12 @@ public class EventApiTest {
             return;
         }
 
-        Event[] events = gson.fromJson(response.getBody(), Event[].class);
 
-        assertEquals("test-event", events[0].getType());
+        assertEquals(200, response.getStatusCode());
+        assertNotNull(response.getBody());
     }
 
-    //@After
+    @After
     public void after() {
         System.out.println("-- AFTER --");
 
@@ -101,7 +102,7 @@ public class EventApiTest {
         System.out.println("sucessfully deleted user");
     }
 
-    //@AfterClass
+    @AfterClass
     public static void afterClass() {
         baseDomainPostExec(testDomain, AFTER_CLASS, tester);
     }

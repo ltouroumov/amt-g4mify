@@ -58,7 +58,7 @@ public class EventRulesApiTest {
         EventRule eventRule = gson.fromJson(response.getBody(), EventRule.class);
         eventRuleId = eventRule.getId();
 
-        assertEquals("201", response.getStatusCode());
+        assertEquals(201, response.getStatusCode());
     }
 
     @Test
@@ -78,7 +78,9 @@ public class EventRulesApiTest {
         }
 
         EventRule[] eventRule = gson.fromJson(response.getBody(), EventRule[].class);
-        assertEquals("award 'test-badge'", eventRule[0].getScript());
+
+        // not super cool depends on when the put test is run
+        assertEquals("award 'test-badge'", eventRule[1].getScript());
     }
 
     @Test
@@ -104,7 +106,7 @@ public class EventRulesApiTest {
         assertEquals(id, eventRule.getId());
     }
 
-    /*@Test
+    @Test
     public void putEventRule() {
         System.out.println("-- " + name.getMethodName() + " --");
 
@@ -124,14 +126,14 @@ public class EventRulesApiTest {
                 "  ]\n" +
                 "}";
 
-        TestResponse response = tester.put("/api/event-rules/" + id, body, null, headers, "PUT");
+        TestResponse response = tester.put("/api/event-rules/" + id, null, body);
 
         if (HttpTestRequest.isError(response)) {
             System.out.println("Error creating eventRule");
             return;
         }
 
-        assertEquals("200", response.getStatusCode());
+        assertEquals(200, response.getStatusCode());
 
         // get eventRule to verify
         request = new HttpTestRequest();
@@ -139,7 +141,7 @@ public class EventRulesApiTest {
         headers = new HashMap<>();
         headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
 
-        response = request.test("/api/event-rules/" + id, null, null, headers, "GET");
+        response = tester.get("/api/event-rules/" + id, null);
 
         if (HttpTestRequest.isError(response)) {
             System.out.println("Error creating eventRule");
@@ -149,7 +151,7 @@ public class EventRulesApiTest {
         EventRule eventRule = gson.fromJson(response.getBody(), EventRule.class);
         assertEquals(id, eventRule.getId());
         assertEquals("update 'test-counter' set 10", eventRule.getScript());
-    }*/
+    }
 
     @Test
     public void deleteEventRule() {
@@ -166,7 +168,7 @@ public class EventRulesApiTest {
             return;
         }
 
-        assertEquals("200", response.getStatusCode());
+        assertEquals(200, response.getStatusCode());
     }
 
     @AfterClass
