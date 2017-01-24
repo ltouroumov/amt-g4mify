@@ -13,7 +13,7 @@ public class BadgeSummary {
 
     public long level;
 
-    public Timestamp awarded;
+    public long awarded;
 
     public BadgeTypeSummary type;
 

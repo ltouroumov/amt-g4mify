@@ -22,10 +22,10 @@ public class Event {
     private long id;
 
     @Column(nullable = false)
-    private Timestamp received;
+    private long received;
 
     @Column(nullable = true)
-    private Timestamp processed = null;
+    private long processed = 0;
 
     @ManyToOne(optional = false)
     private User user;
@@ -45,19 +45,19 @@ public class Event {
         return id;
     }
 
-    public Timestamp getReceived() {
+    public long getReceived() {
         return received;
     }
 
-    public void setReceived(Timestamp received) {
+    public void setReceived(long received) {
         this.received = received;
     }
 
-    public Timestamp getProcessed() {
+    public long getProcessed() {
         return processed;
     }
 
-    public void setProcessed(Timestamp processed) {
+    public void setProcessed(long processed) {
         this.processed = processed;
     }
 

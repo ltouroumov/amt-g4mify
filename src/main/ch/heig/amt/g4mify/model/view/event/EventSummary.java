@@ -14,9 +14,9 @@ public class EventSummary {
 
     public long id;
 
-    public Timestamp received;
+    public long received;
 
-    public Timestamp processed;
+    public long processed;
 
     public String type;
 

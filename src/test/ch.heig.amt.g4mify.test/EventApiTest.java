@@ -18,7 +18,8 @@ import static org.junit.Assert.assertEquals;
  * Created by yathanasiades on 24/01/17.
  */
 public class EventApiTest {
-    /*static private Domain testDomain = null;
+    static private HttpTestRequest tester = null;
+    static private Domain testDomain = null;
     private User testUser = null;
 
     @Rule
@@ -26,7 +27,9 @@ public class EventApiTest {
 
     @BeforeClass
     static public void beforeClass() {
-        testDomain = baseDomainInit(BEFORE_CLASS);
+        tester = new HttpTestRequest();
+        testDomain = baseDomainInit(BEFORE_CLASS, tester);
+        tester.setDefaultHeader("Identity", testDomain.getId() + ":" + testDomain.getKey());
     }
 
     @Before
@@ -42,7 +45,7 @@ public class EventApiTest {
                 "  \"profileId\": \"Donald Duck\",\n" +
                 "  \"profileUrl\": \"dduck\"\n" +
                 "}";
-        TestResponse response = request.test("/api/users", body, null, headers, "POST");
+        TestResponse response = tester.post("/api/users", null, body);
 
         if (HttpTestRequest.isError(response))
             return;
@@ -68,7 +71,7 @@ public class EventApiTest {
                 "  \"user\": \"" + testUser.getProfileId() + "\"\n" +
                 "}";
 
-        TestResponse response = request.test("/api/events/", body, null, headers, "POST");
+        TestResponse response = tester.post("/api/events", null, body);
 
         if (HttpTestRequest.isError(response)) {
             System.out.println("Error creating event");
@@ -83,7 +86,7 @@ public class EventApiTest {
         headers = new HashMap<>();
         headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
 
-        response = request.test("/api/events/", null, null, headers, "GET");
+        response = tester.get("/api/events", null);
 
         if (HttpTestRequest.isError(response)) {
             System.out.println("Error creating event");
@@ -104,7 +107,7 @@ public class EventApiTest {
         HashMap<String, String> headers = new HashMap<>();
         headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
 
-        TestResponse response = request.test("/api/users/" + testUser.getProfileId(), null, null, headers, "DELETE");
+        TestResponse response = tester.delete("/api/users/" + testUser.getProfileId());
 
         if (HttpTestRequest.isError(response))
             return;
@@ -114,6 +117,6 @@ public class EventApiTest {
 
     @AfterClass
     public static void afterClass() {
-        baseDomainPostExec(testDomain, AFTER_CLASS);
-    }*/
+        baseDomainPostExec(testDomain, AFTER_CLASS, tester);
+    }
 }
