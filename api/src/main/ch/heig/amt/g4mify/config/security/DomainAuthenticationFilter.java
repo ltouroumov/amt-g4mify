@@ -38,7 +38,7 @@ public class DomainAuthenticationFilter extends OncePerRequestFilter {
         String authorization = request.getHeader("Identity"); // <domain-id>:<domain-key>
 
         if (authorization == null) {
-            LOG.info("Request Identity: Anonymous");
+            // LOG.info("Request Identity: Anonymous");
             SecurityContextHolder.getContext().setAuthentication(null);
             filterChain.doFilter(request, response);
             return;
@@ -57,7 +57,7 @@ public class DomainAuthenticationFilter extends OncePerRequestFilter {
         if (domain == null || !domain.getKey().equalsIgnoreCase(domainKey)) {
             doError(response);
         } else {
-            LOG.info("Request Identity: " + domain.getName());
+            // LOG.info("Request Identity: " + domain.getName());
             // Create our Authentication and let Spring know about it
             Authentication auth = new DomainAuthenticationToken(domainId, domainKey);
             SecurityContextHolder.getContext().setAuthentication(auth);

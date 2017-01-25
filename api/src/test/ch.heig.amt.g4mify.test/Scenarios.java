@@ -186,7 +186,7 @@ public class Scenarios {
             }
 
             System.out.println("Created event: " + i);
-            Thread.sleep(100);
+            // Thread.sleep(100);
         }
 
         // leave time to process the events (asynchronous)
@@ -228,7 +228,7 @@ public class Scenarios {
             }
 
             System.out.println("Created event: " + i);
-            Thread.sleep(100);
+            // Thread.sleep(100);
         }
 
         // leave time to process the events (asynchronous)

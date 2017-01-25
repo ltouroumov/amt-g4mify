@@ -15,8 +15,6 @@ import java.util.stream.Stream;
  */
 public interface BucketsRepository extends JpaRepository<Bucket, Long> {
 
-    Stream<Bucket> findByUserAndMetricOrderByTimeDesc(User user, Metric metric);
-
     @Query("select b from Bucket b where b.user = ?1 and b.metric = ?2 and b.time >= ?3")
     Optional<Bucket> findBucketForUpdate(User user, Metric metric, long time);
 

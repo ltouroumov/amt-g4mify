@@ -10,15 +10,15 @@ import ch.heig.amt.g4mify.repository.*;
 import ch.heig.amt.g4mify.util.CounterAggregate;
 import ch.heig.amt.g4mify.util.CounterAggregator;
 import ch.heig.amt.g4mify.util.CounterSpecResolver;
-import ch.heig.amt.g4mify.util.KeyedLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.OptimisticLockException;
 import javax.persistence.TypedQuery;
-import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -26,6 +26,7 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
 /**
@@ -37,6 +38,10 @@ import java.util.logging.Logger;
 public class EventProcessor {
 
     private static Logger LOG = Logger.getLogger(EventActor.class.getSimpleName());
+
+    private static int instanceCount = 0;
+
+    private final int instanceId;
 
     private final EventsRepository eventsRepository;
 
@@ -59,14 +64,18 @@ public class EventProcessor {
     private final BadgeRuleEvaluator badgeRuleEvaluator;
 
     @Autowired
-    public EventProcessor(EventsRepository eventsRepository,
-                      BucketsRepository bucketsRepository,
-                      BadgeTypesRepository badgeTypesRepository,
-                      BadgesRepository badgesRepository,
-                      BadgeRulesRepository badgeRulesRepository,
-                      EntityManager em,
-                      CounterSpecResolver counterSpecResolver,
-                      CounterAggregator counterAggregator) {
+    private EventProcessor self;
+
+    @Autowired
+    public EventProcessor(
+            EventsRepository eventsRepository,
+            BucketsRepository bucketsRepository,
+            BadgeTypesRepository badgeTypesRepository,
+            BadgesRepository badgesRepository,
+            BadgeRulesRepository badgeRulesRepository,
+            EntityManager em,
+            CounterSpecResolver counterSpecResolver,
+            CounterAggregator counterAggregator) {
         this.eventsRepository = eventsRepository;
         this.bucketsRepository = bucketsRepository;
         this.badgeTypesRepository = badgeTypesRepository;
@@ -77,10 +86,19 @@ public class EventProcessor {
         this.counterAggregator = counterAggregator;
         this.eventRuleEvaluator = new EventRuleEvaluator();
         this.badgeRuleEvaluator = new BadgeRuleEvaluator();
+
+        instanceId = ++instanceCount;
+
+        LOG.warning("New instance of EventProcessor " + instanceId);
     }
 
-    public void process(ReceivedEvent message) throws InterruptedException {
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public synchronized void process(ReceivedEvent message) throws InterruptedException {
         Event event = eventsRepository.findOne(message.getEventId());
+
+        LOG.info("Processing event " + event.getId());
+
         User user = event.getUser();
 
         TypedQuery<EventRule> query = em.createNamedQuery("EventRule.FindByTypesInDomain", EventRule.class);
@@ -107,12 +125,15 @@ public class EventProcessor {
             boolean result = evaluateBadgeRule(user, rule);
 
             if (result) {
-                awardBadge(user, rule.getGrants());
+                self.awardBadge(user, rule.getGrants());
             }
         }
 
         event.setProcessed(Instant.now().getEpochSecond());
         eventsRepository.save(event);
+        em.flush();
+
+        LOG.info("Finished processing " + event.getId());
     }
 
     public boolean evaluateBadgeRule(User user, BadgeRule rule) {
@@ -132,7 +153,7 @@ public class EventProcessor {
         // Update buckets
         Set<Counter> updatedCounters = new HashSet<>();
         for (CounterUpdate update : changes.updates.values()) {
-            Counter updated = updateBucket(user, update);
+            Counter updated = self.updateBucket(user, update);
             updatedCounters.add(updated);
         }
 
@@ -147,12 +168,15 @@ public class EventProcessor {
     private void awardBadge(User user, Award award) {
         BadgeType badgeType = badgeTypesRepository.findByDomainAndKey(user.getDomain(), award.getId())
                 .orElseThrow(() -> new ApiException("Could not find badge type " + award.getId()));
-        awardBadge(user, badgeType);
+        self.awardBadge(user, badgeType);
     }
 
-    private void awardBadge(User user, BadgeType badgeType) {
-        boolean ok;
-        do {
+    private Lock badgeLock = new ReentrantLock();
+
+    @Transactional(isolation = Isolation.SERIALIZABLE, propagation = Propagation.REQUIRES_NEW)
+    public void awardBadge(User user, BadgeType badgeType) {
+        badgeLock.lock();
+        try {
             Optional<Badge> instance = badgesRepository.findByUserAndType(user, badgeType);
             Badge badge = null;
             if (!instance.isPresent()) {
@@ -174,34 +198,29 @@ public class EventProcessor {
 
             if (badge != null) {
                 try {
+                    LOG.info("Awarded badge " + badgeType.getName() + " to " + user.getProfileId());
                     badgesRepository.save(badge);
-                    ok = true;
+                    em.flush();
                 } catch (OptimisticLockException ex) {
-                    LOG.warning("Concurrent Badge Update, retrying");
-                    ok = false;
+                    LOG.warning("Concurrent Badge Update!");
                 }
-            } else {
-                ok = true;
             }
-        } while (!ok);
+        } finally {
+            badgeLock.unlock();
+        }
     }
 
-    private KeyedLock bucketUpdateLock = new KeyedLock();
-
-    @Transactional
-    private Counter updateBucket(User user, CounterUpdate update) {
+    @Transactional(isolation = Isolation.SERIALIZABLE, propagation = Propagation.REQUIRES_NEW)
+    public Counter updateBucket(User user, CounterUpdate update) {
         Metric metric = counterSpecResolver.findMetric(user.getDomain(), update.counter);
 
         ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
         ZonedDateTime last15 = now.minus(Duration.ofMinutes(15));
         ZonedDateTime at15 = now.with(ChronoField.MINUTE_OF_HOUR, (now.get(ChronoField.MINUTE_OF_HOUR) / 15) * 15);
 
-        Lock metricLock = bucketUpdateLock.get(update.counter);
+        LOG.info("Updating bucket " + update.counter + " for " + user.getProfileId() + " (search frame " + last15.toInstant().getEpochSecond() + ")");
 
-        try {
-            metricLock.lock();
-
-            Bucket lastBucket = bucketsRepository.findBucketForUpdate(user, metric, last15.toInstant().getEpochSecond())
+        Bucket lastBucket = bucketsRepository.findBucketForUpdate(user, metric, last15.toInstant().getEpochSecond())
                 .orElseGet(() -> {
                     Bucket theBucket = new Bucket();
                     theBucket.setUser(user);
@@ -210,19 +229,20 @@ public class EventProcessor {
                     theBucket.setVersion(0);
                     theBucket.setTime(at15.toInstant().getEpochSecond());
 
+                    bucketsRepository.save(theBucket);
+                    LOG.info("Created bucket " + theBucket.getId() + " for " + update.counter + " and " + user.getProfileId());
+
                     return theBucket;
                 });
 
-            if (update.set) {
-                lastBucket.setValue(update.amount);
-            } else {
-                lastBucket.setValue(lastBucket.getValue() + update.amount);
-            }
-
-            bucketsRepository.save(lastBucket);
-        } finally {
-            metricLock.unlock();
+        if (update.set) {
+            lastBucket.setValue(update.amount);
+        } else {
+            lastBucket.setValue(lastBucket.getValue() + update.amount);
         }
+
+        LOG.info("Updated bucket " + lastBucket.getId() + " for " + update.counter + " and " + user.getProfileId());
+        bucketsRepository.save(lastBucket);
 
         return metric.getCounter();
     }
