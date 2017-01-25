@@ -114,8 +114,6 @@ public class CountersApiTest {
     @After
     public void after(){
         System.out.println("\n- AFTER -");
-        HashMap<String, String> headers = new HashMap<>();
-        headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
         for(CounterSummary counter : counters){
             TestResponse response = tester.delete("/api/counters/" + counter.name);
             if(isError(response)) return;
