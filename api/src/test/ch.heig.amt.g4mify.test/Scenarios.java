@@ -3,11 +3,14 @@ package ch.heig.amt.g4mify.test;
 import ch.heig.amt.g4mify.Utils.HttpTestRequest;
 import ch.heig.amt.g4mify.Utils.TestResponse;
 import ch.heig.amt.g4mify.Utils.UtilsApiTest;
-import ch.heig.amt.g4mify.model.*;
+import ch.heig.amt.g4mify.model.Badge;
+import ch.heig.amt.g4mify.model.Domain;
+import ch.heig.amt.g4mify.model.User;
 import ch.heig.amt.g4mify.model.view.counter.CounterSummary;
 import ch.heig.amt.g4mify.model.view.metric.MetricSummary;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -289,7 +292,7 @@ public class Scenarios {
         assertEquals(2, badges.size());
     }
 
-    //@After
+    @After
     public void after() {
         baseDomainPostExec(domain, AFTER, tester);
     }
