@@ -36,10 +36,7 @@ public class EventRulesApiTest {
         System.out.println("-- BEFORE --");
 
         // create eventRule that gives a badge when event is triggered
-        HttpTestRequest request = new HttpTestRequest();
         Gson gson = new Gson();
-        HashMap<String, String> headers = new HashMap<>();
-        headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
 
         String body = "{" +
                 "  \"script\": \"award 'test-badge'\"," +
@@ -87,10 +84,7 @@ public class EventRulesApiTest {
         // in case eventRuleId changes
         long id = eventRuleId;
 
-        HttpTestRequest request = new HttpTestRequest();
         Gson gson = new Gson();
-        HashMap<String, String> headers = new HashMap<>();
-        headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
 
         TestResponse response = tester.get("/api/event-rules/" + id, null);
 
@@ -111,11 +105,6 @@ public class EventRulesApiTest {
         long id = eventRuleId;
 
         // update eventRule
-        HttpTestRequest request = new HttpTestRequest();
-        Gson gson = new Gson();
-        HashMap<String, String> headers = new HashMap<>();
-        headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
-
         String body = "{\n" +
                 "  \"script\": \"update 'test-counter' set 10\",\n" +
                 "  \"types\": [\n" +
@@ -133,10 +122,7 @@ public class EventRulesApiTest {
         assertEquals(200, response.getStatusCode());
 
         // get eventRule to verify
-        request = new HttpTestRequest();
-        gson = new Gson();
-        headers = new HashMap<>();
-        headers.put("identity", testDomain.getId() + ":" + testDomain.getKey());
+        Gson gson = new Gson();
 
         response = tester.get("/api/event-rules/" + id, null);
 
