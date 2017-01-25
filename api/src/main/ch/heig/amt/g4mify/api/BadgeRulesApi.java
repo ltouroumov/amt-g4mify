@@ -12,8 +12,13 @@ import ch.heig.amt.g4mify.repository.BadgeTypesRepository;
 import ch.heig.amt.g4mify.repository.BadgeRulesRepository;
 import ch.heig.amt.g4mify.repository.UsersRepository;
 import ch.heig.amt.g4mify.util.CounterSpecResolver;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -33,6 +38,7 @@ import static ch.heig.amt.g4mify.model.view.ViewUtils.*;
  */
 @RestController
 @RequestMapping("/api/badge-rules")
+@Api(value = "badge-rules", description = "Handles CRUD operations on badge rules")
 public class BadgeRulesApi extends AbstractDomainApi {
 
     private static final Logger LOG = Logger.getLogger(BadgeRulesApi.class.getName());
@@ -52,6 +58,12 @@ public class BadgeRulesApi extends AbstractDomainApi {
 
     @RequestMapping(method = RequestMethod.GET)
     @Transactional
+    @ApiOperation(value = "Retreives all badge-rules from the domain",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiResponses({
+            @ApiResponse(code = 201, message = "Created"),
+            @ApiResponse(code = 404, message = "Not found"),
+            @ApiResponse(code = 500, message = "Error retrieving badge-rules from the domain")})
     public ResponseEntity<List<BadgeRuleSummary>> index(@RequestParam(required = false, defaultValue = "0") long page,
                                                         @RequestParam(required = false, defaultValue = "50") long pageSize) {
 
@@ -67,6 +79,13 @@ public class BadgeRulesApi extends AbstractDomainApi {
     }
 
     @RequestMapping(method = RequestMethod.POST)
+    @ApiOperation(value = "Creates a new badge-rule in the domain",
+            produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiResponses({
+            @ApiResponse(code = 201, message = "Created"),
+            @ApiResponse(code = 404, message = "Not found"),
+            @ApiResponse(code = 500, message = "Error creating badge-rule in the domain")})
     public ResponseEntity<BadgeRuleDetail> create(@RequestBody BadgeRuleUpdate body) {
 
 
@@ -98,6 +117,11 @@ public class BadgeRulesApi extends AbstractDomainApi {
     }
 
     @RequestMapping(path = "/{id}", method = RequestMethod.GET)
+    @ApiOperation(value = "Retrieves a particular badge-rule from the domain", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Ok"),
+            @ApiResponse(code = 404, message = "Not found"),
+            @ApiResponse(code = 500, message = "Error retrieving the badge-rule from the domain")})
     public ResponseEntity<BadgeRuleDetail> show(@PathVariable long id) {
 
         BadgeRule badgeRule = badgeRulesRepository.findOne(id);
@@ -114,6 +138,11 @@ public class BadgeRulesApi extends AbstractDomainApi {
     }
 
     @RequestMapping(path = "/{id}/evaluate", method = RequestMethod.GET)
+    @ApiOperation(value = "Evaluates a badge-rules's script againts the specified user's counters (debug method, does not trigger grants)", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Ok"),
+            @ApiResponse(code = 404, message = "Not found"),
+            @ApiResponse(code = 500, message = "Error evaluating the rule")})
     public ResponseEntity<EvaluationResult> eval(@PathVariable long id, @RequestParam(name = "user") String pid) {
 
         BadgeRule badgeRule = badgeRulesRepository.findOne(id);
@@ -138,6 +167,13 @@ public class BadgeRulesApi extends AbstractDomainApi {
     }
 
     @RequestMapping(path = "/{id}", method = RequestMethod.PUT)
+    @ApiOperation(value = "Updates a particular badge-rule from the domain",
+            produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Ok"),
+            @ApiResponse(code = 404, message = "Not found"),
+            @ApiResponse(code = 500, message = "Error updating the badge-rule from the domain")})
     public ResponseEntity<BadgeRuleDetail> update(@PathVariable long id, @RequestBody BadgeRuleUpdate body) {
 
         BadgeRule badgeRule = badgeRulesRepository.findOne(id);
@@ -165,6 +201,11 @@ public class BadgeRulesApi extends AbstractDomainApi {
     }
 
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
+    @ApiOperation(value = "Deletes a particular badge-rule from the domain")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Ok"),
+            @ApiResponse(code = 404, message = "Not found"),
+            @ApiResponse(code = 500, message = "Error deleting the badge-rule from the domain")})
     public ResponseEntity<?> delete(@PathVariable long id) {
 
         BadgeRule badgeRule = badgeRulesRepository.findOne(id);

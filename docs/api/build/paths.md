@@ -2,13 +2,13 @@
 <a name="paths"></a>
 ## Resources
 
-<a name="badge-rules-api_resource"></a>
-### Badge-rules-api
-Badge Rules Api
+<a name="badge-rules_resource"></a>
+### Badge-rules
+Handles CRUD operations on badge rules
 
 
 <a name="createusingpost"></a>
-#### create
+#### Creates a new badge-rule in the domain
 ```
 POST /api/badge-rules
 ```
@@ -26,10 +26,11 @@ POST /api/badge-rules
 |HTTP Code|Description|Schema|
 |---|---|---|
 |**200**|OK|[BadgeRuleDetail](#badgeruledetail)|
-|**201**|Created|No Content|
+|**201**|Created|[BadgeRuleDetail](#badgeruledetail)|
 |**401**|Unauthorized|No Content|
 |**403**|Forbidden|No Content|
-|**404**|Not Found|No Content|
+|**404**|Not found|No Content|
+|**500**|Error creating badge-rule in the domain|No Content|
 
 
 ##### Consumes
@@ -39,11 +40,12 @@ POST /api/badge-rules
 
 ##### Produces
 
+* `application/json`
 * `*/*`
 
 
 <a name="indexusingget"></a>
-#### index
+#### Retreives all badge-rules from the domain
 ```
 GET /api/badge-rules
 ```
@@ -62,9 +64,11 @@ GET /api/badge-rules
 |HTTP Code|Description|Schema|
 |---|---|---|
 |**200**|OK|< [BadgeRuleSummary](#badgerulesummary) > array|
+|**201**|Created|< [BadgeRuleSummary](#badgerulesummary) > array|
 |**401**|Unauthorized|No Content|
 |**403**|Forbidden|No Content|
-|**404**|Not Found|No Content|
+|**404**|Not found|No Content|
+|**500**|Error retrieving badge-rules from the domain|No Content|
 
 
 ##### Consumes
@@ -74,11 +78,12 @@ GET /api/badge-rules
 
 ##### Produces
 
+* `application/json`
 * `*/*`
 
 
 <a name="showusingget"></a>
-#### show
+#### Retrieves a particular badge-rule from the domain
 ```
 GET /api/badge-rules/{id}
 ```
@@ -95,10 +100,11 @@ GET /api/badge-rules/{id}
 
 |HTTP Code|Description|Schema|
 |---|---|---|
-|**200**|OK|[BadgeRuleDetail](#badgeruledetail)|
+|**200**|Ok|[BadgeRuleDetail](#badgeruledetail)|
 |**401**|Unauthorized|No Content|
 |**403**|Forbidden|No Content|
-|**404**|Not Found|No Content|
+|**404**|Not found|No Content|
+|**500**|Error retrieving the badge-rule from the domain|No Content|
 
 
 ##### Consumes
@@ -108,11 +114,12 @@ GET /api/badge-rules/{id}
 
 ##### Produces
 
+* `application/json`
 * `*/*`
 
 
 <a name="updateusingput"></a>
-#### update
+#### Updates a particular badge-rule from the domain
 ```
 PUT /api/badge-rules/{id}
 ```
@@ -130,11 +137,12 @@ PUT /api/badge-rules/{id}
 
 |HTTP Code|Description|Schema|
 |---|---|---|
-|**200**|OK|[BadgeRuleDetail](#badgeruledetail)|
+|**200**|Ok|[BadgeRuleDetail](#badgeruledetail)|
 |**201**|Created|No Content|
 |**401**|Unauthorized|No Content|
 |**403**|Forbidden|No Content|
-|**404**|Not Found|No Content|
+|**404**|Not found|No Content|
+|**500**|Error updating the badge-rule from the domain|No Content|
 
 
 ##### Consumes
@@ -144,11 +152,12 @@ PUT /api/badge-rules/{id}
 
 ##### Produces
 
+* `application/json`
 * `*/*`
 
 
 <a name="deleteusingdelete"></a>
-#### delete
+#### Deletes a particular badge-rule from the domain
 ```
 DELETE /api/badge-rules/{id}
 ```
@@ -165,10 +174,12 @@ DELETE /api/badge-rules/{id}
 
 |HTTP Code|Description|Schema|
 |---|---|---|
-|**200**|OK|object|
+|**200**|Ok|object|
 |**204**|No Content|No Content|
 |**401**|Unauthorized|No Content|
 |**403**|Forbidden|No Content|
+|**404**|Not found|No Content|
+|**500**|Error deleting the badge-rule from the domain|No Content|
 
 
 ##### Consumes
@@ -182,7 +193,7 @@ DELETE /api/badge-rules/{id}
 
 
 <a name="evalusingget"></a>
-#### eval
+#### Evaluates a badge-rules's script againts the specified user's counters (debug method, does not trigger grants)
 ```
 GET /api/badge-rules/{id}/evaluate
 ```
@@ -200,10 +211,11 @@ GET /api/badge-rules/{id}/evaluate
 
 |HTTP Code|Description|Schema|
 |---|---|---|
-|**200**|OK|[EvaluationResult](#evaluationresult)|
+|**200**|Ok|[EvaluationResult](#evaluationresult)|
 |**401**|Unauthorized|No Content|
 |**403**|Forbidden|No Content|
-|**404**|Not Found|No Content|
+|**404**|Not found|No Content|
+|**500**|Error evaluating the rule|No Content|
 
 
 ##### Consumes
@@ -213,6 +225,7 @@ GET /api/badge-rules/{id}/evaluate
 
 ##### Produces
 
+* `application/json`
 * `*/*`
 
 
@@ -695,13 +708,13 @@ DELETE /api/domain
 * `*/*`
 
 
-<a name="event-rules-api_resource"></a>
-### Event-rules-api
-Event Rules Api
+<a name="event-rules_resource"></a>
+### Event-rules
+Handles CRUD operations on event-rules
 
 
 <a name="createusingpost_3"></a>
-#### create
+#### Creates a new event-rule in the domain
 ```
 POST /api/event-rules
 ```
@@ -719,10 +732,11 @@ POST /api/event-rules
 |HTTP Code|Description|Schema|
 |---|---|---|
 |**200**|OK|[EventRuleOutputView](#eventruleoutputview)|
-|**201**|Created|No Content|
+|**201**|Created|[EventRuleOutputView](#eventruleoutputview)|
 |**401**|Unauthorized|No Content|
 |**403**|Forbidden|No Content|
-|**404**|Not Found|No Content|
+|**404**|Not found|No Content|
+|**500**|Error creating event-rule in the domain|No Content|
 
 
 ##### Consumes
@@ -732,11 +746,12 @@ POST /api/event-rules
 
 ##### Produces
 
+* `application/json`
 * `*/*`
 
 
 <a name="indexusingget_3"></a>
-#### index
+#### Retreives all event-rules from the domain
 ```
 GET /api/event-rules
 ```
@@ -756,9 +771,11 @@ GET /api/event-rules
 |HTTP Code|Description|Schema|
 |---|---|---|
 |**200**|OK|< [EventRuleDetail](#eventruledetail) > array|
+|**201**|Created|< [EventRuleDetail](#eventruledetail) > array|
 |**401**|Unauthorized|No Content|
 |**403**|Forbidden|No Content|
-|**404**|Not Found|No Content|
+|**404**|Not found|No Content|
+|**500**|Error retrieving event-rules from the domain|No Content|
 
 
 ##### Consumes
@@ -768,46 +785,12 @@ GET /api/event-rules
 
 ##### Produces
 
-* `*/*`
-
-
-<a name="showusingpost"></a>
-#### show
-```
-POST /api/event-rules/{id}
-```
-
-
-##### Parameters
-
-|Type|Name|Description|Schema|
-|---|---|---|---|
-|**Path**|**id**  <br>*required*|id|integer(int64)|
-
-
-##### Responses
-
-|HTTP Code|Description|Schema|
-|---|---|---|
-|**200**|OK|object|
-|**201**|Created|No Content|
-|**401**|Unauthorized|No Content|
-|**403**|Forbidden|No Content|
-|**404**|Not Found|No Content|
-
-
-##### Consumes
-
 * `application/json`
-
-
-##### Produces
-
 * `*/*`
 
 
 <a name="showusingget_4"></a>
-#### show
+#### Retrieves a particular event-rule from the domain
 ```
 GET /api/event-rules/{id}
 ```
@@ -824,10 +807,11 @@ GET /api/event-rules/{id}
 
 |HTTP Code|Description|Schema|
 |---|---|---|
-|**200**|OK|object|
+|**200**|Ok|object|
 |**401**|Unauthorized|No Content|
 |**403**|Forbidden|No Content|
-|**404**|Not Found|No Content|
+|**404**|Not found|No Content|
+|**500**|Error retrieving the event-rule from the domain|No Content|
 
 
 ##### Consumes
@@ -837,11 +821,12 @@ GET /api/event-rules/{id}
 
 ##### Produces
 
+* `application/json`
 * `*/*`
 
 
-<a name="showusingput"></a>
-#### show
+<a name="updateusingput_4"></a>
+#### Updates a particular event-rule from the domain
 ```
 PUT /api/event-rules/{id}
 ```
@@ -852,17 +837,19 @@ PUT /api/event-rules/{id}
 |Type|Name|Description|Schema|
 |---|---|---|---|
 |**Path**|**id**  <br>*required*|id|integer(int64)|
+|**Body**|**body**  <br>*required*|body|[EventRuleSummary](#eventrulesummary)|
 
 
 ##### Responses
 
 |HTTP Code|Description|Schema|
 |---|---|---|
-|**200**|OK|object|
+|**200**|Ok|[EventRuleOutputView](#eventruleoutputview)|
 |**201**|Created|No Content|
 |**401**|Unauthorized|No Content|
 |**403**|Forbidden|No Content|
-|**404**|Not Found|No Content|
+|**404**|Not found|No Content|
+|**500**|Error updating the event-rule from the domain|No Content|
 
 
 ##### Consumes
@@ -872,11 +859,12 @@ PUT /api/event-rules/{id}
 
 ##### Produces
 
+* `application/json`
 * `*/*`
 
 
-<a name="showusingdelete"></a>
-#### show
+<a name="deleteusingdelete_4"></a>
+#### Deletes a particular event-rule from the domain
 ```
 DELETE /api/event-rules/{id}
 ```
@@ -893,112 +881,12 @@ DELETE /api/event-rules/{id}
 
 |HTTP Code|Description|Schema|
 |---|---|---|
-|**200**|OK|object|
+|**200**|Ok|object|
 |**204**|No Content|No Content|
 |**401**|Unauthorized|No Content|
 |**403**|Forbidden|No Content|
-
-
-##### Consumes
-
-* `application/json`
-
-
-##### Produces
-
-* `*/*`
-
-
-<a name="showusingpatch"></a>
-#### show
-```
-PATCH /api/event-rules/{id}
-```
-
-
-##### Parameters
-
-|Type|Name|Description|Schema|
-|---|---|---|---|
-|**Path**|**id**  <br>*required*|id|integer(int64)|
-
-
-##### Responses
-
-|HTTP Code|Description|Schema|
-|---|---|---|
-|**200**|OK|object|
-|**204**|No Content|No Content|
-|**401**|Unauthorized|No Content|
-|**403**|Forbidden|No Content|
-
-
-##### Consumes
-
-* `application/json`
-
-
-##### Produces
-
-* `*/*`
-
-
-<a name="showusinghead"></a>
-#### show
-```
-HEAD /api/event-rules/{id}
-```
-
-
-##### Parameters
-
-|Type|Name|Description|Schema|
-|---|---|---|---|
-|**Path**|**id**  <br>*required*|id|integer(int64)|
-
-
-##### Responses
-
-|HTTP Code|Description|Schema|
-|---|---|---|
-|**200**|OK|object|
-|**204**|No Content|No Content|
-|**401**|Unauthorized|No Content|
-|**403**|Forbidden|No Content|
-
-
-##### Consumes
-
-* `application/json`
-
-
-##### Produces
-
-* `*/*`
-
-
-<a name="showusingoptions"></a>
-#### show
-```
-OPTIONS /api/event-rules/{id}
-```
-
-
-##### Parameters
-
-|Type|Name|Description|Schema|
-|---|---|---|---|
-|**Path**|**id**  <br>*required*|id|integer(int64)|
-
-
-##### Responses
-
-|HTTP Code|Description|Schema|
-|---|---|---|
-|**200**|OK|object|
-|**204**|No Content|No Content|
-|**401**|Unauthorized|No Content|
-|**403**|Forbidden|No Content|
+|**404**|Not found|No Content|
+|**500**|Error deleting the event-rule from the domain|No Content|
 
 
 ##### Consumes
