@@ -62,14 +62,7 @@
 
 
 		vm.submit = function () {
-
-			if(!homeService.checkIfUserExists(vm)){
-				var data = {
-					"profileId": vm.form.toLowerCase(),
-					"profileUrl": vm.form.toLowerCase()
-				};
-				homeService.registerUser(vm, data);
-			}
+			homeService.checkIfUserExists(vm);
 		}
 	}
 })();

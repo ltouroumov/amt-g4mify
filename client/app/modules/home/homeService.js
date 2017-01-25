@@ -88,7 +88,11 @@
 
 			}, function(err){
 
-				return false;
+				var data = {
+					"profileId": vm.form.toLowerCase(),
+					"profileUrl": vm.form.toLowerCase()
+				};
+				registerUser(vm, data);
 			});
 
 		}

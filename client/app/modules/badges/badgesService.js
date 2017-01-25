@@ -28,7 +28,7 @@
 			function getBadges(vm) {
 
 				var badges = [];
-				var url = "https://github.com/ltouroumov/amt-g4mify.git/client/app/assets/images/";
+				var url = "https://raw.githubusercontent.com/ltouroumov/amt-g4mify/master/client/app/assets/images/";
 
 				var req = {
 					method: 'GET',
@@ -45,9 +45,10 @@
 					for(var i = 0; i < res.data.length; i++){
 						var badge = {
 							level: res.data[i].level,
-							name: url + res.data[i].type.name,
-							image: res.data[i].type.image
+							name: res.data[i].type.name,
+							image: url + res.data[i].type.image
 						};
+						console.log(badges);
 						badges.push(badge);
 					}
 
