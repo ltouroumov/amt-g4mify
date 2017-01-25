@@ -8,7 +8,6 @@ import ch.heig.amt.g4mify.model.view.counter.CounterSummary;
 import ch.heig.amt.g4mify.model.view.metric.MetricSummary;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -114,7 +113,12 @@ public class Scenarios {
 
         System.out.println("Created eventRule");
 
-
+        try {
+            Thread.sleep(2000);
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         //Post Badge-rules
         body = "{ " +
                 "\"condition\": \"when 'beeps' matches { it >= 10 }\"," +
@@ -145,8 +149,8 @@ public class Scenarios {
     }
 
     @Test
-    public void Scenario1() {
-        //Get Domain -> Post User -> Post event (Multiple times) -> Get users/PID/Badges (After 10 events)
+    public void Scenario1() throws InterruptedException {
+        //Post User -> Post events (Multiple times) -> Get users/PID/Badges (After 10 events)
 
         System.out.println("-- Scenario 1 --");
 
@@ -181,16 +185,12 @@ public class Scenarios {
                 return;
             }
 
-            System.out.println("Created event");
+            System.out.println("Created event: " + i);
+            Thread.sleep(100);
         }
 
         // leave time to process the events (asynchronous)
-        try {
-            Thread.sleep(2000);
-        }
-        catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        Thread.sleep(1000);
 
 
         // Get user badges
@@ -208,12 +208,12 @@ public class Scenarios {
         ArrayList<Badge> badges = gson.fromJson(response.getBody(), new TypeToken<ArrayList<Badge>>() {
         }.getType());
 
-        System.out.println(response.getBody());
+        //System.out.println(response.getBody());
         assertEquals(1, badges.size());
 
 
         // Post more events
-        for (int i = 0; i < 10; i++) {
+        for (int i = 10; i < 20; i++) {
             body = "{\n" +
                     "  \"data\": {},\n" +
                     "  \"type\": \"beep\",\n" +
@@ -227,16 +227,12 @@ public class Scenarios {
                 return;
             }
 
-            System.out.println("Created event");
+            System.out.println("Created event: " + i);
+            Thread.sleep(100);
         }
 
         // leave time to process the events (asynchronous)
-        try {
-            Thread.sleep(2000);
-        }
-        catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        Thread.sleep(1000);
 
         // Get more user badges
         gson = new Gson();
@@ -253,7 +249,7 @@ public class Scenarios {
         badges = gson.fromJson(response.getBody(), new TypeToken<ArrayList<Badge>>() {
         }.getType());
 
-        System.out.println(response.getBody());
+        //System.out.println(response.getBody());
         assertEquals(2, badges.size());
     }
 
