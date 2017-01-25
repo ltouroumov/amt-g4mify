@@ -42,8 +42,13 @@ public class CounterAggregator {
             query.setParameter(2, user);
             query.setParameter(3, start);
 
-            long value = (Long)query.getSingleResult();
-            aggregate.setMetric(metric.getName(), value);
+            Long value = (Long)query.getSingleResult();
+            if (value != null) {
+                aggregate.setMetric(metric.getName(), value);
+            } else {
+                LOG.warning("Error getting metric value " + counter.getName() + "." + metric.getName());
+                aggregate.setMetric(metric.getName(), 0);
+            }
         }
 
         return aggregate;
