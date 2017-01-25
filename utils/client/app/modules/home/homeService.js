@@ -63,11 +63,12 @@
 			});
 		}
 
-		function postBeep() {
+		function postBeep(data) {
 
 			var req = {
 				method: 'POST',
 				url: 'http://localhost:8080/api/events',
+				data: JSON.stringify(data),
 				headers: {
 					'Content-Type': 'application/json',
 					'Identity': '1:secret'
@@ -88,11 +89,11 @@
 			var req = {
 				method: 'POST',
 				url: 'http://localhost:8080/api/events',
+				data: JSON.stringify(data),
 				headers: {
 					'Content-Type': 'application/json',
 					'Identity': '1:secret'
-				},
-				data: data
+				}
 			};
 
 			$http(req).then(function(err){
