@@ -15,6 +15,7 @@ import java.util.ArrayList;
 
 import static ch.heig.amt.g4mify.Utils.UtilsApiTest.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by Yves Athanasiadès on 05.12.2016.
@@ -229,10 +230,9 @@ System.out.println(response.getBody());
             return;
         }
 
-        Counter counter = gson.fromJson(response.getBody(), Counter.class);
-
-
-        assertEquals("test", counter.getName());
+        System.out.println(response.getBody());
+        assertEquals(200, response.getStatusCode());
+        assertNotNull(response.getBody());
     }
 
     @After
