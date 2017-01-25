@@ -1,0 +1,14 @@
+version: '2'
+services:
+  db:
+    image: postgres
+    environment:
+        - POSTGRES_USER=g4mify
+        - POSTGRES_PASSWORD=g4mify
+        - POSTGRES_DB=g4mify
+  api:
+    build: ./api
+    links:
+      - db:postgres-db
+    ports:
+      - "8080:8080"
