@@ -174,7 +174,7 @@ public class EventProcessor {
     private Lock badgeLock = new ReentrantLock();
 
     @Transactional(isolation = Isolation.SERIALIZABLE, propagation = Propagation.REQUIRES_NEW)
-    public void awardBadge(User user, BadgeType badgeType) {
+    public synchronized void awardBadge(User user, BadgeType badgeType) {
         badgeLock.lock();
         try {
             Optional<Badge> instance = badgesRepository.findByUserAndType(user, badgeType);
@@ -211,7 +211,7 @@ public class EventProcessor {
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE, propagation = Propagation.REQUIRES_NEW)
-    public Counter updateBucket(User user, CounterUpdate update) {
+    public synchronized Counter updateBucket(User user, CounterUpdate update) {
         Metric metric = counterSpecResolver.findMetric(user.getDomain(), update.counter);
 
         ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
