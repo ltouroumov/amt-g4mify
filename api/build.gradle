@@ -1,0 +1,59 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url "http://repo.spring.io/snapshot" }
+        maven { url "http://repo.spring.io/milestone" }
+    }
+
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.0.BUILD-SNAPSHOT")
+    }
+}
+
+// Apply the java plugin to add support for Java
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'org.springframework.boot'
+
+sourceSets {
+    main {
+        java.srcDirs = []
+        groovy.srcDirs = ['src/main']
+        resources.srcDirs = ['res/main']
+    }
+    test {
+        java.srcDirs = []
+        groovy.srcDirs = ['src/test']
+        resources.srcDirs = ['res/test']
+    }
+}
+repositories {
+    mavenCentral()
+    maven { url "http://repo.spring.io/snapshot" }
+    maven { url "http://repo.spring.io/milestone" }
+}
+
+
+// In this section you declare the dependencies for your production and test code
+dependencies {
+    compile "org.springframework.boot:spring-boot-devtools"
+    compile "com.google.code.gson:gson:2.8.0"
+    compile "junit:junit:4.12"
+    compile "org.springframework.boot:spring-boot-starter-web"
+    compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    compile 'org.springframework.boot:spring-boot-starter-data-jpa'
+    compile 'org.springframework.boot:spring-boot-starter-security'
+    compile 'org.apache.httpcomponents:httpclient:4.3.6'
+    compile 'org.apache.httpcomponents:httpasyncclient:4.0.2'
+    compile 'org.apache.httpcomponents:httpmime:4.3.6'
+    compile 'org.json:json:20140107'
+    compile 'com.mashape.unirest:unirest-java:1.4.9'
+
+
+    compile 'com.h2database:h2'
+    compile 'org.postgresql:postgresql:9.4.1212.jre7'
+    compile 'com.typesafe.akka:akka-actor_2.12:2.4.13'
+    compile 'io.springfox:springfox-swagger-ui:2.2.2'
+    compile 'io.springfox:springfox-swagger2:2.2.2'
+    compile 'org.codehaus.groovy:groovy:2.4.7'
+}

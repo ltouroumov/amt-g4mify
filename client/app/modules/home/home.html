@@ -1,0 +1,64 @@
+<div class="container">
+
+	<!-- ng-if -->
+	<div ng-if="vm.success == true" class="alert alert-success alert-dismissable">
+		<a class="close" data-dismiss="alert" aria-label="close">&times;</a>
+		<strong>Success</strong> {{vm.msg}}
+	</div>
+	<div ng-if="vm.success == false" class="alert alert-danger alert-dismissable">
+		<a class="close" data-dismiss="alert" aria-label="close">&times;</a>
+		<strong>Error</strong> {{vm.msg}}
+	</div>
+
+	<button type="button" class="btn btn-primary btn-lg btn-block" ng-click="vm.showme = !vm.showme">New User Name</button>
+
+	<br>
+
+	<div ng-show="vm.showme" class="well text-center">
+		<div class="form-group row">
+			<label for="example-text-input" class="col-2 col-form-label">Username</label>
+			<div class="col-10">
+				<input class="form-control" type="text" value="" id="example-text-input" ng-model="vm.form">
+			</div>
+			<br/>
+			<div class="col-md-4"></div>
+			<div class="col-md-4">
+				<button type="button" class="btn btn-primary btn-lg btn-block" ng-click="vm.submit()">Submit</button>
+			</div>
+		</div>
+	</div>
+
+	<div ng-show="vm.username != ''" >
+		<div class="well text-center">
+			<h1>{{vm.greetings}}</h1>
+		</div>
+
+		<div class="well text-center">
+			<div class="row">
+				<div class="col-md-6">
+					<canvas id="bar" class="chart chart-bar"
+							chart-data="vm.data" chart-labels="vm.labels">
+					</canvas>
+				</div>
+				<div class="col-md-6">
+					<div style="height:250px;width:250px;margin-left:auto;margin-right:auto;">
+						<canvas id="doughnut" class="chart chart-doughnut"
+								chart-data="vm.data" chart-labels="vm.labels" chart-options="vm.options">
+						</canvas>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="well text-center">
+			<div class="row">
+				<div class="col-md-6">
+					<button type="button" class="btn btn-success btn-lg btn-block" ng-click="vm.onBeep()">Beep</button>
+				</div>
+				<div class="col-md-6">
+					<button type="button" class="btn btn-danger btn-lg btn-block" ng-click="vm.onBoop()">Boop</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
