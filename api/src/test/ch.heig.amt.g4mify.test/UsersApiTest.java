@@ -49,7 +49,7 @@ public class UsersApiTest {
 
         if (HttpTestRequest.isError(response))
             return;
-System.out.println(response.getBody());
+
         testUser = gson.fromJson(response.getBody(), User.class);
 
         System.out.println("sucessfully created user");
@@ -201,7 +201,7 @@ System.out.println(response.getBody());
         }.getType());
 
         System.out.println(response.getBody());
-        //assertEquals("test-badge", badges.get(0).getType().getName());
+        assertEquals("test-badge", badges.get(0).getType().getName());
     }
 
     @Test
