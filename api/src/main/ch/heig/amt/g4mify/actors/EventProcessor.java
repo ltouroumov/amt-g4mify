@@ -10,6 +10,7 @@ import ch.heig.amt.g4mify.repository.*;
 import ch.heig.amt.g4mify.util.CounterAggregate;
 import ch.heig.amt.g4mify.util.CounterAggregator;
 import ch.heig.amt.g4mify.util.CounterSpecResolver;
+import ch.heig.amt.g4mify.util.KeyedLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.util.*;
+import java.util.concurrent.locks.Lock;
 import java.util.logging.Logger;
 
 /**
@@ -184,6 +186,8 @@ public class EventProcessor {
         } while (!ok);
     }
 
+    private KeyedLock bucketUpdateLock = new KeyedLock();
+
     @Transactional
     private Counter updateBucket(User user, CounterUpdate update) {
         Metric metric = counterSpecResolver.findMetric(user.getDomain(), update.counter);
@@ -192,33 +196,33 @@ public class EventProcessor {
         ZonedDateTime last15 = now.minus(Duration.ofMinutes(15));
         ZonedDateTime at15 = now.with(ChronoField.MINUTE_OF_HOUR, (now.get(ChronoField.MINUTE_OF_HOUR) / 15) * 15);
 
-        boolean ok;
-        do {
-            Bucket lastBucket = bucketsRepository.findBucketForUpdate(user, metric, last15.toInstant().getEpochSecond())
-                    .orElseGet(() -> {
-                        Bucket theBucket = new Bucket();
-                        theBucket.setUser(user);
-                        theBucket.setMetric(metric);
-                        theBucket.setValue(0);
-                        theBucket.setVersion(0);
-                        theBucket.setTime(at15.toInstant().getEpochSecond());
+        Lock metricLock = bucketUpdateLock.get(update.counter);
 
-                        return theBucket;
-                    });
+        try {
+            metricLock.lock();
+
+            Bucket lastBucket = bucketsRepository.findBucketForUpdate(user, metric, last15.toInstant().getEpochSecond())
+                .orElseGet(() -> {
+                    Bucket theBucket = new Bucket();
+                    theBucket.setUser(user);
+                    theBucket.setMetric(metric);
+                    theBucket.setValue(0);
+                    theBucket.setVersion(0);
+                    theBucket.setTime(at15.toInstant().getEpochSecond());
+
+                    return theBucket;
+                });
 
             if (update.set) {
                 lastBucket.setValue(update.amount);
             } else {
                 lastBucket.setValue(lastBucket.getValue() + update.amount);
             }
-            try {
-                bucketsRepository.save(lastBucket);
-                ok = true;
-            } catch (OptimisticLockException ex) {
-                LOG.warning("Concurrent Bucket Update, retrying");
-                ok = false;
-            }
-        } while (!ok);
+
+            bucketsRepository.save(lastBucket);
+        } finally {
+            metricLock.unlock();
+        }
 
         return metric.getCounter();
     }
