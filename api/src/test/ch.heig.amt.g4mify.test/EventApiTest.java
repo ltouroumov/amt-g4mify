@@ -54,7 +54,7 @@ public class EventApiTest {
     }
 
     @Test
-    public void testEvents() {
+    public void WeShouldBeAbleToPublishAnEvent() {
         System.out.println("-- " + name.getMethodName() + " --");
 
         // create an event

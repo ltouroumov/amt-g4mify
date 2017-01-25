@@ -56,7 +56,7 @@ public class UsersApiTest {
     }
 
     @Test
-    public void getUsers() {
+    public void WeShouldBeAbleToGetAllTheUsers() {
         System.out.println("-- " + name.getMethodName() + " --");
 
         Gson gson = new Gson();
@@ -74,7 +74,7 @@ public class UsersApiTest {
     }
 
     @Test
-    public void putUser() {
+    public void WeShouldBeAbleToUpdateAUser() {
         System.out.println("-- " + name.getMethodName() + " --");
 
         String body = "{\n" +
@@ -107,7 +107,7 @@ public class UsersApiTest {
     }
 
     @Test
-    public void getUser() {
+    public void WeShouldBeAbleToGetAUser() {
         System.out.println("-- " + name.getMethodName() + " --");
 
         Gson gson = new Gson();
@@ -125,7 +125,7 @@ public class UsersApiTest {
     }
 
     @Test
-    public void getUserBadges() {
+    public void WeShouldBeAbleToGetAllBadgesForAUser() {
         System.out.println("-- " + name.getMethodName() + " --");
 
         // create badge type (test-badge)
@@ -205,7 +205,7 @@ public class UsersApiTest {
     }
 
     @Test
-    public void getUserCounters() {
+    public void WeShouldBeAbleToGetACounterFromAUser() {
         System.out.println("-- " + name.getMethodName() + " --");
 
         // create counter(test)

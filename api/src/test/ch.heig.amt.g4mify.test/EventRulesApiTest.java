@@ -59,7 +59,7 @@ public class EventRulesApiTest {
     }
 
     @Test
-    public void getEventRules() {
+    public void WeShouldBeAbleToGetAllEventRules() {
         System.out.println("-- " + name.getMethodName() + " --");
 
         Gson gson = new Gson();
@@ -78,7 +78,7 @@ public class EventRulesApiTest {
     }
 
     @Test
-    public void getEventRule() {
+    public void WeShouldBeAbleToGetAnEventRule() {
         System.out.println("-- " + name.getMethodName() + " --");
 
         // in case eventRuleId changes
@@ -98,7 +98,7 @@ public class EventRulesApiTest {
     }
 
     @Test
-    public void putEventRule() {
+    public void WeShouldBeAbleToUpdateAnEventRule() {
         System.out.println("-- " + name.getMethodName() + " --");
 
         // in case eventRuleId changes
@@ -137,7 +137,7 @@ public class EventRulesApiTest {
     }
 
     @Test
-    public void deleteEventRule() {
+    public void WeShouldBeAbleToDeleteAnEventRule() {
         System.out.println("-- " + name.getMethodName() + " --");
 
         // in case eventRuleId changes

@@ -25,10 +25,6 @@ public class Scenarios {
 
     private HttpTestRequest tester = null;
     private Domain domain = null;
-    private ArrayList<CounterSummary> counters = new ArrayList<>();
-    private ArrayList<EventRule> eventRules = new ArrayList<>();
-    private ArrayList<BadgeType> badgeTypes = new ArrayList<>();
-    //private ArrayList<BadgeRule> badgeRules = new ArrayList<>();
 
     @Before
     public void before() {
@@ -171,7 +167,7 @@ public class Scenarios {
 
 
         // Post events
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 5; i++) {
             body = "{\n" +
                     "  \"data\": {},\n" +
                     "  \"type\": \"beep\",\n" +
@@ -209,8 +205,48 @@ public class Scenarios {
         }.getType());
 
         //System.out.println(response.getBody());
-        assertEquals(1, badges.size());
+        assertEquals(0, badges.size());
 
+        // Post events
+        for (int i = 0; i < 5; i++) {
+            body = "{\n" +
+                    "  \"data\": {},\n" +
+                    "  \"type\": \"beep\",\n" +
+                    "  \"user\": \"" + testUser.getProfileId() + "\"\n" +
+                    "}";
+
+            response = tester.post("/api/events/", null, body);
+
+            if (HttpTestRequest.isError(response)) {
+                System.out.println("Error creating event");
+                return;
+            }
+
+            System.out.println("Created event: " + i);
+            Thread.sleep(100);
+        }
+
+        // leave time to process the events (asynchronous)
+        Thread.sleep(1000);
+
+
+        // Get user badges
+        gson = new Gson();
+
+        response = tester.get("/api/users/" + testUser.getProfileId() + "/badges", null);
+
+        if (HttpTestRequest.isError(response)) {
+            System.out.println("Error getting badge list");
+            return;
+        }
+
+        System.out.println("got user's badges");
+
+        badges = gson.fromJson(response.getBody(), new TypeToken<ArrayList<Badge>>() {
+        }.getType());
+
+        //System.out.println(response.getBody());
+        assertEquals(1, badges.size());
 
         // Post more events
         for (int i = 10; i < 20; i++) {
