@@ -55,7 +55,7 @@ public class UtilsApiTest {
         TestResponse response = tester.delete("/api/domain");
         if(isError(response)) return;
         if(response.getStatusCode() == 200){
-            System.out.println("Correctly deleted domain " + testDomain.getId());
+            System.out.println("Correctly deleted domain " + testDomain.getId() + " and all his componants");
         }else{
             throw new RuntimeException("Couldn't delete the domain " + testDomain.getId() + "! Please run the DomainApiTest test class!");
         }
