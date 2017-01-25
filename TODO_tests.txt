@@ -17,24 +17,6 @@
 	|- WeShouldBeAbleToGetACounter
 	|- WeShouldBeAbleToDeleteACounter
 	|- WeShouldBeAbleToUpdateACounter
-	
-
-4. metric-api:
-	- WeShouldBeAbleToGetAMetric
-	- WeShouldntBeAbleToGetAMetricInAWrongCounter
-	- WeShouldBeAbleToSetThePageAndPageSize
-	- WeShouldntBeAbleToSetThePageAndPageSizeWithBadValue
-	- WeShouldBeAbleToCreateANewMetric
-	- WeShouldBeAbleToGetAllTheMetrics
-	- WeShouldBeAbleToUpdateAMetric
-	- WeShouldBeAbleToDeleteAMetric
-
-5. badge-types-api:
-	- WeShouldBeAbleToGetAllTheBadge
-	- WeShouldBeAbleToCreateABadge
-	- WeShouldBeAbleToGetABadge
-	- WeShouldBeAbleToUpdateABadge
-	- WeShouldBeAbleToDeleteABadge
 
 6. badge-rules-api:
 	|- WeShouldBeAbleToGetAllBadgeRules
@@ -42,6 +24,7 @@
 	|- WeShouldBeAbleToGetABadgeRule
 	|- WeShouldBeAbleToUpdateABadgeRule
 	|- WeShouldBeAbleToDeleteABadgeRule
+	|- WeShouldBeAbleToGetTheEvaluation
 	Also check the alphaNumeric ID (Only number are accepted)
 
 7. event-rules-api:

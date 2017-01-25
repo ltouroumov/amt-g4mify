@@ -79,7 +79,7 @@ public class BadgeRulesApiTest {
     }
 
     @Test
-    public void getBadgeRules() {
+    public void WeShouldBeAbleToGetAllBadgeRules() {
         System.out.println("-- " + name.getMethodName() + " --");
 
         // create badgeRule
@@ -97,7 +97,7 @@ public class BadgeRulesApiTest {
     }
 
     @Test
-    public void getBadgeRule() {
+    public void WeShouldBeAbleToGetABadgeRule() {
         System.out.println("-- " + name.getMethodName() + " --");
 
         Gson gson = new Gson();
@@ -114,7 +114,7 @@ public class BadgeRulesApiTest {
     }
 
     @Test
-    public void deleteBadgeRule() {
+    public void WeShouldBeAbleToDeleteABadgeRule() {
         System.out.println("-- " + name.getMethodName() + " --");
 
         Gson gson = new Gson();
@@ -131,7 +131,7 @@ public class BadgeRulesApiTest {
     }
 
     @Test
-    public void putBadgeRule() {
+    public void WeShouldBeAbleToUpdateABadgeRule() {
         System.out.println("-- " + name.getMethodName() + " --");
 
         // create badge-type
@@ -170,7 +170,7 @@ public class BadgeRulesApiTest {
     }
 
     @Test
-    public void getEvalutation() {
+    public void WeShouldBeAbleToGetTheEvaluation() {
         System.out.println("-- " + name.getMethodName() + " --");
 
         User testUser = null;

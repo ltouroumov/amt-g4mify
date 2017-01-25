@@ -59,7 +59,7 @@ public class EventRulesApiTest {
     }
 
     @Test
-    public void getEventRules() {
+    public void WeShouldBeAbleToGetAllEventRules() {
         System.out.println("-- " + name.getMethodName() + " --");
 
         Gson gson = new Gson();
@@ -74,11 +74,11 @@ public class EventRulesApiTest {
         EventRule[] eventRule = gson.fromJson(response.getBody(), EventRule[].class);
 
         // not super cool depends on when the put test is run
-        assertEquals("award 'test-badge'", eventRule[1].getScript());
+        assertEquals("award 'test-badge'", eventRule[0].getScript());
     }
 
     @Test
-    public void getEventRule() {
+    public void WeShouldBeAbleToGetAnEventRule() {
         System.out.println("-- " + name.getMethodName() + " --");
 
         // in case eventRuleId changes
@@ -98,7 +98,7 @@ public class EventRulesApiTest {
     }
 
     @Test
-    public void putEventRule() {
+    public void WeShouldBeAbleToUpdateAnEventRule() {
         System.out.println("-- " + name.getMethodName() + " --");
 
         // in case eventRuleId changes
@@ -137,7 +137,7 @@ public class EventRulesApiTest {
     }
 
     @Test
-    public void deleteEventRule() {
+    public void WeShouldBeAbleToDeleteAnEventRule() {
         System.out.println("-- " + name.getMethodName() + " --");
 
         // in case eventRuleId changes
