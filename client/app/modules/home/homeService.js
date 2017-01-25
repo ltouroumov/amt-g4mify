@@ -12,9 +12,9 @@
 	angular.module('g4mify-client-app')
 		.factory('homeService', homeService);
 
-	homeService.$inject = ['$http'];
+	homeService.$inject = ['$http', '$rootScope'];
 
-	function homeService($http) {
+	function homeService($http, $rootScope) {
 
 		var list = [
 			{"feature": "Implemented Best Practices, following: John Papa's Guide"},
@@ -31,6 +31,8 @@
 
 		return {
 			init:init,
+			checkIfUserExists:checkIfUserExists,
+			registerUser:registerUser,
 			postBeep:postBeep,
 			postBoop:postBoop,
 			getFeaturesList: getFeaturesList
@@ -56,23 +58,83 @@
 				console.log(res.data);
 				vm.msg = "- The domain has been successfully connected to the gamification platform";
 				vm.success = true;
-
 			}, function(err){
 				vm.msg = "- An error occurred while connecting to he gamification platform ";
 				vm.success = false;
 			});
 		}
 
-		function postBeep(data) {
+		function checkIfUserExists(vm){
 
 			var req = {
-				method: 'POST',
-				url: 'http://localhost:8080/api/events',
-				data: JSON.stringify(data),
+				method: 'GET',
+				url: 'http://localhost:8080/api/users/' + vm.form.toLowerCase(),
 				headers: {
 					'Content-Type': 'application/json',
 					'Identity': '1:secret'
 				}
+			};
+
+			$http(req).then(function(res){
+
+				vm.username = vm.form;
+				$rootScope.username = vm.username;
+				vm.greetings = "Welcome " + vm.username;
+				vm.showme = !vm.showme;
+				vm.msg = "- The user has been successfully connected to the domain";
+				vm.success = true;
+				console.log("User connection: OK");
+				return true;
+
+			}, function(err){
+
+				return false;
+			});
+
+		}
+
+		function registerUser(vm, data) {
+
+			var req = {
+				method: 'POST',
+				url: 'http://localhost:8080/api/users',
+				headers: {
+					'Content-Type': 'application/json',
+					'Identity': '1:secret'
+				},
+				data:data
+			};
+
+			$http(req).then(function(res){
+				vm.username = vm.form;
+				$rootScope.username = vm.username;
+				vm.greetings = "Welcome " + vm.username;
+				vm.showme = !vm.showme;
+				vm.msg = "- The user has been successfully registered to the domain";
+				vm.success = true;
+				console.log("User registration: OK");
+			}, function(err){
+
+				vm.username = '';
+				$rootScope.username = '';
+				vm.showme = 0;
+
+				vm.msg = "- An error occurred while registering the user to the domain";
+				vm.success = false;
+				console.log("User registration: ERROR");
+			});
+		}
+
+		function postBeep(vm, data) {
+
+			var req = {
+				method: 'POST',
+				url: 'http://localhost:8080/api/events',
+				headers: {
+					'Content-Type': 'application/json',
+					'Identity': '1:secret'
+				},
+				data: data
 			};
 
 			$http(req).then(function(res){
@@ -84,29 +146,27 @@
 			});
 		}
 
-		function postBoop(data) {
+		function postBoop(vm, data) {
 
 			var req = {
 				method: 'POST',
 				url: 'http://localhost:8080/api/events',
-				data: JSON.stringify(data),
 				headers: {
 					'Content-Type': 'application/json',
 					'Identity': '1:secret'
-				}
+				},
+				data: data
 			};
 
-			$http(req).then(function(err){
+			$http(req).then(function(res){
 				console.log("Boop: OK");
 
-			}, function(data){
+			}, function(err){
 				console.log("Boop: ERROR");
 				vm.msg = "- An error occurred posting the event to the gamification platform";
 				vm.success = false;
 
 			});
 		}
-
 	}
-
 })();

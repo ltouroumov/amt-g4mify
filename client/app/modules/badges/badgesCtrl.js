@@ -13,7 +13,7 @@
 		.module('badges')
 		.controller('BadgesCtrl', Badges);
 
-		Badges.$inject = [];
+		Badges.$inject = ['BadgesService'];
 
 		/*
 		* recommend
@@ -21,9 +21,11 @@
 		* and bindable members up top.
 		*/
 
-		function Badges() {
+		function Badges(BadgesService) {
 			/*jshint validthis: true */
 			var vm = this;
+
+			BadgesService.getBadges(vm);
 
 		}
 

@@ -13,7 +13,7 @@
 		.module('g4mify-client-app')
 		.controller('HomeCtrl', Home);
 
-	Home.$inject = ['homeService'];
+	Home.$inject = ['homeService', '$rootScope'];
 
 	/*
 	* recommend
@@ -21,7 +21,7 @@
 	* and bindable members up top.
 	*/
 
-	function Home(homeService) {
+	function Home(homeService, $rootScope) {
 		/*jshint validthis: true */
 		var vm = this;
 
@@ -40,12 +40,12 @@
 			vm.data[0] = vm.data[0] + 1;
 
 			var event = {
-				'user': vm.username,
-				'type': 'beep',
+				"user": vm.username,
+				"type": "beep",
 				"data": {}
 			};
 
-			homeService.postBeep(event);
+			homeService.postBeep(vm, event);
 
 		};
 
@@ -53,24 +53,23 @@
 			vm.data[1] = vm.data[1] + 1;
 
 			var event = {
-				'user': vm.username,
-				'type': 'beep',
+				"user": vm.username,
+				"type": "boop",
 				"data": {}
 			};
-			homeService.postBoop(event);
+			homeService.postBoop(vm, event);
 		};
 
 
 		vm.submit = function () {
-			vm.showme = !vm.showme;
-			vm.msg = "- The user has been successfully registered";
-			vm.success = true;
-			vm.username = vm.form;
-			vm.greetings = "Welcome " + vm.username;
+
+			if(!homeService.checkIfUserExists(vm)){
+				var data = {
+					"profileId": vm.form.toLowerCase(),
+					"profileUrl": vm.form.toLowerCase()
+				};
+				homeService.registerUser(vm, data);
+			}
 		}
-
-
-
 	}
-
 })();

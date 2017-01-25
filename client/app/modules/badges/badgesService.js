@@ -15,10 +15,49 @@
 		// Inject your dependencies as .$inject = ['$http', 'someSevide'];
 		// function Name ($http, someSevide) {...}
 
-		Badges.$inject = ['$http'];
+		Badges.$inject = ['$http', '$rootScope'];
 
-		function Badges ($http) {
+		function Badges ($http, $rootScope) {
 
+
+			return {
+				getBadges:getBadges
+			};
+
+
+			function getBadges(vm) {
+
+				var badges = [];
+				var url = "https://github.com/ltouroumov/amt-g4mify.git/client/app/assets/images/";
+
+				var req = {
+					method: 'GET',
+					url: 'http://localhost:8080/api/users/' + $rootScope.username +'/badges',
+					headers: {
+						'Content-Type': 'application/json',
+						'Identity': '1:secret'
+					}
+				};
+
+				$http(req).then(function(res){
+					console.log("Badges: OK");
+
+					for(var i = 0; i < res.data.length; i++){
+						var badge = {
+							level: res.data[i].level,
+							name: url + res.data[i].type.name,
+							image: res.data[i].type.image
+						};
+						badges.push(badge);
+					}
+
+					vm.badges = badges;
+
+				}, function(err){
+					console.log("Badges: ERROR");
+					vm.msg = "- An error occurred posting the event to the gamification platform";
+					vm.success = false;
+				});
+			}
 		}
-
 })();

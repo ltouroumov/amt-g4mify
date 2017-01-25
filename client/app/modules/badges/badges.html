@@ -1,3 +1,31 @@
 <div class="container">
-	<h1>Content from: badges page</h1>
+
+	<!-- ng-if -->
+	<div ng-if="vm.success == true" class="alert alert-success alert-dismissable">
+		<a class="close" data-dismiss="alert" aria-label="close">&times;</a>
+		<strong>Success</strong> {{vm.msg}}
+	</div>
+	<div ng-if="vm.success == false" class="alert alert-danger alert-dismissable">
+		<a class="close" data-dismiss="alert" aria-label="close">&times;</a>
+		<strong>Error</strong> {{vm.msg}}
+	</div>
+
+	<div class="well text-center">
+
+		<div ng-repeat="badge in vm.badges">
+			<div class="well text-center">
+				<div class="row">
+					<div class="col-md-4"><h1>Badge Name: {{badge.name}}</h1></div>
+					<div class="col-md-4">
+						<img src="../../assets/images/{{badge.image}}" alt="Mountain View" style="width:304px;height:228px;">
+					</div>
+					<div class="col-md-4"><h1>Level: {{badge.level}}</h1></div>
+				</div>
+
+			</div>
+		</div>
+
+
+	</div>
 </div>
+

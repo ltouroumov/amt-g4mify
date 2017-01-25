@@ -42,15 +42,15 @@ for event_rule in event_rules:
 
 print("Creating badge-types")
 badge_types = [
-    { "key": "bronze-beep", "name": "Bronze Beeps", "color": "bronze", "isSingleton": True },
-    { "key": "silver-beep", "name": "Silver Beeps", "color": "silver", "isSingleton": True },
-    { "key": "gold-beep", "name": "Gold Beeps", "color": "gold", "isSingleton": True },
-    { "key": "platinium-beep", "name": "Platinium Beeps", "color": "silver", "isSingleton": True },
+    { "key": "bronze-beep", "name": "Bronze Beeps", "color": "bronze", "isSingleton": True, "image": "bronze.png" },
+    { "key": "silver-beep", "name": "Silver Beeps", "color": "silver", "isSingleton": True, "image": "silver.png" },
+    { "key": "gold-beep", "name": "Gold Beeps", "color": "gold", "isSingleton": True, "image": "gold.png"  },
+    { "key": "platinium-beep", "name": "Platinium Beeps", "color": "silver", "isSingleton": True, "image": "platinium.png" },
 
-    { "key": "bronze-boop", "name": "Bronze Boops", "color": "bronze", "isSingleton": True },
-    { "key": "silver-boop", "name": "Silver Boops", "color": "silver", "isSingleton": True },
-    { "key": "gold-boop", "name": "Gold Boops", "color": "gold", "isSingleton": True },
-    { "key": "platinium-boop", "name": "Platinium Boops", "color": "silver", "isSingleton": True }
+    { "key": "bronze-boop", "name": "Bronze Boops", "color": "bronze", "isSingleton": True, "image": "bronze.png" },
+    { "key": "silver-boop", "name": "Silver Boops", "color": "silver", "isSingleton": True, "image": "silver.png" },
+    { "key": "gold-boop", "name": "Gold Boops", "color": "gold", "isSingleton": True, "image": "gold.png" },
+    { "key": "platinium-boop", "name": "Platinium Boops", "color": "silver", "isSingleton": True, "image": "platinium.png" }
 ]
 
 for badge_type in badge_types:
@@ -58,9 +58,9 @@ for badge_type in badge_types:
 
 print("Creating badge-rules")
 badge_rules = [
-    { "condition": "when 'beeps' matches { it >= 10 }", "grants": "bronze-beep" },
-    { "condition": "when 'beeps' matches { it >= 100 }", "grants": "silver-beep" },
-    { "condition": "when 'beeps' matches { it >= 1000 }", "grants": "gold-beep" },
+    { "condition": "when 'beeps' matches { it >= 10 }", "grants": "bronze-beep"},
+    { "condition": "when 'beeps' matches { it >= 100 }", "grants": "silver-beep"},
+    { "condition": "when 'beeps' matches { it >= 1000 }", "grants": "gold-beep"},
     { "condition": "when 'beeps' matches { it >= 10000 }", "grants": "platinium-beep" },
 
     { "condition": "when 'boops' matches { it >= 10 }", "grants": "bronze-boop" },
