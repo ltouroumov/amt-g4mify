@@ -2,6 +2,7 @@ package ch.heig.amt.g4mify.config;
 
 import ch.heig.amt.g4mify.config.security.DomainAuthenticationFilter;
 import ch.heig.amt.g4mify.config.security.DomainAuthenticationProvider;
+import org.apache.catalina.filters.CorsFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -26,8 +27,9 @@ public class ApplicationSecurityConfiguration extends WebSecurityConfigurerAdapt
     protected void configure(HttpSecurity http) throws Exception {
 
         http
+                .cors().and()
                 .csrf().disable()
-                .addFilterBefore(domainAuthenticationFilter, BasicAuthenticationFilter.class)
+                .addFilterAfter(domainAuthenticationFilter, BasicAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers("/register", "/v2/api-docs", "/swagger-resources", "/swagger**").permitAll()
                 .antMatchers("/api/**").fullyAuthenticated()
