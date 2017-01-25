@@ -169,6 +169,15 @@ module.exports = function (grunt) {
 		"clean"
 	]);
 
+	// Register grunt tasks
+	grunt.registerTask("build:prod", [
+		"jshint",
+		"exec",
+		"concat",
+		"ngtemplates",
+		"injector:production"
+	]);
+
 	// Development task(s).
 	grunt.registerTask('dev', ['injector:dev', 'concurrent']);
 
