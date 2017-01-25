@@ -10,6 +10,8 @@ This platform allows clients to [gamify](https://en.wikipedia.org/wiki/Gamificat
   * [Domain Model](docs/models.md)
   * [Rules Syntax](docs/rules.md)
 
+Swagger UI is available at `http://localhost:8080/swagger/ui.html` when the application is running.
+
 ## Building
 
 The project uses the [gradle build system](https://gradle.org).
