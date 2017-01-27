@@ -10,7 +10,7 @@ To create a domain call the `POST /register` endpoint. The server will return a 
 
 ```
 -- Request --
-GET /register
+POST /register
 
 -- Response --
 {
